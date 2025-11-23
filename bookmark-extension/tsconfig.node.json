@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "composite": true, // 다른 tsconfig에서 참조 가능하게
+    "module": "ESNext", // Node의 ESM import 지원
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true, // import 문 허용
+    "resolveJsonModule": true, // ✅ 이거 추가!
+    "types": ["node"], // ✅ Node 전역 타입(path, __dirname 등) 인식
+    "skipLibCheck": true, // ✅ 타입 검사를 줄여줌
+    "isolatedModules": true
+  },
+  "include": [
+    "vite.config.ts",
+    "manifest.config.ts", // ✅ 추가
+    "server/**/*.ts", // (서버 코드도 함께 잡고 싶으면)
+    "**/*.config.ts" // 또는 이렇게 패턴으로 한 번에
+  ],
+  "exclude": ["node_modules", "dist", "release"]
+}
