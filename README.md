@@ -4,9 +4,8 @@
 
 **Bookmark Service**는 크롬 브라우저의 기본 북마크 기능을 보다 직관적이고 편리하게 사용할 수 있도록 돕는 서비스입니다. 사용자는 북마크를 체계적으로 관리하고, 폴더를 활용하여 북마크를 분류하거나 정렬할 수 있습니다. 직관적인 UI와 간단한 조작으로 북마크를 효율적으로 관리할 수 있는 환경을 제공합니다.
 
-![alt text](<스크린샷 2025-11-24 오후 10.36.28.png>)
-![alt text](<스크린샷 2025-11-24 오후 10.36.34.png>)
-
+<img width="1306" height="745" alt="Image" src="https://github.com/user-attachments/assets/3a4bd190-2faf-4209-87c5-fb270f463e35" />
+<img width="1300" height="745" alt="Image" src="https://github.com/user-attachments/assets/7f459753-322b-484a-80b4-f2c8affde72c" />
 ---
 
 ## 서비스 개발 동기
