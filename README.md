@@ -1,4 +1,5 @@
-# Bookmark Service
+# 프리코스 오픈 미션 - Bookmark Service
+[📝소감문 노션링크]("https://curse-snipe-edf.notion.site/8-mission-_-2b4ea2795d2d80d2ae3ddd9e452bd228")
 
 ## 서비스 소개
 
