@@ -1,28 +1,26 @@
 @font-face {
   font-family: 'FounderYooGeonWook';
-  src: url('/establish\ Retrosans\ OTF.otf') format('woff2');
+  src: url('/establish\ Retrosans\ OTF.woff2') format('woff2');
   font-weight: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'LeferiBaseRegular';
-  src: url('/LeferiBaseRegular.otf') format('opentype');
+  src: url('/LeferiBaseRegular.woff2') format('woff2');
   font-weight: normal;
+  font-display: swap;
 }
 @font-face {
   font-family: 'LeferiBaseBold';
-  src: url('/LeferiBaseBold.otf') format('opentype');
+  src: url('/LeferiBaseBold.woff2') format('woff2');
   font-weight: normal;
+  font-display: swap;
 }
 @font-face {
   font-family: 'LeferiPointWhite';
-  src: url('/LeferiPointWhite.otf') format('opentype');
+  src: url('/LeferiPointWhite.woff2') format('woff2');
   font-weight: normal;
-}
-@font-face {
-  font-family: 'LeferiPointBlack';
-  src: url('/LeferiPointBlack.otf') format('opentype');
-  font-weight: normal;
+  font-display: swap;
 }
 
 :root {
@@ -44,10 +42,16 @@
 }
 
 body {
-  font-family: 'LeferiPointWhite', sans-serif;
+  font-family:
+    'LeferiPointWhite',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   font-weight: normal;
   color: var(--color-main-white);
-  background-image: url('/src/assets/images/bg-library.svg');
+  background-image: url('/src/assets/images/bg-library.webp');
   background-position: center;
   background-size: cover;
   background-attachment: fixed;
@@ -56,7 +60,7 @@ body {
 }
 
 h2 {
-  font-family: 'LeferiPointRegular';
+  font-family: 'LeferiPointRegular', system-ui, sans-serif;
   color: var(--color-main-white);
   letter-spacing: 0.2em;
   font-size: 1.4em;
