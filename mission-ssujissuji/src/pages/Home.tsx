@@ -25,7 +25,7 @@ export default function Home() {
   }, [data]);
 
   return (
-    <div>
+    <div className="w-full ">
       <BookMarkCardList bookmarkBar={bookmarkBarData} />
     </div>
   );

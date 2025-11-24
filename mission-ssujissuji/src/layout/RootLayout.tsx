@@ -12,7 +12,7 @@ export default function RootLayout() {
   };
 
   return (
-    <div className="w-full min-w-[510px] mx-auto flex flex-col gap-4 pb-25 pt-16">
+    <div className="w-full  mx-auto flex flex-col gap-4 pb-25 pt-16">
       <Header
         sortType={sortType}
         onChangeSort={setSortType}

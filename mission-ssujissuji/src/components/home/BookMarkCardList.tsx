@@ -55,7 +55,7 @@ export default function BookMarkCardList({
   }, [bookmarkBar]);
 
   return (
-    <div className="flex flex-col justify-center items-center gap-5">
+    <div className="flex flex-col items-center mx-auto gap-5 w-full">
       <ul className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4 mt-4 w-full">
         {hasSearch ? (
           hasResult ? (

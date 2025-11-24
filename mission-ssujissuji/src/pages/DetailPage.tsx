@@ -43,10 +43,11 @@ export default function DetailPage() {
         return title.includes(normalizedKeyword);
       });
     }
+    return [];
   }, [sortedBookmarks, normalizedKeyword]);
 
   const hasSearch = normalizedKeyword.length > 0;
-  const hasResult = filteredList.length > 0;
+  const hasResult = (filteredList?.length ?? 0) > 0;
   if (!data) return <div>데이터를 불러오지 못했습니다.</div>;
   return (
     <div>
