@@ -19,6 +19,9 @@ export default function BookMarkCardList({
   const [bookmarkBarFolderList, setBookmarkBarFolderList] = useState<
     BookmarkTreeType[]
   >([]);
+  const [bookmarkBarUrlList, setBookmarkBarUrlList] = useState<
+    BookmarkTreeType[]
+  >([]);
 
   const { data } = useBookmarks();
   const { keyword } = useOutletContext<OutletContextType>();
@@ -26,13 +29,13 @@ export default function BookMarkCardList({
   const normalizedKeyword = keyword.trim().toLowerCase();
 
   const filteredList = useMemo(() => {
-    if (!normalizedKeyword) return [];
-    if (normalizedKeyword) {
-      return bookmarkBarFolderList.filter((bookmark) => {
-        const title = bookmark.title.toLowerCase() ?? '';
-        return title.includes(normalizedKeyword);
-      });
+    if (!normalizedKeyword) {
+      return [];
     }
+    return bookmarkBarFolderList.filter((bookmark) => {
+      const title = bookmark.title.toLowerCase() ?? '';
+      return title.includes(normalizedKeyword);
+    });
   }, [bookmarkBarFolderList, normalizedKeyword]);
 
   const hasSearch = normalizedKeyword.length > 0;
@@ -44,10 +47,16 @@ export default function BookMarkCardList({
   const limitList = recent.slice(0, LIMIT);
   const navigate = useNavigate();
 
+  // bookmarkBar에서 폴더와 URL 리스트 분리
   useEffect(() => {
     if (!bookmarkBar.length) return;
-    const { folders } = separateFolderAndBookmarks(bookmarkBar);
+
+    const { folders, bookmarks } = separateFolderAndBookmarks(bookmarkBar);
     setBookmarkBarFolderList(folders);
+
+    // URL만 필터링
+    const urlList = bookmarks.filter((item) => item.url);
+    setBookmarkBarUrlList(urlList);
   }, [bookmarkBar]);
 
   return (
@@ -77,17 +86,32 @@ export default function BookMarkCardList({
           ))
         )}
         <BookmarkCard
-          title={'others'}
+          title={'기타 북마크'}
           type="others"
           onClick={() => navigate('/bookmark/2')}
         />
         <NewBookMark />
       </ul>
-      <p className="pt-10 text-(--color-gray-light)">최근 북마크 추가 목록</p>
-      <div className="w-full mx-auto flex flex-col gap-3 pb-25 pt-6">
-        {limitList.map((r) => (
-          <BookmarkListItem key={r.id} url={r.url} title={r.title} />
-        ))}
+      <div className="flex justify-start items-center">
+        <div className="flex justify-start items-center">
+          <p className="pt-10 text-(--color-gray-light)">
+            최근 북마크 추가 목록
+          </p>
+          <div className="w-full mx-auto flex flex-col gap-3 pb-25 pt-6">
+            {limitList.map((r) => (
+              <BookmarkListItem key={r.id} url={r.url} title={r.title} />
+            ))}
+          </div>
+        </div>
+
+        <div className="flex justify-start items-center">
+          <p className="pt-10 text-(--color-gray-light)">북마크바 URL 리스트</p>
+          <div className="w-full mx-auto flex flex-col gap-3 pb-25 pt-6">
+            {bookmarkBarUrlList.map((r) => (
+              <BookmarkListItem key={r.id} url={r.url} title={r.title} />
+            ))}
+          </div>
+        </div>
       </div>
     </>
   );
