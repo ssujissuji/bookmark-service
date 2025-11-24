@@ -55,8 +55,19 @@ body {
   background-position: center;
   background-size: cover;
   background-attachment: fixed;
-  padding: 0px 30rem;
-  min-width: 510px;
+  padding: 0px 20rem;
+  min-width: 810px;
+}
+@media (max-width: 1024px) {
+  body {
+    padding: 0 10rem;
+  }
+}
+
+@media (max-width: 790px) {
+  body {
+    padding: 0 1rem;
+  }
 }
 
 h2 {
