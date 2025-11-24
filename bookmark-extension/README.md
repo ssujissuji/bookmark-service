@@ -21,9 +21,8 @@ bookmark-extension/
 ├── src/                         # 소스 코드
 │   ├── background.ts            # 백그라운드 스크립트
 │   ├── components/              # 재사용 가능한 컴포넌트
-│   ├── content/                 # 컨텐츠 스크립트
 │   ├── popup/                   # 팝업 UI
-│   └── sidepanel/               # 사이드패널 UI
+
 ```
 
 ---
