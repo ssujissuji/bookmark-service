@@ -1,10 +1,11 @@
-import path from 'node:path'
-import { crx } from '@crxjs/vite-plugin'
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
-import zip from 'vite-plugin-zip-pack'
-import manifest from './manifest.config.js'
-import { name, version } from './package.json'
+import path from 'node:path';
+import { crx } from '@crxjs/vite-plugin';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+import zip from 'vite-plugin-zip-pack';
+import manifest from './manifest.config.js';
+import { name, version } from './package.json';
+import svgr from 'vite-plugin-svgr';
 
 export default defineConfig({
   resolve: {
@@ -16,12 +17,15 @@ export default defineConfig({
     react(),
     crx({ manifest }),
     zip({ outDir: 'release', outFileName: `crx-${name}-${version}.zip` }),
+    svgr({
+      svgrOptions: {
+        icon: true,
+      },
+    }),
   ],
   server: {
     cors: {
-      origin: [
-        /chrome-extension:\/\//,
-      ],
+      origin: [/chrome-extension:\/\//],
     },
   },
-})
+});
