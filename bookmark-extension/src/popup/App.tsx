@@ -1,6 +1,10 @@
 // ✅ 크롬 확장 프로그램 popup/App.tsx
 
+import RootLayout from '@/app/layout/RootLayout';
+import DetailPage from '@/app/pages/DetailPage';
+import Home from '@/app/pages/Home';
 import { useState } from 'react';
+import { Navigate, Route, Routes } from 'react-router';
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -35,12 +39,21 @@ function App() {
   };
 
   return (
-    <div style={{ padding: '16px', width: '220px' }}>
-      <h3>📚 북마크 내보내기</h3>
-      <button onClick={handleExport} disabled={loading}>
-        {loading ? '전송 중...' : '내 웹 서비스로 보내기'}
-      </button>
-    </div>
+    <>
+      <div style={{ padding: '16px', width: '220px' }}>
+        <h3>📚 북마크 내보내기</h3>
+        <button onClick={handleExport} disabled={loading}>
+          {loading ? '전송 중...' : '내 웹 서비스로 보내기'}
+        </button>
+      </div>
+      <Routes>
+        <Route element={<RootLayout />}>
+          <Route index element={<Home />} />
+          <Route path="/bookmark/:folderId" element={<DetailPage />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </>
   );
 }
 
