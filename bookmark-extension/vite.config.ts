@@ -6,6 +6,7 @@ import zip from 'vite-plugin-zip-pack';
 import manifest from './manifest.config.js';
 import { name, version } from './package.json';
 import svgr from 'vite-plugin-svgr';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   resolve: {
@@ -15,6 +16,7 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    tailwindcss(),
     crx({ manifest }),
     zip({ outDir: 'release', outFileName: `crx-${name}-${version}.zip` }),
     svgr({
