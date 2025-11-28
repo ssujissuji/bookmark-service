@@ -10,6 +10,7 @@ const customStyles = {
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
+    borderRadius: '12px',
   },
 };
 
@@ -59,9 +60,16 @@ function App() {
         style={customStyles}
         contentLabel="Welcome Modal"
       >
-        <div style={{ padding: '16px', width: '220px' }}>
-          <h3>📕 내북마크 내보내기</h3>
-          <button onClick={handleExport} disabled={loading}>
+        <div
+          className="flex flex-col justify-center items-center bg-white  gap-4"
+          style={{ padding: '20px', minWidth: '300px' }}
+        >
+          <h3 className="text-black font-bold">📕 내북마크 내보내기</h3>
+          <button
+            className="rounded-2xl border border-(--color-main-red) px-4 py-2 mt-4 text-black hover:text-white hover:bg-(--color-main-red) cursor-pointer"
+            onClick={handleExport}
+            disabled={loading}
+          >
             {loading ? '전송 중...' : '내 웹 서비스로 보내기'}
           </button>
         </div>
