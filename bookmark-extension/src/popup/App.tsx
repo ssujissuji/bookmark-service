@@ -35,6 +35,7 @@ function App() {
       setBookmarksData(bookmarks as BookmarkTreeType[]);
       setLoading(false);
     });
+    setIsOpen(false);
   };
 
   const closeModal = () => {
