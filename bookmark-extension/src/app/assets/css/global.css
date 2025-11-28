@@ -51,7 +51,8 @@ body {
     sans-serif;
   font-weight: normal;
   color: var(--color-main-white);
-  background-image: url('/src/assets/images/bg-library.webp');
+  background-image: url('../images/bg-library.webp');
+  background-color: var(--color-glass-bg-dark);
   background-position: center;
   background-size: cover;
   background-attachment: fixed;
