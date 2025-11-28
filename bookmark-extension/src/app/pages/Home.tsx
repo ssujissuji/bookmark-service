@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
 import BookMarkCardList from '../components/home/BookMarkCardList';
-import { useBookmarks } from '../hooks/useBookmark';
+import { useBookmarksData } from '../BookmarksContext';
 
 export default function Home() {
-  const { data } = useBookmarks();
+  const { data, status } = useBookmarksData();
+  if (status !== 'success' || !data) {
+    return null;
+  }
   const [bookmarkBarData, setBookmarkBarData] = useState<BookmarkTreeType[]>(
     [],
   );
-
+  console.log('Home data:', data);
   useEffect(() => {
     if (!data || !data[0]?.children) {
       console.error('Invalid data structure:', data);

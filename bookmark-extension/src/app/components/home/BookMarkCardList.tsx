@@ -7,8 +7,8 @@ import {
 } from '../../utils/bookmarkTreeUtils';
 import { useNavigate, useOutletContext } from 'react-router';
 import BookmarkListItem from '../ui/BookmarkListItem';
-import { useBookmarks } from '../../hooks/useBookmark';
 import type { OutletContextType } from '../../pages/DetailPage';
+import { useBookmarksData } from '@/app/BookmarksContext';
 
 export default function BookMarkCardList({
   bookmarkBar,
@@ -22,8 +22,12 @@ export default function BookMarkCardList({
     BookmarkTreeType[]
   >([]);
 
-  const { data } = useBookmarks();
+  const { data, status } = useBookmarksData();
   const { keyword } = useOutletContext<OutletContextType>();
+
+  if (status !== 'success' || !data) {
+    return null;
+  }
 
   const normalizedKeyword = keyword.trim().toLowerCase();
 

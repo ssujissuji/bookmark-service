@@ -7,9 +7,9 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import FolderEditModal from '../FolderEditModal';
 import { useNavigate, useParams } from 'react-router';
-import { useBookmarks } from '../../hooks/useBookmark';
 import { findPathToNode } from '../../utils/bookmarkTreeUtils';
 import type { SortType } from '../../layout/RootLayout';
+import { useBookmarksData } from '@/app/BookmarksContext';
 
 type HeaderProps = {
   sortType: SortType;
@@ -25,7 +25,10 @@ export default function Header({
   onChangeKeyword,
 }: HeaderProps) {
   const { folderId } = useParams<{ folderId: string }>();
-  const { data } = useBookmarks();
+  const { data, status } = useBookmarksData();
+  if (status !== 'success' || !data) {
+    return null;
+  }
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 

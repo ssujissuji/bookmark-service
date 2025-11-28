@@ -3,13 +3,14 @@ import FolderList from '../components/FolderList';
 import BookmarkListItem from '../components/ui/BookmarkListItem';
 import ReactDOM from 'react-dom';
 import { useOutletContext, useParams } from 'react-router';
-import { useBookmarks } from '../hooks/useBookmark';
+
 import {
   findNodeById,
   separateFolderAndBookmarks,
 } from '../utils/bookmarkTreeUtils';
 import type { SortType } from '../layout/RootLayout';
 import { sortBookmarks } from '../utils/sortBookmarks';
+import { useBookmarksData } from '../BookmarksContext';
 
 export type OutletContextType = {
   sortType: SortType;
@@ -19,7 +20,10 @@ export type OutletContextType = {
 export default function DetailPage() {
   const listRef = useRef<HTMLDivElement>(null);
   const { folderId } = useParams<{ folderId: string }>();
-  const { data } = useBookmarks(); // BookmarkTree[] 형태로 가정
+  const { data, status } = useBookmarksData();
+  if (status !== 'success' || !data) {
+    return null;
+  }
   const { sortType, keyword } = useOutletContext<OutletContextType>();
 
   const rootNodes = data?.[0]?.children ?? [];
