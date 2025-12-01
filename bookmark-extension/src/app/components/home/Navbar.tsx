@@ -5,8 +5,8 @@ import type { SortType } from '../../layout/RootLayout';
 type NavbarProps = {
   sortType: SortType;
   onChangeSort: (type: SortType) => void;
-  keyword: string;
-  onChangeValue: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  keyword?: string;
+  onChangeValue?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 export default function Navbar({
@@ -27,13 +27,16 @@ export default function Navbar({
         <TextButton
           buttonName="최신순"
           onClick={handleRecentClick}
-          // 선택된 상태에만 active 스타일(예시)
-          className={isRecent ? 'font-semibold text-(--color-yellow)' : ''}
+          className={
+            isRecent ? 'text-lg font-semibold text-(--color-yellow)' : ''
+          }
         />
         <TextButton
           buttonName="이름순"
           onClick={handleNameClick}
-          className={isName ? 'font-semibold text-(--color-yellow)' : ''}
+          className={
+            isName ? 'text-lg font-semibold text-(--color-yellow)' : ''
+          }
         />
       </div>
       <InputComponent
