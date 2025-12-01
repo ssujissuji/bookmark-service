@@ -10,7 +10,7 @@ export default function Home() {
   const [bookmarkBarData, setBookmarkBarData] = useState<BookmarkTreeType[]>(
     [],
   );
-  console.log('Home data:', data);
+
   useEffect(() => {
     if (!data || !data[0]?.children) {
       console.error('Invalid data structure:', data);
