@@ -59,12 +59,14 @@ function App() {
         onAfterOpen={afterCloseModal}
         style={customStyles}
         contentLabel="Welcome Modal"
+        shouldCloseOnEsc={false}
+        shouldCloseOnOverlayClick={false}
       >
         <div
           className="flex flex-col justify-center items-center bg-white  gap-4"
           style={{ padding: '20px', minWidth: '300px' }}
         >
-          <h3 className="text-black font-bold">📕 내북마크 내보내기</h3>
+          <h3 className="text-black font-bold">📕 내북마크 불러오기</h3>
           <button
             className="rounded-2xl border border-(--color-main-red) px-4 py-2 mt-4 text-black hover:text-white hover:bg-(--color-main-red) cursor-pointer"
             onClick={handleExport}
