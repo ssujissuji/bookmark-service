@@ -11,9 +11,14 @@ export default defineManifest({
         default_icon: {
             48: 'logo.png',
         },
-        default_popup: 'src/popup/index.html', // ✅ 확장 팝업 페이지
+        default_title: 'MyBookmark',
     },
     permissions: [
         'bookmarks', // ✅ 북마크 API 접근
     ],
+    background: { service_worker: 'src/background.ts', type: 'module' },
+    options_ui: {
+        page: 'src/popup/index.html',
+        open_in_tab: true,
+    },
 });
