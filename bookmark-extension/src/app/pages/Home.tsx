@@ -23,7 +23,7 @@ export default function Home() {
     );
 
     if (rootBar?.children) {
-      setBookmarkBarData(rootBar.children); // 전체 내용을 저장
+      setBookmarkBarData(rootBar.children);
     }
   }, [data]);
 
