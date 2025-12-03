@@ -10,6 +10,8 @@ import { useNavigate, useParams } from 'react-router';
 import { findPathToNode } from '../../utils/bookmarkTreeUtils';
 import type { SortType } from '../../layout/RootLayout';
 import { useBookmarksData } from '@/app/BookmarksContext';
+import { useFolderActions } from '@/app/hooks/useFoldersActions';
+import toast from 'react-hot-toast';
 
 type HeaderProps = {
   sortType: SortType;
@@ -58,6 +60,24 @@ export default function Header({
       }
     }
   }
+
+  const { createFolder } = useFolderActions();
+  const currentFolderId = '1'; // 기본 북마크바에 생성되도록 설정
+
+  const handleSubmit = async (name: string, desc: string) => {
+    try {
+      await createFolder({
+        title: name,
+        parentId: currentFolderId,
+      });
+      console.log('새 폴더 생성 데이터:', { name, desc });
+      toast.success('✅ 폴더가 생성되었습니다!');
+      setIsOpen(false);
+    } catch (error) {
+      toast.error('❌ 폴더 생성에 실패했습니다.');
+      console.error('폴더 생성 실패:', error);
+    }
+  };
 
   const clickParentHandler = () => {
     console.log('click backward');
@@ -115,7 +135,11 @@ export default function Header({
               className="fixed z-9999 inset-0 flex justify-center items-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <FolderEditModal type="edit" onClick={() => setIsOpen(false)} />
+              <FolderEditModal
+                type="edit"
+                onCancel={() => setIsOpen(false)}
+                onSubmit={handleSubmit}
+              />
             </div>
           </>,
           document.body,
