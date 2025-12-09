@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import toast from 'react-hot-toast';
 
 type CreateFolderParams = {
   title: string;
@@ -31,9 +32,11 @@ export function useFolderActions() {
           const error = chrome.runtime.lastError;
           if (error) {
             console.error('createFolder error:', error);
+            toast.error('폴더 생성에 실패했습니다.');
             reject(error);
           } else {
             resolve(result);
+            toast.success(' 폴더가 생성되었습니다!');
           }
         },
       );

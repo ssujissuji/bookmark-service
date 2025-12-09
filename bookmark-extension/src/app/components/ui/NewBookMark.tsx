@@ -3,24 +3,27 @@ import NewFolder from '../../assets/icon/new_folder.svg?react';
 import ReactDOM from 'react-dom';
 import FolderEditModal from '../FolderEditModal';
 import { useFolderActions } from '../../hooks/useFoldersActions';
-import toast from 'react-hot-toast';
+import { useBookmarksData } from '@/app/BookmarksContext';
 
 export default function NewBookMark() {
   const [isOpen, setIsOpen] = useState(false);
   const currentFolderId = '1'; // 기본 북마크바에 생성되도록 설정
 
   const { createFolder } = useFolderActions();
-  const handleSubmit = async (name: string, desc: string) => {
+  const { reloadBookmarks } = useBookmarksData();
+
+  const handleSubmit = async (name: string, desc?: string) => {
     try {
       await createFolder({
         title: name,
         parentId: currentFolderId,
       });
       console.log('새 폴더 생성 데이터:', { name, desc });
-      toast.success('✅ 폴더가 생성되었습니다!');
+
+      await reloadBookmarks();
+
       setIsOpen(false);
     } catch (error) {
-      toast.error('❌ 폴더 생성에 실패했습니다.');
       console.error('폴더 생성 실패:', error);
     }
   };
