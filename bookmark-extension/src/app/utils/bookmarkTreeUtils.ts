@@ -2,7 +2,7 @@ export const separateFolderAndBookmarks = (arr: BookmarkTreeType[]) => {
   const folders: BookmarkTreeType[] = [];
   const bookmarks: BookmarkTreeType[] = [];
   arr.forEach((node) => {
-    if (node.children && node.children.length > 0) {
+    if (node.children && !node.url) {
       folders.push(node);
     } else {
       bookmarks.push(node);
@@ -47,7 +47,6 @@ export const findPathToNode = (
     }
   }
 
-  // 못 찾으면 undefined
   return undefined;
 };
 
@@ -60,7 +59,7 @@ export function collectAllBookmarks(
 
   const traverse = (list: BookmarkTreeType[]) => {
     list.forEach((node) => {
-      if (node.children && node.children.length > 0) {
+      if (node.children && !node.url) {
         traverse(node.children);
       } else {
         result.push(node);

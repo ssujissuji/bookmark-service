@@ -70,7 +70,7 @@ export default function DetailPage() {
               검색 결과가 없습니다.
             </p>
           )
-        ) : (
+        ) : sortedBookmarks ? (
           sortedBookmarks.map((bookmark) => (
             <BookmarkListItem
               key={bookmark.id}
@@ -78,6 +78,10 @@ export default function DetailPage() {
               title={bookmark.title}
             />
           ))
+        ) : (
+          <div className="flex mt-4 text-sm text-gray-400 justify-center text-center">
+            북마크가 없습니다.
+          </div>
         )}
       </div>
       {/* 좌측 폴더 리스트 */}
