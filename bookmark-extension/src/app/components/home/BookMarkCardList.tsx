@@ -100,7 +100,12 @@ export default function BookMarkCardList({
           </p>
           <div className="w-full mx-auto flex flex-col gap-3 pt-6">
             {limitList.map((r) => (
-              <BookmarkListItem key={r.id} url={r.url} title={r.title} />
+              <BookmarkListItem
+                key={r.id}
+                url={r.url}
+                title={r.title}
+                id={r.id}
+              />
             ))}
           </div>
         </div>
@@ -111,7 +116,12 @@ export default function BookMarkCardList({
           <div className="w-full mx-auto flex flex-col gap-3 pt-6">
             {bookmarkBarUrlList.length > 0 ? (
               bookmarkBarUrlList.map((r) => (
-                <BookmarkListItem key={r.id} url={r.url} title={r.title} />
+                <BookmarkListItem
+                  key={r.id}
+                  url={r.url}
+                  title={r.title}
+                  id={r.id}
+                />
               ))
             ) : (
               <p className="flex justify-center mt-4 text-sm text-(--color-main-red)">

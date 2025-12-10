@@ -4,17 +4,23 @@ import Ellipsis from '../../assets/icon/ellipsis.svg?react';
 import SelectBox from './SelectBox';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
+import { useBookmarksData } from '@/app/BookmarksContext';
+import { useUrlActions } from '@/app/hooks/useUrlActions';
 
 export default function BookmarkListItem({
   url,
   title,
+  id,
 }: {
   url: string;
   title: string;
+  id?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLDivElement>(null);
+  const { deleteUrl } = useUrlActions();
+  const { reloadBookmarks } = useBookmarksData();
 
   const handleOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -22,7 +28,6 @@ export default function BookmarkListItem({
     if (buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
 
-      // rect는 viewport 기준 → body에 붙일 때 그대로 사용 가능
       setPos({
         top: rect.bottom + window.scrollY + 6, // 버튼 아래 6px 여백
         left: rect.right + window.scrollX - 130, // SelectBox 너비(130px)만큼 왼쪽으로
@@ -30,6 +35,20 @@ export default function BookmarkListItem({
     }
 
     setIsOpen(true);
+  };
+
+  const handleDelete = async () => {
+    console.log('handleDelete 호출됨');
+    console.log('삭제할 북마크 ID:', id);
+    if (!id) return;
+    try {
+      await deleteUrl(id);
+      console.log('삭제된 북마크 ID:', id);
+      await reloadBookmarks();
+    } catch (error) {
+      console.error('북마크 삭제 실패:', error);
+    }
+    setIsOpen(false);
   };
 
   return (
@@ -67,7 +86,7 @@ export default function BookmarkListItem({
                 left: `${pos.left}px`,
               }}
             >
-              <SelectBox />
+              <SelectBox onDelete={handleDelete} />
             </div>
           </>,
           document.body,
