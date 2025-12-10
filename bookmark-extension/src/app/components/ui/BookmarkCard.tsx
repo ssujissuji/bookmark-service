@@ -1,21 +1,27 @@
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import IconDefault from '../../assets/icon/bookmark.svg?react';
 import Ellipsis from '../../assets/icon/ellipsis.svg?react';
 import SelectBox from './SelectBox';
 import ReactDOM from 'react-dom';
+import { useFolderActions } from '@/app/hooks/useFoldersActions';
+import { useBookmarksData } from '@/app/BookmarksContext';
 
 export default function BookmarkCard({
   title,
   type,
+  id,
   onClick,
 }: {
   title: string;
   type: string;
+  id?: string;
   onClick: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLDivElement>(null);
+  const { deleteFolder } = useFolderActions();
+  const { reloadBookmarks } = useBookmarksData();
 
   const handleOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -29,9 +35,20 @@ export default function BookmarkCard({
     setIsOpen(true);
   };
 
+  const handleDelete = async () => {
+    if (!id) return;
+    try {
+      deleteFolder(id);
+      console.log('삭제된 폴더 ID:', id);
+      await reloadBookmarks();
+    } catch (error) {
+      console.error('폴더 삭제 실패:', error);
+    }
+    setIsOpen(false);
+  };
+
   return (
     <>
-      {/* 북마크 폴더*/}
       <li
         className="flex relative justify-between items-center glass rounded-xl gap-4 px-6 py-4 w-full min-h-[120px] glass--hover"
         onClick={onClick}
@@ -67,17 +84,15 @@ export default function BookmarkCard({
         >
           <Ellipsis />
         </div>
-        {/* ✅ Portal로 SelectBox와 오버레이를 body로 렌더링 */}
+
         {isOpen &&
           ReactDOM.createPortal(
             <>
-              {/* 화면 전체 덮는 오버레이 */}
               <div
                 className="fixed inset-0 bg-transparent z-9998"
-                onClick={() => setIsOpen(false)}
+                // onClick={() => setIsOpen(false)}
               ></div>
 
-              {/* SelectBox는 고정된 위치에 띄우되, 절대 위치로 조정 */}
               <div
                 className="absolute z-9999"
                 style={{
@@ -85,7 +100,7 @@ export default function BookmarkCard({
                   left: `${pos.left}px`,
                 }}
               >
-                <SelectBox onClick={() => setIsOpen(false)} />
+                <SelectBox onDelete={handleDelete} />
               </div>
             </>,
             document.body,

@@ -67,6 +67,7 @@ export default function BookMarkCardList({
               <BookmarkCard
                 key={list.id}
                 title={list.title}
+                id={list.id}
                 type="bookmarkBar"
                 onClick={() => navigate(`/bookmark/${list.id}`)}
               />
@@ -79,6 +80,7 @@ export default function BookMarkCardList({
             <BookmarkCard
               key={list.id}
               title={list.title}
+              id={list.id}
               type="bookmarkBar"
               onClick={() => navigate(`/bookmark/${list.id}`)}
             />

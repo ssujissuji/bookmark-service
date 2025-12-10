@@ -67,7 +67,7 @@ export default function BookmarkListItem({
                 left: `${pos.left}px`,
               }}
             >
-              <SelectBox onClick={() => setIsOpen(false)} />
+              <SelectBox />
             </div>
           </>,
           document.body,

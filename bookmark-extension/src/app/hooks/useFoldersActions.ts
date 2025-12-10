@@ -74,10 +74,12 @@ export function useFolderActions() {
       chrome.bookmarks.removeTree(id, () => {
         const error = chrome.runtime.lastError;
         if (error) {
+          toast.error('폴더 삭제에 실패했습니다.');
           console.error('deleteFolder error:', error);
           reject(error);
         } else {
           resolve();
+          toast.success('폴더가 삭제되었습니다!');
         }
       });
     });
