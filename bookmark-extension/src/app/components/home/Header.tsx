@@ -15,16 +15,22 @@ import toast from 'react-hot-toast';
 
 type HeaderProps = {
   sortType: SortType;
-  onChangeSort: (type: SortType) => void;
   keyword: string;
+  onChangeSort: (type: SortType) => void;
   onChangeKeyword: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onCompositionStart?: (e: React.CompositionEvent<HTMLInputElement>) => void;
+  onCompositionEnd?: (e: React.CompositionEvent<HTMLInputElement>) => void;
 };
 
 export default function Header({
   sortType,
-  onChangeSort,
   keyword,
+  onChangeSort,
   onChangeKeyword,
+  onKeyDown,
+  onCompositionEnd,
+  onCompositionStart,
 }: HeaderProps) {
   const { folderId } = useParams<{ folderId: string }>();
   const { data, status } = useBookmarksData();
@@ -119,6 +125,9 @@ export default function Header({
         onChangeSort={onChangeSort}
         keyword={keyword}
         onChangeValue={onChangeKeyword}
+        onKeyDown={onKeyDown}
+        onCompositionStart={onCompositionStart}
+        onCompositionEnd={onCompositionEnd}
       />
       {isOpen &&
         ReactDOM.createPortal(

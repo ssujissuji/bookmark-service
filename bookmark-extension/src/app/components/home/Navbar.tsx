@@ -4,16 +4,22 @@ import type { SortType } from '../../layout/RootLayout';
 
 type NavbarProps = {
   sortType: SortType;
-  onChangeSort: (type: SortType) => void;
   keyword?: string;
+  onChangeSort: (type: SortType) => void;
   onChangeValue?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onCompositionStart?: (e: React.CompositionEvent<HTMLInputElement>) => void;
+  onCompositionEnd?: (e: React.CompositionEvent<HTMLInputElement>) => void;
 };
 
 export default function Navbar({
   sortType,
-  onChangeSort,
   keyword,
+  onChangeSort,
   onChangeValue,
+  onKeyDown,
+  onCompositionEnd,
+  onCompositionStart,
 }: NavbarProps) {
   const handleRecentClick = () => onChangeSort('recent');
   const handleNameClick = () => onChangeSort('name');
@@ -44,6 +50,9 @@ export default function Navbar({
         placeholder="search"
         value={keyword}
         onChange={onChangeValue}
+        onKeyDown={onKeyDown}
+        onCompositionStart={onCompositionStart}
+        onCompositionEnd={onCompositionEnd}
       />
     </div>
   );
