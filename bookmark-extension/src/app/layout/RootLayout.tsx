@@ -6,9 +6,41 @@ export type SortType = 'recent' | 'name';
 
 export default function RootLayout() {
   const [sortType, setSortType] = useState<SortType>('recent');
-  const [keyword, setKeyword] = useState<string>('');
+  const [inputValue, setInputValue] = useState<string>('');
+  const [searchKeyword, setSearchKeyword] = useState<string>('');
+  const [isComposing, setIsComposing] = useState(false);
+
   const handleChangeKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setKeyword(e.target.value);
+    const { value } = e.target;
+    setInputValue(value);
+
+    if (isComposing || (e.nativeEvent as InputEvent).isComposing) return;
+
+    setSearchKeyword(value);
+  };
+
+  const handleCompositionStart = () => {
+    setIsComposing(true);
+  };
+
+  const handleCompositionEnd = (
+    e: React.CompositionEvent<HTMLInputElement>,
+  ) => {
+    const value = e.currentTarget.value;
+    setIsComposing(false);
+    setInputValue(value);
+    setSearchKeyword(value); // 🔥 완성된 문자열로 검색
+  };
+
+  // Enter 눌렀을 때 검색 확정
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.nativeEvent.isComposing) return;
+
+    if (e.key === 'Enter') {
+      const value = (e.target as HTMLInputElement).value;
+      setInputValue(value);
+      setSearchKeyword(value);
+    }
   };
 
   return (
@@ -16,10 +48,13 @@ export default function RootLayout() {
       <Header
         sortType={sortType}
         onChangeSort={setSortType}
-        keyword={keyword}
+        keyword={inputValue}
         onChangeKeyword={handleChangeKeyword}
+        onCompositionStart={handleCompositionStart}
+        onCompositionEnd={handleCompositionEnd}
+        onKeyDown={handleKeyDown}
       />
-      <Outlet context={{ sortType, keyword }} />
+      <Outlet context={{ sortType, keyword: searchKeyword }} />
     </div>
   );
 }
