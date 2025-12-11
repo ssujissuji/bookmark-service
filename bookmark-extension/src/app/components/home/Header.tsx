@@ -39,14 +39,13 @@ export default function Header({
     setIsOpen(true);
   };
 
-  let currentTitle = 'MyBookMark'; // 기본값
+  let currentTitle = 'MyBookMark';
   let parentTitle = '';
   let parentId: string = '1';
 
   if (data && folderId) {
     const rootNodes = data[0]?.children ?? [];
 
-    // 1) 전체 경로 구하기
     const path = findPathToNode(rootNodes, folderId);
 
     if (path && path.length > 0) {
@@ -87,20 +86,20 @@ export default function Header({
 
   return (
     <>
-      <div
-        className="flex flex-col justify-start items-start gap-5"
-        onClick={clickParentHandler}
-      >
-        {/* 상위 폴더 버튼 */}
-
+      <div className="flex flex-col justify-start items-start gap-5">
         {folderId === '1' || folderId === '2' ? (
-          <TextButton className="button__text" buttonName={`MyBookMark /`}>
+          <TextButton
+            className="button__text"
+            buttonName={`MyBookMark /`}
+            onClick={clickParentHandler}
+          >
             <ArrowLeft className="inline mr-2" />
           </TextButton>
         ) : (
           <TextButton
             className={`button__text ${currentTitle === 'MyBookMark' ? 'hidden' : ''}`}
             buttonName={`${parentTitle} /`}
+            onClick={clickParentHandler}
           >
             <ArrowLeft className="inline mr-2" />
           </TextButton>
