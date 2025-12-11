@@ -4,6 +4,7 @@ import ArrowChild from '../assets/icon/arrow_child.svg?react';
 import { separateFolderAndBookmarks } from '../utils/bookmarkTreeUtils';
 import { useNavigate } from 'react-router';
 import type React from 'react';
+import { useBookmarksData } from '../BookmarksContext';
 
 type FolderListProps = {
   node: BookmarkItemType; // 이 폴더 하나
@@ -18,6 +19,7 @@ export default function FolderList({
 }: FolderListProps) {
   const children = node.children ?? [];
   const { folders } = separateFolderAndBookmarks(children);
+  const { reloadBookmarks } = useBookmarksData();
 
   const navigate = useNavigate();
 
@@ -33,10 +35,36 @@ export default function FolderList({
     navigate(`/bookmark/${node.id}`);
   };
 
+  const onDragOver = (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+  };
+
+  const onDrop = async (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    const draggedBookmarkId = e.dataTransfer.getData('text/plain');
+    if (!draggedBookmarkId) return;
+
+    const destinationFolderId = String(node.id);
+
+    try {
+      await chrome.bookmarks.move(draggedBookmarkId, {
+        parentId: destinationFolderId,
+      });
+      await reloadBookmarks();
+    } catch (err) {
+      console.error('북마크 이동 실패:', err);
+    }
+  };
+
   return (
     <div className="flex flex-col justify-start items-start ">
       <li className={'button__text__folder'}>
-        <div style={indentStyle} onClick={clickHandler}>
+        <div
+          style={indentStyle}
+          onClick={clickHandler}
+          onDragOver={onDragOver}
+          onDrop={onDrop}
+        >
           <TextButton
             // text-[var(--color-yellow)] : Tailwind arbitrary value 문법으로 CSS 변수 사용
             className={`tracking-widest cursor-pointer flex items-center ${
