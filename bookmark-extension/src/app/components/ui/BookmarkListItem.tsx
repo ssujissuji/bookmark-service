@@ -52,7 +52,7 @@ export default function BookmarkListItem({
   };
 
   const handleDragStart = (e: React.DragEvent) => {
-    e.stopPropagation();
+    // e.stopPropagation(); // 필요시 주석 해제
     if (!id) return;
     e.dataTransfer.setData('text/plain', String(id));
   };
