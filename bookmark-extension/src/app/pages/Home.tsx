@@ -4,9 +4,7 @@ import { useBookmarksData } from '../BookmarksContext';
 
 export default function Home() {
   const { data, status } = useBookmarksData();
-  if (status !== 'success' || !data) {
-    return null;
-  }
+
   const [bookmarkBarData, setBookmarkBarData] = useState<BookmarkTreeType[]>(
     [],
   );
@@ -26,6 +24,10 @@ export default function Home() {
       setBookmarkBarData(rootBar.children);
     }
   }, [data]);
+
+  if (status !== 'success' || !data) {
+    return null;
+  }
 
   return (
     <div className="w-full ">
