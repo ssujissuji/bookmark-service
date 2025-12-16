@@ -47,11 +47,37 @@ export default function BookmarkCard({
     setIsOpen(false);
   };
 
+  const onDragOver = (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+  };
+
+  const onDrop = async (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    const draggedBookmarkUrl = e.dataTransfer.getData('text/plain');
+    const draggedBookmarkId = await chrome.bookmarks
+      .search({ url: draggedBookmarkUrl })
+      .then((results) => results[0]?.id);
+
+    if (!draggedBookmarkId || !id) return;
+
+    try {
+      await chrome.bookmarks.move(draggedBookmarkId, {
+        parentId: id,
+      });
+      console.log('북마크가 이동되었습니다.');
+      await reloadBookmarks();
+    } catch (err) {
+      console.error('북마크 이동 실패:', err);
+    }
+  };
+
   return (
     <>
       <li
         className="flex relative justify-between items-center glass rounded-xl gap-4 px-6 py-4 w-full min-h-[120px] glass--hover"
         onClick={onClick}
+        onDragOver={onDragOver}
+        onDrop={onDrop}
       >
         <div className="flex gap-5  cursor-pointer">
           <IconDefault
@@ -90,7 +116,7 @@ export default function BookmarkCard({
             <>
               <div
                 className="fixed inset-0 bg-transparent z-9998"
-                // onClick={() => setIsOpen(false)}
+                onClick={() => setIsOpen(false)}
               ></div>
 
               <div
