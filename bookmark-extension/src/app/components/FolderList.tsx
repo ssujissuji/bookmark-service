@@ -5,6 +5,7 @@ import { separateFolderAndBookmarks } from '../utils/bookmarkTreeUtils';
 import { useNavigate } from 'react-router';
 import type React from 'react';
 import { useBookmarksData } from '../BookmarksContext';
+import { useEffect, useRef, useState } from 'react';
 
 type FolderListProps = {
   node: BookmarkItemType; // 이 폴더 하나
@@ -20,6 +21,14 @@ export default function FolderList({
   const children = node.children ?? [];
   const { folders } = separateFolderAndBookmarks(children);
   const { reloadBookmarks } = useBookmarksData();
+  const [isDropping, setIsDropping] = useState(false);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   const navigate = useNavigate();
 
@@ -32,6 +41,9 @@ export default function FolderList({
   const clickHandler = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (isDropping) return;
+
     navigate(`/bookmark/${node.id}`);
   };
 
@@ -41,8 +53,21 @@ export default function FolderList({
 
   const onDrop = async (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
-    const draggedBookmarkId = e.dataTransfer.getData('text/plain');
-    if (!draggedBookmarkId) return;
+    e.stopPropagation();
+
+    setIsDropping(true);
+
+    const draggedBookmarkUrl = e.dataTransfer.getData('text/plain');
+    const draggedBookmarkId = await chrome.bookmarks
+      .search({ url: draggedBookmarkUrl })
+      .then((results) => results[0]?.id);
+
+    if (!draggedBookmarkId) {
+      setTimeout(() => {
+        setIsDropping(false);
+      }, 50);
+      return;
+    }
 
     const destinationFolderId = String(node.id);
 
@@ -50,9 +75,17 @@ export default function FolderList({
       await chrome.bookmarks.move(draggedBookmarkId, {
         parentId: destinationFolderId,
       });
-      await reloadBookmarks();
+      if (mountedRef.current) {
+        await reloadBookmarks();
+      } else {
+        console.log('컴포넌트가 언마운트되어 상태를 업데이트하지 않습니다.');
+      }
     } catch (err) {
       console.error('북마크 이동 실패:', err);
+    } finally {
+      setTimeout(() => {
+        setIsDropping(false);
+      }, 50);
     }
   };
 
@@ -66,13 +99,11 @@ export default function FolderList({
           onDrop={onDrop}
         >
           <TextButton
-            // text-[var(--color-yellow)] : Tailwind arbitrary value 문법으로 CSS 변수 사용
             className={`tracking-widest cursor-pointer flex items-center ${
               isActive ? 'text-[var(--color-yellow)] font-semibold' : ''
             }`}
             buttonName={node.title}
           >
-            {/* 자식 폴더가 있을 때만 화살표 보여주고 싶다면 조건부 렌더링도 가능 */}
             {depth > 0 && (
               <ArrowChild width={10} height={10} className="inline" />
             )}
