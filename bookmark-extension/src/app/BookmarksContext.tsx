@@ -15,16 +15,19 @@ type BookmarksState = {
 export type BookmarksContextValue = BookmarksState & {
   reloadBookmarks: () => Promise<void>;
 };
-
-export const BookmarksContext = createContext<
-  BookmarksContextValue | undefined
->(undefined);
+const initialContextValue: BookmarksContextValue = {
+  status: 'idle',
+  data: null,
+  error: null,
+  // reloadBookmarks 함수도 더미로 제공해야 합니다.
+  reloadBookmarks: () => Promise.resolve(),
+};
+export const BookmarksContext =
+  createContext<BookmarksContextValue>(initialContextValue);
 
 export const useBookmarksData = () => {
   const ctx = useContext(BookmarksContext);
-  if (!ctx) {
-    throw new Error('useBookmarksData must be used within a BookmarksProvider');
-  }
+
   return ctx;
 };
 

@@ -34,9 +34,8 @@ export default function Header({
 }: HeaderProps) {
   const { folderId } = useParams<{ folderId: string }>();
   const { data, status } = useBookmarksData();
-  if (status !== 'success' || !data) {
-    return null;
-  }
+  const { createFolder } = useFolderActions();
+
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -66,7 +65,10 @@ export default function Header({
     }
   }
 
-  const { createFolder } = useFolderActions();
+  if (status !== 'success' || !data) {
+    return null;
+  }
+
   const currentFolderId = '1'; // 기본 북마크바에 생성되도록 설정
 
   const handleSubmit = async (name: string, desc: string) => {

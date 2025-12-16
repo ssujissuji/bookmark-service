@@ -51,8 +51,18 @@ export default function BookmarkListItem({
     setIsOpen(false);
   };
 
+  const handleDragStart = (e: React.DragEvent) => {
+    // e.stopPropagation(); // 필요시 주석 해제
+    if (!id) return;
+    e.dataTransfer.setData('text/plain', String(id));
+  };
+
   return (
-    <li className="flex relative justify-between items-center glass rounded-lg gap-4 px-6 py-3 glass--hover cursor-pointer min-w-[500px] ">
+    <li
+      draggable
+      onDragStart={handleDragStart}
+      className="flex relative justify-between items-center glass rounded-lg gap-4 px-6 py-3 glass--hover cursor-pointer min-w-[500px] "
+    >
       <div className="flex items-center gap-4 ">
         <IconDefault width={20} height={20} />
         <Link

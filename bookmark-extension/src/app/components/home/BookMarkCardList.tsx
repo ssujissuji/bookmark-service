@@ -25,11 +25,17 @@ export default function BookMarkCardList({
   const { data, status } = useBookmarksData();
   const { keyword } = useOutletContext<OutletContextType>();
 
-  if (status !== 'success' || !data) {
-    return null;
-  }
-
   const normalizedKeyword = keyword.trim().toLowerCase();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!bookmarkBar.length) return;
+
+    const { folders, bookmarks } = separateFolderAndBookmarks(bookmarkBar);
+    setBookmarkBarFolderList(folders);
+    setBookmarkBarUrlList(bookmarks);
+  }, [bookmarkBar]);
 
   const filteredList = useMemo(() => {
     if (!normalizedKeyword) {
@@ -41,6 +47,9 @@ export default function BookMarkCardList({
     });
   }, [bookmarkBarFolderList, normalizedKeyword]);
 
+  if (status !== 'success' || !data) {
+    return null;
+  }
   const hasSearch = normalizedKeyword.length > 0;
   const hasResult = filteredList.length > 0;
 
@@ -48,15 +57,6 @@ export default function BookMarkCardList({
   const recent = [...allList].sort((a, b) => b.dateAdded - a.dateAdded);
   const LIMIT = 6;
   const limitList = recent.slice(0, LIMIT);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!bookmarkBar.length) return;
-
-    const { folders, bookmarks } = separateFolderAndBookmarks(bookmarkBar);
-    setBookmarkBarFolderList(folders);
-    setBookmarkBarUrlList(bookmarks);
-  }, [bookmarkBar]);
 
   return (
     <div className="flex flex-col items-center mx-auto gap-5 w-full">
@@ -87,10 +87,16 @@ export default function BookMarkCardList({
           ))
         )}
         <BookmarkCard
+          title={'북마크바'}
+          type="bookmarkBar"
+          onClick={() => navigate('/bookmark/1')}
+        />
+        <BookmarkCard
           title={'기타 북마크'}
           type="others"
           onClick={() => navigate('/bookmark/2')}
         />
+
         <NewBookMark />
       </ul>
       <div className="flex flex-col justify-start items-start w-full gap-4">

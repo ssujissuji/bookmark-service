@@ -37,7 +37,7 @@ export default function RootLayout() {
     if (e.nativeEvent.isComposing) return;
 
     if (e.key === 'Enter') {
-      const value = (e.target as HTMLInputElement).value;
+      const value = e.currentTarget.value;
       setInputValue(value);
       setSearchKeyword(value);
     }

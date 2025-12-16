@@ -21,9 +21,7 @@ export default function DetailPage() {
   const listRef = useRef<HTMLDivElement>(null);
   const { folderId } = useParams<{ folderId: string }>();
   const { data, status } = useBookmarksData();
-  if (status !== 'success' || !data) {
-    return null;
-  }
+
   const { sortType, keyword } = useOutletContext<OutletContextType>();
 
   const rootNodes = data?.[0]?.children ?? [];
@@ -49,6 +47,10 @@ export default function DetailPage() {
     }
     return [];
   }, [sortedBookmarks, normalizedKeyword]);
+
+  if (status !== 'success' || !data) {
+    return null;
+  }
 
   const hasSearch = normalizedKeyword.length > 0;
   const hasResult = (filteredList?.length ?? 0) > 0;
