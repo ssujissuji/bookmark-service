@@ -18,8 +18,6 @@ export default function Navbar({
   onChangeSort,
   onChangeValue,
   onKeyDown,
-  onCompositionEnd,
-  onCompositionStart,
 }: NavbarProps) {
   const handleRecentClick = () => onChangeSort('recent');
   const handleNameClick = () => onChangeSort('name');
@@ -51,8 +49,6 @@ export default function Navbar({
         value={keyword}
         onChange={onChangeValue}
         onKeyDown={onKeyDown}
-        onCompositionStart={onCompositionStart}
-        onCompositionEnd={onCompositionEnd}
       />
     </div>
   );
