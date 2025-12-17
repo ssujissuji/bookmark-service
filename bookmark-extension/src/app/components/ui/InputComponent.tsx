@@ -6,8 +6,6 @@ export default function InputComponent({
   value,
   onChange,
   onKeyDown,
-  onCompositionEnd,
-  onCompositionStart,
 }: InputProps) {
   const searchStyle = id === 'search' ? 'input--search' : '';
 
@@ -26,8 +24,6 @@ export default function InputComponent({
         onChange={onChange}
         placeholder={placeholder}
         onKeyDown={onKeyDown}
-        onCompositionStart={onCompositionStart}
-        onCompositionEnd={onCompositionEnd}
         className={`w-full px-3 py-2 rounded-md glass input ${searchStyle} focus:outline-none`}
       />
     </div>
