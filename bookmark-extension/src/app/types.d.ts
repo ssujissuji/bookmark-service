@@ -1,6 +1,7 @@
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   id: string;
   label?: string;
+  onReset?: () => void;
 }
 
 // 북마크(링크)

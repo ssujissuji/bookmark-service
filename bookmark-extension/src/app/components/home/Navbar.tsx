@@ -10,6 +10,7 @@ type NavbarProps = {
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onCompositionStart?: (e: React.CompositionEvent<HTMLInputElement>) => void;
   onCompositionEnd?: (e: React.CompositionEvent<HTMLInputElement>) => void;
+  onReset?: () => void;
 };
 
 export default function Navbar({
@@ -18,6 +19,7 @@ export default function Navbar({
   onChangeSort,
   onChangeValue,
   onKeyDown,
+  onReset,
 }: NavbarProps) {
   const handleRecentClick = () => onChangeSort('recent');
   const handleNameClick = () => onChangeSort('name');
@@ -49,6 +51,7 @@ export default function Navbar({
         value={keyword}
         onChange={onChangeValue}
         onKeyDown={onKeyDown}
+        onReset={onReset}
       />
     </div>
   );

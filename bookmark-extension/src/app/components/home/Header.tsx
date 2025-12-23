@@ -19,6 +19,7 @@ type HeaderProps = {
   onChangeSort: (type: SortType) => void;
   onChangeKeyword: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onReset?: () => void;
 };
 
 export default function Header({
@@ -27,6 +28,7 @@ export default function Header({
   onChangeSort,
   onChangeKeyword,
   onKeyDown,
+  onReset,
 }: HeaderProps) {
   const { folderId } = useParams<{ folderId: string }>();
   const { data, status } = useBookmarksData();
@@ -124,6 +126,7 @@ export default function Header({
         keyword={keyword}
         onChangeValue={onChangeKeyword}
         onKeyDown={onKeyDown}
+        onReset={onReset}
       />
       {isOpen &&
         ReactDOM.createPortal(
