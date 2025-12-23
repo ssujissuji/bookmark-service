@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router';
+import { Outlet, useLocation } from 'react-router';
 import Header from '../components/home/Header';
 import { useEffect, useState } from 'react';
 
@@ -8,6 +8,13 @@ export default function RootLayout() {
   const [sortType, setSortType] = useState<SortType>('recent');
   const [inputValue, setInputValue] = useState<string>('');
   const [searchKeyword, setSearchKeyword] = useState<string>('');
+
+  const location = useLocation();
+
+  useEffect(() => {
+    setInputValue('');
+    setSearchKeyword('');
+  }, [location.pathname]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -27,6 +34,11 @@ export default function RootLayout() {
     }
   };
 
+  const handleReset = () => {
+    setInputValue('');
+    setSearchKeyword('');
+  };
+
   return (
     <div className="w-full mx-auto flex flex-col gap-4 pb-25 pt-16">
       <Header
@@ -35,6 +47,7 @@ export default function RootLayout() {
         keyword={inputValue}
         onChangeKeyword={handleChangeKeyword}
         onKeyDown={handleKeyDown}
+        onReset={handleReset}
       />
       <Outlet context={{ sortType, keyword: searchKeyword }} />
     </div>
