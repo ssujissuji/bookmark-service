@@ -23,7 +23,7 @@ export default function BookMarkCardList({
   >([]);
 
   const { data, status } = useBookmarksData();
-  const { keyword } = useOutletContext<OutletContextType>();
+  const { keyword, sortType } = useOutletContext<OutletContextType>();
 
   const normalizedKeyword = keyword.trim().toLowerCase();
 
@@ -47,11 +47,23 @@ export default function BookMarkCardList({
     });
   }, [bookmarkBarFolderList, normalizedKeyword]);
 
+  const hasSearch = normalizedKeyword.length > 0;
+  // const hasResult = filteredList.length > 0;
+
+  const sortedFolderList = useMemo(() => {
+    const base = hasSearch ? filteredList : bookmarkBarFolderList;
+    const copy = [...base];
+    if (sortType === 'name') {
+      copy.sort((a, b) => (a.title ?? '').localeCompare(b.title ?? '', 'ko'));
+    }
+    if (sortType === 'recent') {
+      copy.sort((a, b) => (b.dateAdded ?? 0) - (a.dateAdded ?? 0));
+    }
+    return copy;
+  }, [sortType, bookmarkBarFolderList, filteredList, hasSearch]);
   if (status !== 'success' || !data) {
     return null;
   }
-  const hasSearch = normalizedKeyword.length > 0;
-  const hasResult = filteredList.length > 0;
 
   const allList = collectAllBookmarks(data);
   const recent = [...allList].sort((a, b) => b.dateAdded - a.dateAdded);
@@ -61,22 +73,10 @@ export default function BookMarkCardList({
   return (
     <div className="flex flex-col items-center mx-auto gap-5 w-full">
       <ul className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4 mt-4 w-full">
-        {hasSearch ? (
-          hasResult ? (
-            filteredList.map((list) => (
-              <BookmarkCard
-                key={list.id}
-                title={list.title}
-                id={list.id}
-                type="bookmarkBar"
-                onClick={() => navigate(`/bookmark/${list.id}`)}
-              />
-            ))
-          ) : (
-            <p className="mt-4 text-sm text-gray-400">검색 결과가 없습니다.</p>
-          )
+        {hasSearch && sortedFolderList.length === 0 ? (
+          <p className="mt-4 text-sm text-gray-400">검색 결과가 없습니다.</p>
         ) : (
-          bookmarkBarFolderList.map((list) => (
+          sortedFolderList.map((list) => (
             <BookmarkCard
               key={list.id}
               title={list.title}
@@ -86,6 +86,7 @@ export default function BookMarkCardList({
             />
           ))
         )}
+
         <BookmarkCard
           title={'북마크바'}
           type="bookmarkBar"
