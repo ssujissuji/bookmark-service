@@ -14,7 +14,7 @@ export default function BookmarkListItem({
 }: {
   url: string;
   title: string;
-  id?: string;
+  id: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
