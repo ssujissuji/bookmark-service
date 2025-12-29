@@ -65,6 +65,7 @@ export default function DetailPage() {
                 key={bookmark.id}
                 url={bookmark.url}
                 title={bookmark.title}
+                id={bookmark.id}
               />
             ))
           ) : (
@@ -78,6 +79,7 @@ export default function DetailPage() {
               key={bookmark.id}
               url={bookmark.url}
               title={bookmark.title}
+              id={bookmark.id}
             />
           ))
         ) : (
