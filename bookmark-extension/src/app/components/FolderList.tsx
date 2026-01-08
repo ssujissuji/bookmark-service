@@ -83,14 +83,7 @@ export default function FolderList({
     setIsDropping(true);
 
     const draggedBookmarkId = e.dataTransfer.getData('text/plain');
-
-    if (!draggedBookmarkId) {
-      setTimeout(() => {
-        if (mountedRef.current) setIsDropping(false);
-      }, 50);
-      return;
-    }
-
+    if (!draggedBookmarkId || !node.id) return;
     const destinationFolderId = String(node.id);
 
     try {
