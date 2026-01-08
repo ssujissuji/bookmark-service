@@ -25,6 +25,7 @@ export default function BookmarkCard({
 
   const handleOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
+
     if (buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
       setPos({
@@ -39,7 +40,6 @@ export default function BookmarkCard({
     if (!id) return;
     try {
       deleteFolder(id);
-      console.log('삭제된 폴더 ID:', id);
       await reloadBookmarks();
     } catch (error) {
       console.error('폴더 삭제 실패:', error);
@@ -49,14 +49,14 @@ export default function BookmarkCard({
 
   const onDragOver = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
   };
 
   const onDrop = async (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
-    const draggedBookmarkUrl = e.dataTransfer.getData('text/plain');
-    const draggedBookmarkId = await chrome.bookmarks
-      .search({ url: draggedBookmarkUrl })
-      .then((results) => results[0]?.id);
+    e.stopPropagation();
+
+    const draggedBookmarkId = e.dataTransfer.getData('text/plain');
 
     if (!draggedBookmarkId || !id) return;
 
@@ -64,7 +64,7 @@ export default function BookmarkCard({
       await chrome.bookmarks.move(draggedBookmarkId, {
         parentId: id,
       });
-      console.log('북마크가 이동되었습니다.');
+
       await reloadBookmarks();
     } catch (err) {
       console.error('북마크 이동 실패:', err);
