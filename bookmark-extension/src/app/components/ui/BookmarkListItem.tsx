@@ -70,9 +70,9 @@ export default function BookmarkListItem({
     try {
       await chrome.bookmarks.update(id, { title: name });
       await reloadBookmarks();
-      toast.success('폴더명이 수정되었습니다.');
+      toast.success('북마크 제목 수정되었습니다.');
     } catch (error) {
-      console.error('폴더 수정 실패:', error);
+      console.error('수정 실패:', error);
     } finally {
       setIsEditOpen(false);
     }
