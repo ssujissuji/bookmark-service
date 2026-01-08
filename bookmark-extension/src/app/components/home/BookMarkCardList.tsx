@@ -48,7 +48,6 @@ export default function BookMarkCardList({
   }, [bookmarkBarFolderList, normalizedKeyword]);
 
   const hasSearch = normalizedKeyword.length > 0;
-  // const hasResult = filteredList.length > 0;
 
   const sortedFolderList = useMemo(() => {
     const base = hasSearch ? filteredList : bookmarkBarFolderList;
