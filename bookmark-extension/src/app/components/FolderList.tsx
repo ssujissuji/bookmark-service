@@ -3,7 +3,6 @@ import FolderIcon from '../assets/icon/folder.svg?react';
 import ArrowChild from '../assets/icon/arrow_child.svg?react';
 import { separateFolderAndBookmarks } from '../utils/bookmarkTreeUtils';
 import { useNavigate } from 'react-router';
-import type React from 'react';
 import { useBookmarksData } from '../BookmarksContext';
 import { useEffect, useRef, useState } from 'react';
 
@@ -26,10 +25,6 @@ export default function FolderList({
 
   const [isDropping, setIsDropping] = useState(false);
 
-  // ✅ 드롭 후보(마우스가 올라간 드롭 타겟) 하이라이트 상태
-  const [isDragHover, setIsDragHover] = useState(false);
-
-  // ✅ dragenter/dragleave가 자식 요소 때문에 튀면서 깜빡이는 걸 방지하는 카운터
   const enterCounterRef = useRef(0);
 
   const mountedRef = useRef(true);
@@ -59,9 +54,6 @@ export default function FolderList({
     e.stopPropagation();
 
     enterCounterRef.current += 1;
-
-    const hasText = e.dataTransfer.types?.includes('text/plain');
-    if (hasText) setIsDragHover(true);
   };
 
   const onDragLeave = (e: React.DragEvent<HTMLElement>) => {
@@ -72,7 +64,6 @@ export default function FolderList({
 
     if (enterCounterRef.current <= 0) {
       enterCounterRef.current = 0;
-      setIsDragHover(false);
     }
   };
 
@@ -81,15 +72,12 @@ export default function FolderList({
     e.stopPropagation();
 
     e.dataTransfer.dropEffect = 'move';
-
-    if (!isDragHover) setIsDragHover(true);
   };
 
   const onDrop = async (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
-    setIsDragHover(false);
     enterCounterRef.current = 0;
 
     setIsDropping(true);
@@ -122,18 +110,6 @@ export default function FolderList({
     }
   };
 
-  /**
-   * ✅ 하이라이트 스타일 가이드
-   * - isActive: 현재 선택된 폴더(라우트 기준)
-   * - isDragHover: 드롭 후보(드래그가 올라가 있는 폴더)
-   * - isDropping: 드롭 처리 중(클릭 방지/살짝 비활성 느낌)
-   */
-  // const dropHoverClass = isDragHover
-  //   ? 'bg-white/10 ring-2 ring-white/35 scale-[1.01]'
-  //   : '';
-
-  // const droppingClass = isDropping ? 'opacity-70' : '';
-
   return (
     <li className="flex flex-col justify-start items-start">
       <div
@@ -146,7 +122,7 @@ export default function FolderList({
       >
         <TextButton
           className={`tracking-widest cursor-pointer flex items-center hover:text-(--color-main-red) ${
-            isActive ? 'text-[var(--color-yellow)] font-semibold' : ''
+            isActive ? 'text-(--color-yellow) font-semibold' : ''
           }`}
           buttonName={node.title}
         >
