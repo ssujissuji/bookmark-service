@@ -1,10 +1,12 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import IconDefault from '../../assets/icon/bookmark.svg?react';
 import Ellipsis from '../../assets/icon/ellipsis.svg?react';
 import SelectBox from './SelectBox';
 import ReactDOM from 'react-dom';
 import { useFolderActions } from '@/app/hooks/useFoldersActions';
 import { useBookmarksData } from '@/app/BookmarksContext';
+import toast from 'react-hot-toast';
+import FolderEditModal from '../FolderEditModal';
 
 export default function BookmarkCard({
   title,
@@ -22,6 +24,19 @@ export default function BookmarkCard({
   const buttonRef = useRef<HTMLDivElement>(null);
   const { deleteFolder } = useFolderActions();
   const { reloadBookmarks } = useBookmarksData();
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editInitialValue, setEditInitialValue] = useState<string>(title);
+
+  useEffect(() => {
+    if (!isEditOpen) return;
+
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isEditOpen]);
 
   const handleOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -45,6 +60,30 @@ export default function BookmarkCard({
       console.error('폴더 삭제 실패:', error);
     }
     setIsOpen(false);
+  };
+
+  const handleModify = () => {
+    if (!id) return;
+
+    setIsOpen(false);
+
+    const nextName = title;
+    setEditInitialValue(nextName);
+    setIsEditOpen(true);
+  };
+
+  const handleEditSubmit = async (name: string) => {
+    if (!id) return;
+
+    try {
+      await chrome.bookmarks.update(id, { title: name });
+      await reloadBookmarks();
+      toast.success('폴더명이 수정되었습니다.');
+    } catch (error) {
+      console.error('폴더 수정 실패:', error);
+    } finally {
+      setIsEditOpen(false);
+    }
   };
 
   const onDragOver = (e: React.DragEvent<HTMLElement>) => {
@@ -126,12 +165,34 @@ export default function BookmarkCard({
                   left: `${pos.left}px`,
                 }}
               >
-                <SelectBox onDelete={handleDelete} />
+                <SelectBox onDelete={handleDelete} onModify={handleModify} />
               </div>
             </>,
             document.body,
           )}
       </li>
+
+      {isEditOpen &&
+        ReactDOM.createPortal(
+          <div
+            className="fixed inset-0 z-9999 flex items-center justify-center"
+            onClick={() => setIsEditOpen(false)}
+          >
+            <div className="absolute inset-0 bg-black/40" />
+            <div
+              className="relative z-10001"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <FolderEditModal
+                type="edit"
+                initialValue={editInitialValue}
+                onCancel={() => setIsEditOpen(false)}
+                onSubmit={handleEditSubmit}
+              />
+            </div>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

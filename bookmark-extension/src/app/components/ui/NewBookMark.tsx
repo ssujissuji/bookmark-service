@@ -12,13 +12,13 @@ export default function NewBookMark() {
   const { createFolder } = useFolderActions();
   const { reloadBookmarks } = useBookmarksData();
 
-  const handleSubmit = async (name: string, desc?: string) => {
+  const handleSubmit = async (name: string) => {
     try {
       await createFolder({
         title: name,
         parentId: currentFolderId,
       });
-      console.log('새 폴더 생성 데이터:', { name, desc });
+      console.log('새 폴더 생성 데이터:', { name });
 
       await reloadBookmarks();
 
