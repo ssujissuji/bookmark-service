@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import IconDefault from '../../assets/icon/bookmark.svg?react';
 import Ellipsis from '../../assets/icon/ellipsis.svg?react';
 import SelectBox from './SelectBox';
@@ -6,6 +6,8 @@ import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
 import { useBookmarksData } from '@/app/BookmarksContext';
 import { useUrlActions } from '@/app/hooks/useUrlActions';
+import toast from 'react-hot-toast';
+import FolderEditModal from '../FolderEditModal';
 
 export default function BookmarkListItem({
   url,
@@ -23,6 +25,19 @@ export default function BookmarkListItem({
   const buttonRef = useRef<HTMLDivElement>(null);
   const { deleteUrl } = useUrlActions();
   const { reloadBookmarks } = useBookmarksData();
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editInitialValue, setEditInitialValue] = useState<string>(title);
+
+  useEffect(() => {
+    if (!isEditOpen) return;
+
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isEditOpen]);
 
   const handleOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -37,6 +52,30 @@ export default function BookmarkListItem({
     }
 
     setIsOpen(true);
+  };
+
+  const handleModify = () => {
+    if (!id) return;
+
+    setIsOpen(false);
+
+    const nextName = title;
+    setEditInitialValue(nextName);
+    setIsEditOpen(true);
+  };
+
+  const handleEditSubmit = async (name: string) => {
+    if (!id) return;
+
+    try {
+      await chrome.bookmarks.update(id, { title: name });
+      await reloadBookmarks();
+      toast.success('북마크 제목 수정되었습니다.');
+    } catch (error) {
+      console.error('수정 실패:', error);
+    } finally {
+      setIsEditOpen(false);
+    }
   };
 
   const handleDelete = async () => {
@@ -65,60 +104,83 @@ export default function BookmarkListItem({
   };
 
   return (
-    <li
-      draggable
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      className={[
-        'flex relative justify-between items-center glass rounded-lg gap-4 px-6 py-3 glass--hover cursor-pointer min-w-[500px]',
-        isDragging
-          ? 'opacity-60 scale-[0.995] glass--hover:!bg-transparent'
-          : '',
-      ].join(' ')}
-    >
-      <div className="flex items-center gap-4 ">
-        <IconDefault width={20} height={20} />
-        <Link
-          to={url}
-          className="text-base font-['LeferiBaseRegular'] align-middle"
-          target="_blank"
-          draggable={false}
-          onDragStart={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-        >
-          {title}
-        </Link>
-      </div>
-      <div
-        ref={buttonRef}
-        className="hover:text-(--color-gray-dark) cursor-pointer"
-        onClick={handleOpen}
+    <>
+      <li
+        draggable
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        className={[
+          'flex relative justify-between items-center glass rounded-lg gap-4 px-6 py-3 glass--hover cursor-pointer min-w-[500px]',
+          isDragging
+            ? 'opacity-60 scale-[0.995] glass--hover:!bg-transparent'
+            : '',
+        ].join(' ')}
       >
-        <Ellipsis />
-      </div>
-      {isOpen &&
-        ReactDOM.createPortal(
-          <>
-            <div
-              className="fixed inset-0 bg-transparent z-9998"
-              onClick={() => setIsOpen(false)}
-            ></div>
+        <div className="flex items-center gap-4 ">
+          <IconDefault width={20} height={20} />
+          <Link
+            to={url}
+            className="text-base font-['LeferiBaseRegular'] align-middle"
+            target="_blank"
+            draggable={false}
+            onDragStart={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            {title}
+          </Link>
+        </div>
+        <div
+          ref={buttonRef}
+          className="hover:text-(--color-gray-dark) cursor-pointer"
+          onClick={handleOpen}
+        >
+          <Ellipsis />
+        </div>
+        {isOpen &&
+          ReactDOM.createPortal(
+            <>
+              <div
+                className="fixed inset-0 bg-transparent z-9998"
+                onClick={() => setIsOpen(false)}
+              ></div>
 
+              <div
+                className="fixed z-9999"
+                style={{
+                  position: 'absolute',
+                  top: `${pos.top}px`,
+                  left: `${pos.left}px`,
+                }}
+              >
+                <SelectBox onDelete={handleDelete} onModify={handleModify} />
+              </div>
+            </>,
+            document.body,
+          )}
+      </li>
+      {isEditOpen &&
+        ReactDOM.createPortal(
+          <div
+            className="fixed inset-0 z-9999 flex items-center justify-center"
+            onClick={() => setIsEditOpen(false)}
+          >
+            <div className="absolute inset-0 bg-black/40" />
             <div
-              className="fixed z-9999"
-              style={{
-                position: 'absolute',
-                top: `${pos.top}px`,
-                left: `${pos.left}px`,
-              }}
+              className="relative z-10001"
+              onClick={(e) => e.stopPropagation()}
             >
-              <SelectBox onDelete={handleDelete} />
+              <FolderEditModal
+                type="edit"
+                initialValue={editInitialValue}
+                onCancel={() => setIsEditOpen(false)}
+                onSubmit={handleEditSubmit}
+              />
             </div>
-          </>,
+          </div>,
           document.body,
         )}
-    </li>
+    </>
   );
 }

@@ -3,7 +3,7 @@ import TextButton from '../ui/TextButton';
 import ArrowLeft from '../../assets/icon/arrow-left.svg?react';
 import SettingIcon from '../../assets/icon/setting.svg?react';
 import Navbar from './Navbar';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import FolderEditModal from '../FolderEditModal';
 import { useNavigate, useParams } from 'react-router';
@@ -31,16 +31,23 @@ export default function Header({
   onReset,
 }: HeaderProps) {
   const { folderId } = useParams<{ folderId: string }>();
-  const { data, status } = useBookmarksData();
-  const { createFolder } = useFolderActions();
+  const { data, status, reloadBookmarks } = useBookmarksData();
+  const [editInitialValue, setEditInitialValue] = useState('');
 
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const { updateFolder } = useFolderActions();
 
-  const handleOpen = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsOpen(true);
-  };
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isOpen]);
 
   let currentTitle = 'MyBookMark';
   let parentTitle = '';
@@ -67,20 +74,24 @@ export default function Header({
     return null;
   }
 
-  const currentFolderId = '1'; // 기본 북마크바에 생성되도록 설정
+  const handleOpen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditInitialValue(currentTitle);
+    setIsOpen(true);
+  };
 
-  const handleSubmit = async (name: string, desc: string) => {
+  const handleSubmit = async (name: string) => {
+    if (!folderId) return;
+
     try {
-      await createFolder({
-        title: name,
-        parentId: currentFolderId,
-      });
-      console.log('새 폴더 생성 데이터:', { name, desc });
-      toast.success('✅ 폴더가 생성되었습니다!');
+      await updateFolder({ id: folderId, title: name });
+      toast.success('폴더 이름이 변경되었습니다.');
+
+      await reloadBookmarks();
       setIsOpen(false);
     } catch (error) {
-      toast.error('❌ 폴더 생성에 실패했습니다.');
-      console.error('폴더 생성 실패:', error);
+      console.error('폴더 이름 변경 실패:', error);
+      toast.error('폴더 이름 변경에 실패했습니다.');
     }
   };
 
@@ -144,6 +155,7 @@ export default function Header({
             >
               <FolderEditModal
                 type="edit"
+                initialValue={editInitialValue}
                 onCancel={() => setIsOpen(false)}
                 onSubmit={handleSubmit}
               />

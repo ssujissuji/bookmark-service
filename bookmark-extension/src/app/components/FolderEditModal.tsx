@@ -5,18 +5,18 @@ import TextButton from './ui/TextButton';
 
 export default function FolderEditModal({
   type,
-  initialValue = { name: '', desc: '' },
+  initialValue,
   onCancel,
   onSubmit,
 }: {
   type: string;
-  initialValue?: { name: string; desc: string };
+  initialValue?: string;
   onCancel: () => void;
-  onSubmit: (name: string, desc: string) => void;
+  onSubmit: (name: string) => void;
 }) {
   const option = type === 'new' ? '🆕 새로운 폴더 생성' : '🪄 폴더 수정';
-  const [folderName, setFolderName] = useState(initialValue.name || '');
-  const [folderDesc, setFolderDesc] = useState(initialValue.desc || '');
+  const [folderName, setFolderName] = useState(initialValue || '');
+  // const [folderDesc, setFolderDesc] = useState(initialValue.desc || '');
 
   return (
     <div className="glass glass__dark flex flex-col justify-between  gap-4 pt-8 px-16 rounded-2xl">
@@ -37,7 +37,7 @@ export default function FolderEditModal({
             value={folderName}
             onChange={(e) => setFolderName(e.target.value)}
           />
-          <InputComponent
+          {/* <InputComponent
             id="desc"
             placeholder={
               type === 'new'
@@ -50,7 +50,7 @@ export default function FolderEditModal({
             type="text"
             value={folderDesc}
             onChange={(e) => setFolderDesc(e.target.value)}
-          />
+          /> */}
         </div>
         {/* <IconSelectComponent /> */}
       </div>
@@ -61,9 +61,9 @@ export default function FolderEditModal({
           onClick={onCancel}
         />
         <TextButton
-          buttonName="생성"
+          buttonName={type === 'new' ? '생성' : '수정'}
           className="button__text__folder tracking-[2.2em]"
-          onClick={() => onSubmit(folderName, folderDesc)}
+          onClick={() => onSubmit(folderName)}
         />
       </div>
     </div>
