@@ -5,6 +5,7 @@ import SelectBox from './SelectBox';
 import ReactDOM from 'react-dom';
 import { useFolderActions } from '@/app/hooks/useFoldersActions';
 import { useBookmarksData } from '@/app/BookmarksContext';
+import toast from 'react-hot-toast';
 
 export default function BookmarkCard({
   title,
@@ -66,6 +67,7 @@ export default function BookmarkCard({
       });
 
       await reloadBookmarks();
+      toast.success('북마크가 성공적으로 이동되었습니다!');
     } catch (err) {
       console.error('북마크 이동 실패:', err);
     }
