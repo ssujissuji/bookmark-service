@@ -3,7 +3,7 @@ import TextButton from '../ui/TextButton';
 import ArrowLeft from '../../assets/icon/arrow-left.svg?react';
 import SettingIcon from '../../assets/icon/setting.svg?react';
 import Navbar from './Navbar';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import FolderEditModal from '../FolderEditModal';
 import { useNavigate, useParams } from 'react-router';
@@ -37,17 +37,6 @@ export default function Header({
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { updateFolder } = useFolderActions();
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [isOpen]);
 
   let currentTitle = 'MyBookMark';
   let parentTitle = '';
