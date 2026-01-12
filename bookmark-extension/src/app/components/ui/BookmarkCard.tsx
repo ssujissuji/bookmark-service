@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import IconDefault from '../../assets/icon/bookmark.svg?react';
 import Ellipsis from '../../assets/icon/ellipsis.svg?react';
 import SelectBox from './SelectBox';
@@ -26,17 +26,6 @@ export default function BookmarkCard({
   const { reloadBookmarks } = useBookmarksData();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editInitialValue, setEditInitialValue] = useState<string>(title);
-
-  useEffect(() => {
-    if (!isEditOpen) return;
-
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [isEditOpen]);
 
   const handleOpen = (e: React.MouseEvent) => {
     e.stopPropagation();

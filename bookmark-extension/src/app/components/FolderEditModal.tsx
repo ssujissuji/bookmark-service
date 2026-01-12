@@ -20,7 +20,7 @@ export default function FolderEditModal({
 
   return (
     <div className="glass glass__dark flex flex-col justify-between  gap-4 pt-8 px-16 rounded-2xl">
-      <h2 className="px-39">{option}</h2>
+      <h2 className="w-full flex justify-center items-center">{option}</h2>
       <div className="flex justify-start items-center gap-10">
         <div className="flex flex-col w-full justify-between  gap-6">
           <InputComponent
