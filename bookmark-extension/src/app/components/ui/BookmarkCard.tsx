@@ -105,6 +105,7 @@ export default function BookmarkCard({
       });
 
       await reloadBookmarks();
+      toast.success('북마크가 성공적으로 이동되었습니다!');
     } catch (err) {
       console.error('북마크 이동 실패:', err);
     }
