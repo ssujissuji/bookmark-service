@@ -1,0 +1,93 @@
+import { useCallback } from 'react';
+import toast from 'react-hot-toast';
+
+type CreateFolderParams = {
+  title: string;
+  parentId?: string; // 부모 폴더 id (생략하면 기본 위치에 생성)
+};
+
+type UpdateFolderParams = {
+  id: string;
+  title: string;
+};
+
+export function useFolderActions() {
+  const index = 0; // 새 폴더 인덱스
+  const createFolder = useCallback((params: CreateFolderParams) => {
+    const { title, parentId } = params;
+
+    return new Promise<chrome.bookmarks.BookmarkTreeNode>((resolve, reject) => {
+      if (!chrome?.bookmarks) {
+        reject(new Error('chrome.bookmarks API 를 사용할 수 없습니다.'));
+        return;
+      }
+
+      chrome.bookmarks.create(
+        {
+          title,
+          parentId,
+          index,
+        },
+        (result) => {
+          const error = chrome.runtime.lastError;
+          if (error) {
+            console.error('createFolder error:', error);
+            toast.error('폴더 생성에 실패했습니다.');
+            reject(error);
+          } else {
+            resolve(result);
+            toast.success(' 폴더가 생성되었습니다!');
+          }
+        },
+      );
+    });
+  }, []);
+
+  const updateFolder = useCallback((params: UpdateFolderParams) => {
+    const { id, title } = params;
+
+    return new Promise<chrome.bookmarks.BookmarkTreeNode>((resolve, reject) => {
+      if (!chrome?.bookmarks) {
+        reject(new Error('chrome.bookmarks API 를 사용할 수 없습니다.'));
+        return;
+      }
+
+      chrome.bookmarks.update(id, { title }, (result) => {
+        const error = chrome.runtime.lastError;
+        if (error) {
+          console.error('updateFolder error:', error);
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }, []);
+
+  const deleteFolder = useCallback((id: string) => {
+    return new Promise<void>((resolve, reject) => {
+      if (!chrome?.bookmarks) {
+        reject(new Error('chrome.bookmarks API 를 사용할 수 없습니다.'));
+        return;
+      }
+
+      chrome.bookmarks.removeTree(id, () => {
+        const error = chrome.runtime.lastError;
+        if (error) {
+          toast.error('폴더 삭제에 실패했습니다.');
+          console.error('deleteFolder error:', error);
+          reject(error);
+        } else {
+          resolve();
+          toast.success('폴더가 삭제되었습니다!');
+        }
+      });
+    });
+  }, []);
+
+  return {
+    createFolder,
+    updateFolder,
+    deleteFolder,
+  };
+}
