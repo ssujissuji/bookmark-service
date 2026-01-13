@@ -105,11 +105,11 @@ export default function BookmarkListItem({
             : '',
         ].join(' ')}
       >
-        <div className="flex items-center gap-4 ">
+        <div className="flex min-w-0 items-center gap-4 ">
           <IconDefault width={20} height={20} />
           <Link
             to={url}
-            className="text-base font-['LeferiBaseRegular'] align-middle"
+            className="text-base font-['LeferiBaseRegular'] align-middle truncate  hover:underline"
             target="_blank"
             draggable={false}
             onDragStart={(e) => {
