@@ -116,7 +116,7 @@ export default function FolderList({
         className="flex flex-1"
       >
         <TextButton
-          className={`tracking-widest cursor-pointer flex items-start hover:text-(--color-main-red) whitespace-normal ${
+          className={`tracking-widest cursor-pointer flex items-start text-left hover:text-(--color-main-red) whitespace-normal ${
             isActive ? 'text-(--color-yellow) font-semibold' : ''
           }`}
           buttonName={node.title}
