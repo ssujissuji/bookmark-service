@@ -108,17 +108,17 @@ export default function BookmarkCard({
         onDragOver={onDragOver}
         onDrop={onDrop}
       >
-        <div className="flex gap-5  cursor-pointer">
+        <div className="flex flex-1 min-w-0 gap-5 cursor-pointer">
           <IconDefault
             className={
               type === 'bookmarkBar'
-                ? 'text-(--color-main-red)'
-                : 'text-(--color-yellow)'
+                ? 'text-(--color-main-red) shrink-0'
+                : 'text-(--color-yellow) shrink-0'
             }
             width={40}
             height={60}
           />
-          <div className="flex flex-col justify-center rounded-xl gap-2">
+          <div className="flex min-w-0 flex-col justify-center rounded-xl gap-2">
             {type === 'bookmarkBar' && (
               <div className="w-fit px-1.5 py-1 bookmark-tag bookmark-tag__bar rounded-sm">
                 bookmark-bar
@@ -129,12 +129,12 @@ export default function BookmarkCard({
                 others
               </div>
             )}
-            <p className="text-xl font-['LeferiBaseBold']">{title}</p>
+            <p className="text-xl font-['LeferiBaseBold'] truncate">{title}</p>
           </div>
         </div>
         <div
           ref={buttonRef}
-          className="hover:text-(--color-gray-dark) cursor-pointer"
+          className="shrink-0 hover:text-(--color-gray-dark) cursor-pointer"
           onClick={handleOpen}
         >
           <Ellipsis />
