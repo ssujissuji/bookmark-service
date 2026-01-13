@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 export default function InputComponent({
   id,
   placeholder,
@@ -7,8 +9,20 @@ export default function InputComponent({
   onChange,
   onKeyDown,
   onReset,
-}: InputProps) {
+  maxLength = 20,
+}: InputProps & { maxLength?: number }) {
+  const [isOverLimit, setIsOverLimit] = useState(false);
   const searchStyle = id === 'search' ? 'input--search' : '';
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    if (inputValue.length > maxLength) {
+      setIsOverLimit(true);
+    } else {
+      setIsOverLimit(false);
+    }
+    onChange?.(e);
+  };
 
   return (
     <div className="flex flex-col w-auto gap-2">
@@ -21,20 +35,29 @@ export default function InputComponent({
         </label>
       )}
 
-      {/* 버튼 배치를 위해 relative 컨테이너 추가 */}
-      <div className="relative w-full flex items-center">
+      <div className="relative w-full flex flex-col items-start">
         <input
           id={id}
           type={type}
           value={value}
-          onChange={onChange}
+          onChange={handleChange}
           placeholder={placeholder}
           onKeyDown={onKeyDown}
-          // 오른쪽 버튼 공간을 위해 pr-10(padding-right) 추가
           className={`w-full px-3 py-2 pr-10 rounded-md glass input ${searchStyle} focus:outline-none`}
+          maxLength={id === 'search' ? undefined : maxLength}
         />
 
-        {/* 값이 있고 onReset 함수가 전달되었을 때만 X 버튼 표시 */}
+        {id !== 'search' && (
+          <div className="absolute top-1/2 right-5 text-xs transform -translate-y-1/2">
+            <span className={isOverLimit ? 'text-red-500' : 'text-gray-500'}>
+              {typeof value === 'string' || Array.isArray(value)
+                ? value.length
+                : 0}
+              /{maxLength}
+            </span>
+          </div>
+        )}
+
         {value && onReset && (
           <button
             type="button"
@@ -42,7 +65,6 @@ export default function InputComponent({
             className="absolute right-3 text-gray-400 hover:text-gray-200 transition-colors"
             aria-label="입력 내용 삭제"
           >
-            {/* 간단한 X 아이콘 (SVG) */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
@@ -58,6 +80,12 @@ export default function InputComponent({
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
+        )}
+
+        {isOverLimit && (
+          <p className="text-red-500 text-xs mt-10 right-0 absolute">
+            글자 수 제한을 초과했습니다.
+          </p>
         )}
       </div>
     </div>
