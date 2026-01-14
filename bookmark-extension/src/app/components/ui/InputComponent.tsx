@@ -9,10 +9,10 @@ export default function InputComponent({
   onChange,
   onKeyDown,
   onReset,
-  maxLength = 20,
-}: InputProps & { maxLength?: number }) {
+}: InputProps) {
   const [isOverLimit, setIsOverLimit] = useState(false);
   const searchStyle = id === 'search' ? 'input--search' : '';
+  const maxLength = 20;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -43,7 +43,7 @@ export default function InputComponent({
           onChange={handleChange}
           placeholder={placeholder}
           onKeyDown={onKeyDown}
-          className={`w-full px-3 py-2 pr-10 rounded-md glass input ${searchStyle} focus:outline-none`}
+          className={`rounded-md glass ${searchStyle} focus:outline-none`}
           maxLength={id === 'search' ? undefined : maxLength}
         />
 
@@ -62,7 +62,7 @@ export default function InputComponent({
           <button
             type="button"
             onClick={onReset}
-            className="absolute right-3 text-gray-400 hover:text-gray-200 transition-colors"
+            className="absolute right-3 text-gray-400 hover:text-gray-200 transition-colors top-1/2 transform -translate-y-1/2"
             aria-label="입력 내용 삭제"
           >
             <svg
@@ -82,7 +82,7 @@ export default function InputComponent({
           </button>
         )}
 
-        {isOverLimit && (
+        {isOverLimit && id !== 'search' && (
           <p className="text-red-500 text-xs mt-10 right-0 absolute">
             글자 수 제한을 초과했습니다.
           </p>

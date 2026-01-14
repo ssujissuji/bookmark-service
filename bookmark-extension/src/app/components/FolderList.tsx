@@ -36,7 +36,7 @@ export default function FolderList({
 
   const indentStyle = {
     paddingLeft: `${depth * 16}px`,
-    minWidth: `calc(var(--spacing) * 0)`,
+    minWidth: 0,
   };
 
   const isActive = String(node.id) === String(folderId);
