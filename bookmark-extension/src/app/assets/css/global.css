@@ -129,7 +129,7 @@ h2 {
 .input {
   border-radius: 0.5rem;
   padding: 0.625rem;
-  margin-left: 0.5rem;
+  /* margin-left: 0.5rem; */
 }
 
 .input:focus {

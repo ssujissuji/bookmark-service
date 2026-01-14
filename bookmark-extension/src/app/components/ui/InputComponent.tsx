@@ -29,7 +29,7 @@ export default function InputComponent({
       {label && (
         <label
           htmlFor={id}
-          className="text-sm font-['LeferiBaseRegular'] tracking-[0.8em] pl-4"
+          className="text-sm font-['LeferiBaseRegular'] tracking-[0.8em] pl-2"
         >
           {label}
         </label>
@@ -43,18 +43,26 @@ export default function InputComponent({
           onChange={handleChange}
           placeholder={placeholder}
           onKeyDown={onKeyDown}
-          className={`rounded-md glass ${searchStyle} focus:outline-none`}
+          className={`flex w-full rounded-md glass input ${searchStyle} focus:outline-none`}
           maxLength={id === 'search' ? undefined : maxLength}
         />
 
         {id !== 'search' && (
-          <div className="absolute top-1/2 right-5 text-xs transform -translate-y-1/2">
+          <div className="flex justify-between items-center mt-1 text-xs w-full px-2 pl-4">
             <span className={isOverLimit ? 'text-red-500' : 'text-gray-500'}>
               {typeof value === 'string' || Array.isArray(value)
                 ? value.length
                 : 0}
               /{maxLength}
             </span>
+            <p
+              className={`text-red-500 text-xs transition-opacity duration-200 ${
+                isOverLimit ? 'opacity-100' : 'opacity-0'
+              }`}
+              aria-hidden={!isOverLimit}
+            >
+              글자 수 제한을 초과했습니다.
+            </p>
           </div>
         )}
 
@@ -80,12 +88,6 @@ export default function InputComponent({
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
-        )}
-
-        {isOverLimit && id !== 'search' && (
-          <p className="text-red-500 text-xs mt-10 right-0 absolute">
-            글자 수 제한을 초과했습니다.
-          </p>
         )}
       </div>
     </div>
