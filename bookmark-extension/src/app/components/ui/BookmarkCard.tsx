@@ -107,6 +107,7 @@ export default function BookmarkCard({
         onClick={onClick}
         onDragOver={onDragOver}
         onDrop={onDrop}
+        title={title}
       >
         <div className="flex flex-1 min-w-0 gap-5 cursor-pointer">
           <IconDefault
