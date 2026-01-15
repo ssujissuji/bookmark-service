@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 export default function InputComponent({
   id,
   placeholder,
@@ -10,17 +8,17 @@ export default function InputComponent({
   onKeyDown,
   onReset,
 }: InputProps) {
-  const [isOverLimit, setIsOverLimit] = useState(false);
   const searchStyle = id === 'search' ? 'input--search' : '';
   const maxLength = 20;
 
+  const countChars = (text: string) => Array.from(text).length;
+
+  const stringValue = typeof value === 'string' ? value : '';
+  const currentLen = countChars(stringValue);
+
+  const isOverLimit = id !== 'search' && currentLen > maxLength;
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    if (inputValue.length > maxLength) {
-      setIsOverLimit(true);
-    } else {
-      setIsOverLimit(false);
-    }
     onChange?.(e);
   };
 
@@ -44,16 +42,13 @@ export default function InputComponent({
           placeholder={placeholder}
           onKeyDown={onKeyDown}
           className={`flex w-full rounded-md glass input ${searchStyle} focus:outline-none`}
-          maxLength={id === 'search' ? undefined : maxLength}
+          // maxLength={id === 'search' ? undefined : maxLength}
         />
 
         {id !== 'search' && (
           <div className="flex justify-between items-center mt-1 text-xs w-full px-2 pl-4">
             <span className={isOverLimit ? 'text-red-500' : 'text-gray-500'}>
-              {typeof value === 'string' || Array.isArray(value)
-                ? value.length
-                : 0}
-              /{maxLength}
+              {currentLen}/{maxLength}
             </span>
             <p
               className={`text-red-500 text-xs transition-opacity duration-200 ${
