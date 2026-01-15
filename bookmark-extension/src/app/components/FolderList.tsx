@@ -36,6 +36,7 @@ export default function FolderList({
 
   const indentStyle = {
     paddingLeft: `${depth * 16}px`,
+    minWidth: 0,
   };
 
   const isActive = String(node.id) === String(folderId);
@@ -104,7 +105,7 @@ export default function FolderList({
   };
 
   return (
-    <li className="flex flex-col justify-start items-start">
+    <li className="flex flex-col justify-start items-start max-w-50">
       <div
         style={indentStyle}
         onClick={clickHandler}
@@ -112,22 +113,27 @@ export default function FolderList({
         onDragLeave={onDragLeave}
         onDragOver={onDragOver}
         onDrop={onDrop}
+        className="flex flex-1"
       >
         <TextButton
-          className={`tracking-widest cursor-pointer flex items-center hover:text-(--color-main-red) ${
+          className={`tracking-widest cursor-pointer flex items-start text-left hover:text-(--color-main-red) whitespace-normal ${
             isActive ? 'text-(--color-yellow) font-semibold' : ''
           }`}
           buttonName={node.title}
         >
           {depth > 0 && (
-            <ArrowChild width={10} height={10} className="inline" />
+            <ArrowChild width={10} height={10} className="inline shrink-0" />
           )}
-          <FolderIcon width={20} height={20} className="inline mr-2.5 ml-2.5" />
+          <FolderIcon
+            width={20}
+            height={20}
+            className="inline mr-2.5 ml-2.5 shrink-0"
+          />
         </TextButton>
       </div>
 
       {folders.length > 0 && (
-        <ul className="flex flex-col gap-2 mt-1">
+        <ul className="flex flex-col gap-1 mt-1">
           {folders.map((childFolder) => (
             <FolderList
               key={childFolder.id}
