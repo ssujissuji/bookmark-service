@@ -58,6 +58,7 @@ export default function FolderEditModal({
             label="폴더명"
             type="text"
             value={folderName}
+            mode="folder"
             onChange={(e) => setFolderName(e.target.value)}
           />
           {/* <InputComponent
