@@ -59,11 +59,14 @@ body {
   padding: 0px 20rem;
   min-width: 810px;
   user-select: none;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 @media (max-width: 1024px) {
   body {
     padding: 0 10rem;
+  }
+  .left-side {
+    display: none;
   }
 }
 

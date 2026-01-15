@@ -112,7 +112,10 @@ export default function DetailPage() {
       </div>
       {/* 좌측 폴더 리스트 */}
       {ReactDOM.createPortal(
-        <div ref={listRef} className="fixed left-20 top-1/2 -translate-y-1/2">
+        <div
+          ref={listRef}
+          className="left-side fixed left-20 top-1/2 -translate-y-1/2"
+        >
           <ul className="flex flex-col justify-start items-start gap-2">
             {leftRootNode ? (
               <FolderList node={leftRootNode} folderId={folderId} />
