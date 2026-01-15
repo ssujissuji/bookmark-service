@@ -58,6 +58,7 @@ body {
   background-attachment: fixed;
   padding: 0px 20rem;
   min-width: 810px;
+  user-select: none;
 }
 @media (max-width: 1024px) {
   body {

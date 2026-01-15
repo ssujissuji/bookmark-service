@@ -4,12 +4,13 @@ export default function InputComponent({
   type,
   label,
   value,
+  mode,
   onChange,
   onKeyDown,
   onReset,
 }: InputProps) {
   const searchStyle = id === 'search' ? 'input--search' : '';
-  const maxLength = 20;
+  const maxLength = mode === 'bookmark' ? 100 : 20;
 
   const countChars = (text: string) => Array.from(text).length;
 
@@ -42,11 +43,13 @@ export default function InputComponent({
           placeholder={placeholder}
           onKeyDown={onKeyDown}
           className={`flex w-full rounded-md glass input ${searchStyle} focus:outline-none`}
-          // maxLength={id === 'search' ? undefined : maxLength}
         />
 
         {id !== 'search' && (
-          <div className="flex justify-between items-center mt-1 text-xs w-full px-2 pl-4">
+          <div
+            className="flex justify-between items-center mt-1 text-xs w-full px-2 pl-4"
+            hidden={!mode}
+          >
             <span className={isOverLimit ? 'text-red-500' : 'text-gray-500'}>
               {currentLen}/{maxLength}
             </span>

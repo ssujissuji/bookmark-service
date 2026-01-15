@@ -7,7 +7,8 @@ import { Link } from 'react-router';
 import { useBookmarksData } from '@/app/BookmarksContext';
 import { useUrlActions } from '@/app/hooks/useUrlActions';
 import toast from 'react-hot-toast';
-import FolderEditModal from '../FolderEditModal';
+// import FolderEditModal from '../FolderEditModal';
+import BookmarkEditModal, { BookmarkSubmitValue } from '../BookmarkEditModal';
 
 export default function BookmarkListItem({
   url,
@@ -26,7 +27,10 @@ export default function BookmarkListItem({
   const { deleteUrl } = useUrlActions();
   const { reloadBookmarks } = useBookmarksData();
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [editInitialValue, setEditInitialValue] = useState<string>(title);
+  const [editInitialValue, setEditInitialValue] = useState<{
+    title: string;
+    url: string;
+  }>({ title, url });
 
   const handleOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -49,15 +53,15 @@ export default function BookmarkListItem({
     setIsOpen(false);
 
     const nextName = title;
-    setEditInitialValue(nextName);
+    setEditInitialValue({ title: nextName, url });
     setIsEditOpen(true);
   };
 
-  const handleEditSubmit = async (name: string) => {
+  const handleEditSubmit = async (data: BookmarkSubmitValue) => {
     if (!id) return;
 
     try {
-      await chrome.bookmarks.update(id, { title: name });
+      await chrome.bookmarks.update(id, { title: data.title });
       await reloadBookmarks();
       toast.success('북마크 제목 수정되었습니다.');
     } catch (error) {
@@ -160,8 +164,14 @@ export default function BookmarkListItem({
               className="relative z-10001"
               onClick={(e) => e.stopPropagation()}
             >
-              <FolderEditModal
+              {/* <FolderEditModal
                 type="edit"
+                initialValue={editInitialValue.title}
+                onCancel={() => setIsEditOpen(false)}
+                onSubmit={handleEditSubmit}
+              /> */}
+              <BookmarkEditModal
+                mode="edit"
                 initialValue={editInitialValue}
                 onCancel={() => setIsEditOpen(false)}
                 onSubmit={handleEditSubmit}
