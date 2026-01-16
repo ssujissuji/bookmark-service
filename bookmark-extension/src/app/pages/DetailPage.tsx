@@ -98,10 +98,10 @@ export default function DetailPage() {
           hasResult ? (
             (filteredList ?? []).map((bookmark) => (
               <BookmarkListItem
-          key={bookmark.id}
-          url={bookmark.url}
-          title={bookmark.title}
-          id={bookmark.id}
+                key={bookmark.id}
+                url={bookmark.url}
+                title={bookmark.title}
+                id={bookmark.id}
               />
             ))
           ) : (
@@ -126,10 +126,11 @@ export default function DetailPage() {
           ref={listRef}
           className="left-side fixed left-20 top-1/2 -translate-y-1/2"
         >
-          <div className="flex flex-col gap-4 items-start text-xs">
+          <div className="flex flex-col gap-4 items-start">
             <TextButton
               buttonName="+ 새폴더"
               onClick={createFolderHandler}
+              className="text-xs button__text cursor-pointer"
             ></TextButton>
             <ul className="flex flex-col justify-start items-start gap-2">
               {leftRootNode ? (
