@@ -11,6 +11,8 @@ import {
 import type { SortType } from '../layout/RootLayout';
 import { sortBookmarks } from '../utils/sortBookmarks';
 import { useBookmarksData } from '../BookmarksContext';
+import TextButton from '../components/ui/TextButton';
+import { useFolderActions } from '../hooks/useFoldersActions';
 
 export type OutletContextType = {
   sortType: SortType;
@@ -70,6 +72,14 @@ export default function DetailPage() {
     return [];
   }, [sortedBookmarks, normalizedKeyword]);
 
+  const { createFolder } = useFolderActions();
+
+  const createFolderHandler = () => {
+    if (!folderId) return;
+    confirm('이 폴더에 새 폴더를 생성하시겠습니까?') &&
+      createFolder({ title: '새 폴더', parentId: folderId });
+  };
+
   if (status !== 'success' || !data) {
     return null;
   }
@@ -116,15 +126,21 @@ export default function DetailPage() {
           ref={listRef}
           className="left-side fixed left-20 top-1/2 -translate-y-1/2"
         >
-          <ul className="flex flex-col justify-start items-start gap-2">
-            {leftRootNode ? (
-              <FolderList node={leftRootNode} folderId={folderId} />
-            ) : (
-              <p className="text-sm text-gray-400">
-                폴더 루트를 찾지 못했습니다.
-              </p>
-            )}
-          </ul>
+          <div className="flex flex-col gap-4 items-start text-xs">
+            <TextButton
+              buttonName="+ 새폴더"
+              onClick={createFolderHandler}
+            ></TextButton>
+            <ul className="flex flex-col justify-start items-start gap-2">
+              {leftRootNode ? (
+                <FolderList node={leftRootNode} folderId={folderId} />
+              ) : (
+                <p className="text-sm text-gray-400">
+                  폴더 루트를 찾지 못했습니다.
+                </p>
+              )}
+            </ul>
+          </div>
         </div>,
         document.body,
       )}
