@@ -6,10 +6,10 @@ Modal.setAppElement('#root'); // 모달 접근성 설정
 
 function App() {
   return (
-    <div>
+    <>
       <Toaster />
       <AppView />
-    </div>
+    </>
   );
 }
 
