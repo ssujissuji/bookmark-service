@@ -90,14 +90,18 @@ export default function DetailPage() {
   return (
     <div>
       <div className="w-full mx-auto flex flex-col gap-3 pb-25 pt-6">
-        {hasSearch ? (
+        {sortedBookmarks.length === 0 ? (
+          <div className="flex mt-4 text-sm text-gray-400 justify-center text-center">
+            북마크가 없습니다.
+          </div>
+        ) : hasSearch ? (
           hasResult ? (
             (filteredList ?? []).map((bookmark) => (
               <BookmarkListItem
-                key={bookmark.id}
-                url={bookmark.url}
-                title={bookmark.title}
-                id={bookmark.id}
+          key={bookmark.id}
+          url={bookmark.url}
+          title={bookmark.title}
+          id={bookmark.id}
               />
             ))
           ) : (
@@ -105,7 +109,7 @@ export default function DetailPage() {
               검색 결과가 없습니다.
             </p>
           )
-        ) : sortedBookmarks ? (
+        ) : (
           sortedBookmarks.map((bookmark) => (
             <BookmarkListItem
               key={bookmark.id}
@@ -114,10 +118,6 @@ export default function DetailPage() {
               id={bookmark.id}
             />
           ))
-        ) : (
-          <div className="flex mt-4 text-sm text-gray-400 justify-center text-center">
-            북마크가 없습니다.
-          </div>
         )}
       </div>
       {/* 좌측 폴더 리스트 */}
