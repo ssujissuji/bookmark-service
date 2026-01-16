@@ -72,7 +72,7 @@ export default function BookmarkEditModal({
     }
   }, [url]);
 
-  const hasError = titleError.length > 0 || urlError.length > 0;
+  // const hasError = titleError.length > 0 || urlError.length > 0;
 
   const handleSubmitClick = () => {
     if (titleError) {
@@ -129,7 +129,6 @@ export default function BookmarkEditModal({
           buttonName={mode === 'new' ? '생성' : '수정'}
           className="button__text__folder tracking-[2.2em]"
           onClick={handleSubmitClick}
-          {...(hasError ? { disabled: true } : {})}
         />
       </div>
     </div>
