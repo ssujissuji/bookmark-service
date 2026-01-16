@@ -61,9 +61,9 @@ export default function BookmarkListItem({
     if (!id) return;
 
     try {
-      await chrome.bookmarks.update(id, { title: data.title });
+      await chrome.bookmarks.update(id, { title: data.title, url: data.url });
       await reloadBookmarks();
-      toast.success('북마크 제목 수정되었습니다.');
+      toast.success('북마크가 수정되었습니다.');
     } catch (error) {
       console.error('수정 실패:', error);
     } finally {
