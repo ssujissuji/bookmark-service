@@ -14,10 +14,12 @@ export default function BookmarkListItem({
   url,
   title,
   id,
+  dateAdded,
 }: {
   url: string;
   title: string;
   id: string;
+  dateAdded?: number;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
@@ -96,6 +98,15 @@ export default function BookmarkListItem({
     setIsDragging(false);
   };
 
+  const isNew = (() => {
+    if (!dateAdded) return false;
+    const createdAt = new Date(dateAdded);
+    const now = new Date();
+    const diffInMs = now.getTime() - createdAt.getTime();
+    const diffInMinutes = diffInMs / (1000 * 60);
+    return diffInMinutes <= 5;
+  })();
+
   return (
     <>
       <li
@@ -109,20 +120,27 @@ export default function BookmarkListItem({
             : '',
         ].join(' ')}
       >
-        <div className="flex min-w-0 items-center gap-4 ">
-          <IconDefault width={20} height={20} className="shrink-0" />
-          <Link
-            to={url}
-            className="text-base font-['LeferiBaseRegular'] align-middle truncate  hover:underline"
-            target="_blank"
-            draggable={false}
-            onDragStart={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-          >
-            {title}
-          </Link>
+        <div className="flex flex-1 min-w-0 justify-start items-center gap-4">
+          <div className="flex flex-1 min-w-0 items-center gap-4 ">
+            <IconDefault width={20} height={20} className="shrink-0" />
+            <Link
+              to={url}
+              className="text-base font-['LeferiBaseRegular'] align-middle truncate  hover:underline"
+              target="_blank"
+              draggable={false}
+              onDragStart={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              {title}
+            </Link>
+          </div>
+          {isNew && (
+            <span className="text-xs text-(--color-yellow) glass px-1 rounded-md max-h-[18px]">
+              new
+            </span>
+          )}
         </div>
         <div
           ref={buttonRef}
