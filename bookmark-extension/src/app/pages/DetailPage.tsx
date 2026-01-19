@@ -14,6 +14,8 @@ import { useBookmarksData } from '../BookmarksContext';
 import TextButton from '../components/ui/TextButton';
 import { useFolderActions } from '../hooks/useFoldersActions';
 import toast from 'react-hot-toast';
+import { CreateUrlParams, useUrlActions } from '../hooks/useUrlActions';
+import BookmarkEditModal from '../components/BookmarkEditModal';
 
 export type OutletContextType = {
   sortType: SortType;
@@ -58,6 +60,8 @@ export default function DetailPage() {
   const children = targetFolder?.children ?? [];
 
   const { bookmarks } = separateFolderAndBookmarks(children);
+  const { createUrl } = useUrlActions();
+  const [isOpen, setIsOpen] = useState(false);
 
   const sortedBookmarks = useMemo(
     () => sortBookmarks(bookmarks, sortType),
@@ -105,7 +109,6 @@ export default function DetailPage() {
   };
 
   const onRootDragOver = (e: React.DragEvent) => {
-    // drop 허용 필수
     e.preventDefault();
     e.stopPropagation();
     e.dataTransfer.dropEffect = 'move';
@@ -136,6 +139,15 @@ export default function DetailPage() {
     navigate(`/bookmark/${id}`);
   };
 
+  const createOpenhandler = () => {
+    setIsOpen(true);
+  };
+  const handleSubmit = ({ title, url }: CreateUrlParams) => {
+    createUrl({ title, url, parentId: folderId ?? '1' });
+    reloadBookmarks();
+    setIsOpen(false);
+  };
+
   if (status !== 'success' || !data) {
     return null;
   }
@@ -158,6 +170,7 @@ export default function DetailPage() {
                 url={bookmark.url}
                 title={bookmark.title}
                 id={bookmark.id}
+                dateAdded={bookmark.dateAdded}
               />
             ))
           ) : (
@@ -172,6 +185,7 @@ export default function DetailPage() {
               url={bookmark.url}
               title={bookmark.title}
               id={bookmark.id}
+              dateAdded={bookmark.dateAdded}
             />
           ))
         )}
@@ -182,12 +196,20 @@ export default function DetailPage() {
           ref={listRef}
           className="left-side fixed left-20 top-[33.333%] max-h-[calc(100vh-33.333%-16px)] overflow-y-auto wrap"
         >
-          <div className="flex flex-col gap-4 items-start">
-            <TextButton
-              buttonName="+ 새폴더"
-              onClick={createFolderHandler}
-              className="text-xs button__text cursor-pointer"
-            />
+          <div className="flex flex-col gap-8 items-start">
+            <div className="flex justify-between items-center w-full px-6">
+              <TextButton
+                buttonName="+ 새폴더"
+                onClick={createFolderHandler}
+                className="text-xs button__text cursor-pointer"
+              />
+              <span className="text-xs text-(--color-gray-light)">|</span>
+              <TextButton
+                buttonName="+ 새북마크"
+                className="text-xs button__text cursor-pointer"
+                onClick={createOpenhandler}
+              />
+            </div>
             {otherSideRootNode && (
               <button
                 type="button"
@@ -223,6 +245,27 @@ export default function DetailPage() {
         </div>,
         document.body,
       )}
+      {isOpen &&
+        ReactDOM.createPortal(
+          <div
+            className="fixed inset-0 z-9999 flex items-center justify-center"
+            onClick={() => setIsOpen(false)}
+          >
+            <div className="absolute inset-0 bg-black/40" />
+            <div
+              className="relative z-10001"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <BookmarkEditModal
+                mode="new"
+                initialValue={{ title: '', url: '' }}
+                onCancel={() => setIsOpen(false)}
+                onSubmit={handleSubmit}
+              />
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
