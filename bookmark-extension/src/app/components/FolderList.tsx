@@ -115,7 +115,7 @@ export default function FolderList({
   console.log(node);
 
   return (
-    <li className="flex flex-col justify-start items-start max-w-50">
+    <li className="flex flex-col  justify-start items-start max-w-50 min-w-0">
       <div
         style={indentStyle}
         onClick={clickHandler}
@@ -123,10 +123,10 @@ export default function FolderList({
         onDragLeave={onDragLeave}
         onDragOver={onDragOver}
         onDrop={onDrop}
-        className="flex flex-1 gap-1"
+        className="flex flex-1 gap-1 w-full min-w-0"
       >
         <TextButton
-          className={`tracking-widest cursor-pointer flex items-start text-left hover:text-(--color-main-red) whitespace-normal ${
+          className={`tracking-widest cursor-pointer flex items-start text-left hover:text-(--color-main-red) whitespace-normal break-all min-w-0 flex-1 ${
             isActive ? 'text-(--color-yellow) font-semibold' : ''
           }`}
           buttonName={node.title}
@@ -141,7 +141,7 @@ export default function FolderList({
           />
         </TextButton>
         {isNewFolder && (
-          <span className="text-xs text-(--color-yellow) glass px-1 rounded-md">
+          <span className="text-xs text-(--color-yellow) glass px-1 rounded-md max-h-[18px]">
             new
           </span>
         )}

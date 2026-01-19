@@ -124,7 +124,7 @@ export default function DetailPage() {
       {ReactDOM.createPortal(
         <div
           ref={listRef}
-          className="left-side fixed left-20 top-1/2 -translate-y-1/2"
+          className="left-side fixed left-20 top-[33.333%] max-h-[calc(100vh-33.333%-16px)] overflow-y-auto wrap"
         >
           <div className="flex flex-col gap-4 items-start">
             <TextButton
