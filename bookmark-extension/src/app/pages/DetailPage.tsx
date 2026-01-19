@@ -93,11 +93,15 @@ export default function DetailPage() {
       try {
         const parsed = JSON.parse(json);
         if (parsed?.id) return String(parsed.id);
-      } catch {}
+      } catch (err) {
+        console.error('Failed to parse DND JSON:', err);
+      }
     }
-
     const plain = e.dataTransfer.getData('text/plain');
-    return plain ? String(plain) : '';
+    if (!plain) return '';
+    if (plain.startsWith('folder:')) return plain.replace('folder:', '');
+    if (plain.startsWith('bookmark:')) return plain.replace('bookmark:', '');
+    return plain;
   };
 
   const onRootDragOver = (e: React.DragEvent) => {

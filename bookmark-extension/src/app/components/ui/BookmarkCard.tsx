@@ -85,9 +85,6 @@ export default function BookmarkCard({
     }
   };
 
-  // =========================
-  // ✅ 드래그 "소스" (카드 자체를 드래그)
-  // =========================
   const handleDragStart = (e: React.DragEvent<HTMLElement>) => {
     if (!targetFolderId || isRootFolder) return;
 
