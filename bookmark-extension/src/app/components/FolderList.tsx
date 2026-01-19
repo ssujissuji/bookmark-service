@@ -5,6 +5,7 @@ import { separateFolderAndBookmarks } from '../utils/bookmarkTreeUtils';
 import { useNavigate } from 'react-router';
 import { useBookmarksData } from '../BookmarksContext';
 import { useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 
 type FolderListProps = {
   node: BookmarkItemType;
@@ -24,6 +25,7 @@ export default function FolderList({
   const { reloadBookmarks } = useBookmarksData();
 
   const [isDropping, setIsDropping] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const enterCounterRef = useRef(0);
 
@@ -44,7 +46,7 @@ export default function FolderList({
   const clickHandler = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
-
+    if (isDragging) return;
     if (isDropping) return;
 
     navigate(`/bookmark/${node.id}`);
@@ -94,6 +96,7 @@ export default function FolderList({
 
       if (mountedRef.current) {
         await reloadBookmarks();
+        toast.success('이동되었습니다!');
       }
     } catch (err) {
       console.error('북마크 이동 실패:', err);
@@ -104,6 +107,19 @@ export default function FolderList({
     }
   };
 
+  const handleDragStart = (e: React.DragEvent) => {
+    if (!node.id) return;
+
+    setIsDragging(true);
+
+    e.dataTransfer.setData('text/plain', String(node.id));
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragEnd = (_e: React.DragEvent) => {
+    setIsDragging(false);
+  };
+
   const isNewFolder = (() => {
     if (!node.dateAdded) return false;
     const createdAt = new Date(node.dateAdded);
@@ -112,18 +128,23 @@ export default function FolderList({
     const diffInMinutes = diffInMs / (1000 * 60);
     return diffInMinutes <= 5;
   })();
-  console.log(node);
 
   return (
     <li className="flex flex-col  justify-start items-start max-w-50 min-w-0">
       <div
         style={indentStyle}
+        draggable
         onClick={clickHandler}
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
         onDragOver={onDragOver}
         onDrop={onDrop}
-        className="flex flex-1 gap-1 w-full min-w-0"
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        className={[
+          'flex flex-1 gap-1 w-full min-w-0',
+          isDragging ? 'opacity-60 scale-[0.995]' : '',
+        ].join(' ')}
       >
         <TextButton
           className={`tracking-widest cursor-pointer flex items-start text-left hover:text-(--color-main-red) whitespace-normal break-all min-w-0 flex-1 ${

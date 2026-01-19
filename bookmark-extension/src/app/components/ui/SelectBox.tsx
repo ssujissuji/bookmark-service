@@ -15,7 +15,7 @@ export default function SelectBox({
       onClick={(e) => e.stopPropagation()}
     >
       <SelectItem selectOption="삭제" onClick={onDelete} />
-      <SelectItem selectOption="이름 변경" onClick={onModify} />
+      <SelectItem selectOption="수정" onClick={onModify} />
     </div>
   );
 }

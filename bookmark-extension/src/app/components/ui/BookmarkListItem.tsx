@@ -110,7 +110,7 @@ export default function BookmarkListItem({
         ].join(' ')}
       >
         <div className="flex min-w-0 items-center gap-4 ">
-          <IconDefault width={20} height={20} />
+          <IconDefault width={20} height={20} className="shrink-0" />
           <Link
             to={url}
             className="text-base font-['LeferiBaseRegular'] align-middle truncate  hover:underline"

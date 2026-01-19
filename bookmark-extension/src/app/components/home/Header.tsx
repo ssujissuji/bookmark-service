@@ -110,10 +110,12 @@ export default function Header({
     }
   };
 
+  const isRootFolder = folderId === '1' || folderId === '2';
+
   return (
     <>
       <div className="flex flex-col justify-start items-start gap-5">
-        {folderId === '1' || folderId === '2' ? (
+        {isRootFolder ? (
           <TextButton
             className="button__text"
             buttonName={`MyBookMark /`}
@@ -135,11 +137,14 @@ export default function Header({
           <Title title={currentTitle ?? 'MyBookMark'} />
           {currentTitle !== 'MyBookMark' && (
             <div className="flex gap-4">
-              <span className="button__text" onClick={handleOpen}>
+              <span
+                className={`button__text  ${isRootFolder ? 'hidden' : ''}`}
+                onClick={handleOpen}
+              >
                 <SettingIcon />
               </span>
               <span
-                className={`button__text ${folderId === '1' || folderId === '2' ? 'hidden' : ''}`}
+                className={`button__text ${isRootFolder ? 'hidden' : ''}`}
                 onClick={handleDeleteFolder}
               >
                 <Trash size="1em" />

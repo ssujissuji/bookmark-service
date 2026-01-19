@@ -33,16 +33,22 @@ export default function Navbar({
         <TextButton
           buttonName="최신순"
           onClick={handleRecentClick}
-          className={
-            isRecent ? 'text-lg font-semibold text-(--color-yellow)' : ''
-          }
+          className={[
+            'px-4 py-2 rounded-lg text-sm transition',
+            isRecent
+              ? 'text-lg font-semibold text-(--color-yellow)'
+              : ' text-(--color-gray-light) hover:bg-white/10',
+          ].join(' ')}
         />
         <TextButton
           buttonName="이름순"
           onClick={handleNameClick}
-          className={
-            isName ? 'text-lg font-semibold text-(--color-yellow)' : ''
-          }
+          className={[
+            'px-4 py-2 rounded-lg text-sm transition',
+            isName
+              ? 'text-lg font-semibold text-(--color-yellow)'
+              : ' text-(--color-gray-light) hover:bg-white/10',
+          ].join(' ')}
         />
       </div>
       <InputComponent

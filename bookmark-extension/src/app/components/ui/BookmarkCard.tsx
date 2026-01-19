@@ -22,10 +22,20 @@ export default function BookmarkCard({
   const [isOpen, setIsOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLDivElement>(null);
+
   const { deleteFolder } = useFolderActions();
   const { reloadBookmarks } = useBookmarksData();
+
+  const targetFolderId =
+    id ?? (type === 'bookmarkBar' ? '1' : type === 'others' ? '2' : undefined);
+  const isRootFolder = targetFolderId === '1' || targetFolderId === '2';
+
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editInitialValue, setEditInitialValue] = useState<string>(title);
+
+  const [isDragging, setIsDragging] = useState(false);
+  const [isDragHover, setIsDragHover] = useState(false);
+  const enterCounterRef = useRef(0);
 
   const handleOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -33,8 +43,8 @@ export default function BookmarkCard({
     if (buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
       setPos({
-        top: rect.bottom + window.scrollY + 4, // 버튼 아래 4px 여백
-        left: rect.right - 120, // SelectBox의 너비 고려 (대충 120px 기준)
+        top: rect.bottom + window.scrollY + 4,
+        left: rect.right - 120,
       });
     }
     setIsOpen(true);
@@ -75,8 +85,43 @@ export default function BookmarkCard({
     }
   };
 
+  const handleDragStart = (e: React.DragEvent<HTMLElement>) => {
+    if (!targetFolderId || isRootFolder) return;
+
+    setIsDragging(true);
+    setIsOpen(false);
+
+    e.dataTransfer.setData('text/plain', `folder:${String(targetFolderId)}`);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragEnd = (_e: React.DragEvent<HTMLElement>) => {
+    setIsDragging(false);
+  };
+
+  const onDragEnter = (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    enterCounterRef.current += 1;
+    setIsDragHover(true);
+  };
+
+  const onDragLeave = (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    enterCounterRef.current -= 1;
+
+    if (enterCounterRef.current <= 0) {
+      enterCounterRef.current = 0;
+      setIsDragHover(false);
+    }
+  };
+
   const onDragOver = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
+    e.stopPropagation();
     e.dataTransfer.dropEffect = 'move';
   };
 
@@ -84,30 +129,59 @@ export default function BookmarkCard({
     e.preventDefault();
     e.stopPropagation();
 
-    const draggedBookmarkId = e.dataTransfer.getData('text/plain');
+    enterCounterRef.current = 0;
+    setIsDragHover(false);
 
-    if (!draggedBookmarkId || !id) return;
+    const raw = e.dataTransfer.getData('text/plain');
+    if (!raw || !targetFolderId) return;
 
+    let draggedId = raw;
+    if (raw.startsWith('folder:')) draggedId = raw.replace('folder:', '');
+    if (raw.startsWith('bookmark:')) draggedId = raw.replace('bookmark:', '');
+
+    if (String(draggedId) === String(targetFolderId)) return;
     try {
-      await chrome.bookmarks.move(draggedBookmarkId, {
-        parentId: id,
+      await chrome.bookmarks.move(draggedId, {
+        parentId: String(targetFolderId),
       });
 
       await reloadBookmarks();
-      toast.success('북마크가 성공적으로 이동되었습니다!');
+      toast.success('이동되었습니다!');
     } catch (err) {
-      console.error('북마크 이동 실패:', err);
+      console.error('이동 실패:', err);
     }
+  };
+
+  // ✅ 드래그 중 클릭이 같이 터지는 것 방지(UX 좋아짐)
+  const handleCardClick = (e: React.MouseEvent<HTMLElement>) => {
+    if (isDragging) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    onClick();
   };
 
   return (
     <>
       <li
-        className="flex relative justify-between items-center glass rounded-xl gap-4 px-6 py-4 w-full min-h-[120px] glass--hover"
-        onClick={onClick}
+        draggable={!isRootFolder}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragEnter={onDragEnter}
+        onDragLeave={onDragLeave}
         onDragOver={onDragOver}
         onDrop={onDrop}
+        onClick={handleCardClick}
         title={title}
+        className={[
+          'flex relative justify-between items-center glass rounded-xl gap-4 px-6 py-4 w-full min-h-[120px] glass--hover',
+          isDragging ? 'opacity-60 scale-[0.995]' : '',
+
+          isDragHover
+            ? 'ring-2 ring-(--color-yellow) bg-(--color-main-red)'
+            : '',
+        ].join(' ')}
       >
         <div className="flex flex-1 min-w-0 gap-5 cursor-pointer">
           <IconDefault
@@ -133,10 +207,13 @@ export default function BookmarkCard({
             <p className="text-xl font-['LeferiBaseBold'] truncate">{title}</p>
           </div>
         </div>
+
         <div
           ref={buttonRef}
           className="shrink-0 hover:text-(--color-gray-dark) cursor-pointer"
           onClick={handleOpen}
+          // ✅ 드래그 시작이 Ellipsis에서 튀는 거 방지(선택이지만 안정적)
+          draggable={false}
         >
           <Ellipsis />
         </div>
