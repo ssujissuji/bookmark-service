@@ -11,6 +11,8 @@ import {
 import type { SortType } from '../layout/RootLayout';
 import { sortBookmarks } from '../utils/sortBookmarks';
 import { useBookmarksData } from '../BookmarksContext';
+import TextButton from '../components/ui/TextButton';
+import { useFolderActions } from '../hooks/useFoldersActions';
 
 export type OutletContextType = {
   sortType: SortType;
@@ -70,6 +72,14 @@ export default function DetailPage() {
     return [];
   }, [sortedBookmarks, normalizedKeyword]);
 
+  const { createFolder } = useFolderActions();
+
+  const createFolderHandler = () => {
+    if (!folderId) return;
+    confirm('이 폴더에 새 폴더를 생성하시겠습니까?') &&
+      createFolder({ title: '새 폴더', parentId: folderId });
+  };
+
   if (status !== 'success' || !data) {
     return null;
   }
@@ -80,7 +90,11 @@ export default function DetailPage() {
   return (
     <div>
       <div className="w-full mx-auto flex flex-col gap-3 pb-25 pt-6">
-        {hasSearch ? (
+        {sortedBookmarks.length === 0 ? (
+          <div className="flex mt-4 text-sm text-gray-400 justify-center text-center">
+            북마크가 없습니다.
+          </div>
+        ) : hasSearch ? (
           hasResult ? (
             (filteredList ?? []).map((bookmark) => (
               <BookmarkListItem
@@ -95,7 +109,7 @@ export default function DetailPage() {
               검색 결과가 없습니다.
             </p>
           )
-        ) : sortedBookmarks ? (
+        ) : (
           sortedBookmarks.map((bookmark) => (
             <BookmarkListItem
               key={bookmark.id}
@@ -104,24 +118,30 @@ export default function DetailPage() {
               id={bookmark.id}
             />
           ))
-        ) : (
-          <div className="flex mt-4 text-sm text-gray-400 justify-center text-center">
-            북마크가 없습니다.
-          </div>
         )}
       </div>
       {/* 좌측 폴더 리스트 */}
       {ReactDOM.createPortal(
-        <div ref={listRef} className="fixed left-20 top-1/2 -translate-y-1/2">
-          <ul className="flex flex-col justify-start items-start gap-2">
-            {leftRootNode ? (
-              <FolderList node={leftRootNode} folderId={folderId} />
-            ) : (
-              <p className="text-sm text-gray-400">
-                폴더 루트를 찾지 못했습니다.
-              </p>
-            )}
-          </ul>
+        <div
+          ref={listRef}
+          className="left-side fixed left-20 top-[33.333%] max-h-[calc(100vh-33.333%-16px)] overflow-y-auto wrap"
+        >
+          <div className="flex flex-col gap-4 items-start">
+            <TextButton
+              buttonName="+ 새폴더"
+              onClick={createFolderHandler}
+              className="text-xs button__text cursor-pointer"
+            ></TextButton>
+            <ul className="flex flex-col justify-start items-start gap-2">
+              {leftRootNode ? (
+                <FolderList node={leftRootNode} folderId={folderId} />
+              ) : (
+                <p className="text-sm text-gray-400">
+                  폴더 루트를 찾지 못했습니다.
+                </p>
+              )}
+            </ul>
+          </div>
         </div>,
         document.body,
       )}
