@@ -128,13 +128,9 @@ export default function FolderList({
     const diffInMinutes = diffInMs / (1000 * 60);
     return diffInMinutes <= 5;
   })();
-  console.log(node);
 
   return (
     <li className="flex flex-col  justify-start items-start max-w-50 min-w-0">
-      {folderId === '2' && (
-        <FolderList node={node} depth={0} folderId={folderId} />
-      )}
       <div
         style={indentStyle}
         draggable
