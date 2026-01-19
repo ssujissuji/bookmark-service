@@ -135,7 +135,10 @@ export default function Header({
           <Title title={currentTitle ?? 'MyBookMark'} />
           {currentTitle !== 'MyBookMark' && (
             <div className="flex gap-4">
-              <span className="button__text" onClick={handleOpen}>
+              <span
+                className={`button__text  ${folderId === '1' || folderId === '2' ? 'hidden' : ''}`}
+                onClick={handleOpen}
+              >
                 <SettingIcon />
               </span>
               <span
