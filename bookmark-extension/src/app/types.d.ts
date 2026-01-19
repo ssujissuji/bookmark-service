@@ -2,6 +2,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   id: string;
   label?: string;
   onReset?: () => void;
+  mode?: 'folder' | 'bookmark';
 }
 
 // 북마크(링크)
@@ -10,7 +11,7 @@ interface BookmarkItemType {
   title: string;
   url?: string; // URL이 있으면 북마크 확정
   children?: never; // 북마크는 children 없음
-  dataAdded?: number;
+  dateAdded?: number;
   syncing?: boolean;
 }
 

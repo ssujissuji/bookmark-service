@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 // import IconSelectComponent from './ui/IconInputComponent';
 import InputComponent from './ui/InputComponent';
 import TextButton from './ui/TextButton';
+import toast from 'react-hot-toast';
 
 export default function FolderEditModal({
   type,
@@ -16,11 +17,33 @@ export default function FolderEditModal({
 }) {
   const option = type === 'new' ? '🆕 새로운 폴더 생성' : '🪄 폴더 수정';
   const [folderName, setFolderName] = useState(initialValue || '');
-  // const [folderDesc, setFolderDesc] = useState(initialValue.desc || '');
+  const maxLength = 20;
+
+  const countChars = (text: string) => Array.from(text).length;
+
+  const nameError = useMemo(() => {
+    const trimmed = folderName.trim();
+    const len = countChars(trimmed);
+
+    if (len === 0) return '폴더명을 입력해주세요.';
+    if (len > maxLength)
+      return `폴더명은 최대 ${maxLength}자까지 입력할 수 있어요.`;
+    return '';
+  }, [folderName]);
+
+  const hasError = nameError.length > 0;
+
+  const handleSubmitClick = () => {
+    if (hasError) {
+      toast.error(nameError);
+      return;
+    }
+    onSubmit(folderName.trim());
+  };
 
   return (
     <div className="glass glass__dark flex flex-col justify-between  gap-4 pt-8 px-16 rounded-2xl">
-      <h2 className="px-39">{option}</h2>
+      <h2 className="w-full flex justify-center items-center">{option}</h2>
       <div className="flex justify-start items-center gap-10">
         <div className="flex flex-col w-full justify-between  gap-6">
           <InputComponent
@@ -35,6 +58,7 @@ export default function FolderEditModal({
             label="폴더명"
             type="text"
             value={folderName}
+            mode="folder"
             onChange={(e) => setFolderName(e.target.value)}
           />
           {/* <InputComponent
@@ -63,7 +87,7 @@ export default function FolderEditModal({
         <TextButton
           buttonName={type === 'new' ? '생성' : '수정'}
           className="button__text__folder tracking-[2.2em]"
-          onClick={() => onSubmit(folderName)}
+          onClick={handleSubmitClick}
         />
       </div>
     </div>

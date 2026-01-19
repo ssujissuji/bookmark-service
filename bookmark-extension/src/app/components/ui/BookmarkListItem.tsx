@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import IconDefault from '../../assets/icon/bookmark.svg?react';
 import Ellipsis from '../../assets/icon/ellipsis.svg?react';
 import SelectBox from './SelectBox';
@@ -7,16 +7,19 @@ import { Link } from 'react-router';
 import { useBookmarksData } from '@/app/BookmarksContext';
 import { useUrlActions } from '@/app/hooks/useUrlActions';
 import toast from 'react-hot-toast';
-import FolderEditModal from '../FolderEditModal';
+// import FolderEditModal from '../FolderEditModal';
+import BookmarkEditModal, { BookmarkSubmitValue } from '../BookmarkEditModal';
 
 export default function BookmarkListItem({
   url,
   title,
   id,
+  dateAdded,
 }: {
   url: string;
   title: string;
   id: string;
+  dateAdded?: number;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
@@ -26,18 +29,10 @@ export default function BookmarkListItem({
   const { deleteUrl } = useUrlActions();
   const { reloadBookmarks } = useBookmarksData();
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [editInitialValue, setEditInitialValue] = useState<string>(title);
-
-  useEffect(() => {
-    if (!isEditOpen) return;
-
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [isEditOpen]);
+  const [editInitialValue, setEditInitialValue] = useState<{
+    title: string;
+    url: string;
+  }>({ title, url });
 
   const handleOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -60,17 +55,17 @@ export default function BookmarkListItem({
     setIsOpen(false);
 
     const nextName = title;
-    setEditInitialValue(nextName);
+    setEditInitialValue({ title: nextName, url });
     setIsEditOpen(true);
   };
 
-  const handleEditSubmit = async (name: string) => {
+  const handleEditSubmit = async (data: BookmarkSubmitValue) => {
     if (!id) return;
 
     try {
-      await chrome.bookmarks.update(id, { title: name });
+      await chrome.bookmarks.update(id, { title: data.title, url: data.url });
       await reloadBookmarks();
-      toast.success('북마크 제목 수정되었습니다.');
+      toast.success('북마크가 수정되었습니다.');
     } catch (error) {
       console.error('수정 실패:', error);
     } finally {
@@ -103,6 +98,15 @@ export default function BookmarkListItem({
     setIsDragging(false);
   };
 
+  const isNew = (() => {
+    if (!dateAdded) return false;
+    const createdAt = new Date(dateAdded);
+    const now = new Date();
+    const diffInMs = now.getTime() - createdAt.getTime();
+    const diffInMinutes = diffInMs / (1000 * 60);
+    return diffInMinutes <= 5;
+  })();
+
   return (
     <>
       <li
@@ -116,20 +120,27 @@ export default function BookmarkListItem({
             : '',
         ].join(' ')}
       >
-        <div className="flex items-center gap-4 ">
-          <IconDefault width={20} height={20} />
-          <Link
-            to={url}
-            className="text-base font-['LeferiBaseRegular'] align-middle"
-            target="_blank"
-            draggable={false}
-            onDragStart={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-          >
-            {title}
-          </Link>
+        <div className="flex flex-1 min-w-0 justify-start items-center gap-4">
+          <div className="flex flex-1 min-w-0 items-center gap-4 ">
+            <IconDefault width={20} height={20} className="shrink-0" />
+            <Link
+              to={url}
+              className="text-base font-['LeferiBaseRegular'] align-middle truncate  hover:underline"
+              target="_blank"
+              draggable={false}
+              onDragStart={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              {title}
+            </Link>
+          </div>
+          {isNew && (
+            <span className="text-xs text-(--color-yellow) glass px-1 rounded-md max-h-[18px]">
+              new
+            </span>
+          )}
         </div>
         <div
           ref={buttonRef}
@@ -171,8 +182,14 @@ export default function BookmarkListItem({
               className="relative z-10001"
               onClick={(e) => e.stopPropagation()}
             >
-              <FolderEditModal
+              {/* <FolderEditModal
                 type="edit"
+                initialValue={editInitialValue.title}
+                onCancel={() => setIsEditOpen(false)}
+                onSubmit={handleEditSubmit}
+              /> */}
+              <BookmarkEditModal
+                mode="edit"
                 initialValue={editInitialValue}
                 onCancel={() => setIsEditOpen(false)}
                 onSubmit={handleEditSubmit}

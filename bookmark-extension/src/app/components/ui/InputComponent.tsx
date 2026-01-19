@@ -4,45 +4,73 @@ export default function InputComponent({
   type,
   label,
   value,
+  mode,
   onChange,
   onKeyDown,
   onReset,
 }: InputProps) {
   const searchStyle = id === 'search' ? 'input--search' : '';
+  const maxLength = mode === 'bookmark' ? 100 : 20;
+
+  const countChars = (text: string) => Array.from(text).length;
+
+  const stringValue = typeof value === 'string' ? value : '';
+  const currentLen = countChars(stringValue);
+
+  const isOverLimit = id !== 'search' && currentLen > maxLength;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange?.(e);
+  };
 
   return (
     <div className="flex flex-col w-auto gap-2">
       {label && (
         <label
           htmlFor={id}
-          className="text-sm font-['LeferiBaseRegular'] tracking-[0.8em] pl-4"
+          className="text-sm font-['LeferiBaseRegular'] tracking-[0.8em] pl-2"
         >
           {label}
         </label>
       )}
 
-      {/* 버튼 배치를 위해 relative 컨테이너 추가 */}
-      <div className="relative w-full flex items-center">
+      <div className="relative w-full flex flex-col items-start">
         <input
           id={id}
           type={type}
           value={value}
-          onChange={onChange}
+          onChange={handleChange}
           placeholder={placeholder}
           onKeyDown={onKeyDown}
-          // 오른쪽 버튼 공간을 위해 pr-10(padding-right) 추가
-          className={`w-full px-3 py-2 pr-10 rounded-md glass input ${searchStyle} focus:outline-none`}
+          className={`flex w-full rounded-md glass input ${searchStyle} focus:outline-none`}
         />
 
-        {/* 값이 있고 onReset 함수가 전달되었을 때만 X 버튼 표시 */}
+        {id !== 'search' && (
+          <div
+            className="flex justify-between items-center mt-1 text-xs w-full px-2 pl-4"
+            hidden={!mode}
+          >
+            <span className={isOverLimit ? 'text-red-500' : 'text-gray-500'}>
+              {currentLen}/{maxLength}
+            </span>
+            <p
+              className={`text-red-500 text-xs transition-opacity duration-200 ${
+                isOverLimit ? 'opacity-100' : 'opacity-0'
+              }`}
+              aria-hidden={!isOverLimit}
+            >
+              글자 수 제한을 초과했습니다.
+            </p>
+          </div>
+        )}
+
         {value && onReset && (
           <button
             type="button"
             onClick={onReset}
-            className="absolute right-3 text-gray-400 hover:text-gray-200 transition-colors"
+            className="absolute right-3 text-gray-400 hover:text-gray-200 transition-colors top-1/2 transform -translate-y-1/2"
             aria-label="입력 내용 삭제"
           >
-            {/* 간단한 X 아이콘 (SVG) */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"

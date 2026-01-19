@@ -3,7 +3,7 @@ import TextButton from '../ui/TextButton';
 import ArrowLeft from '../../assets/icon/arrow-left.svg?react';
 import SettingIcon from '../../assets/icon/setting.svg?react';
 import Navbar from './Navbar';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import FolderEditModal from '../FolderEditModal';
 import { useNavigate, useParams } from 'react-router';
@@ -12,6 +12,7 @@ import type { SortType } from '../../layout/RootLayout';
 import { useBookmarksData } from '@/app/BookmarksContext';
 import { useFolderActions } from '@/app/hooks/useFoldersActions';
 import toast from 'react-hot-toast';
+import { Trash } from 'lucide-react';
 
 type HeaderProps = {
   sortType: SortType;
@@ -37,17 +38,7 @@ export default function Header({
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { updateFolder } = useFolderActions();
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [isOpen]);
+  const { deleteFolder } = useFolderActions();
 
   let currentTitle = 'MyBookMark';
   let parentTitle = '';
@@ -96,15 +87,35 @@ export default function Header({
   };
 
   const clickParentHandler = () => {
-    console.log('click backward');
     if (folderId === '1' || folderId === '2') navigate('/');
     else navigate(`/bookmark/${parentId}`);
   };
 
+  const handleDeleteFolder = async () => {
+    if (!folderId) return;
+    if (folderId === '1' || folderId === '2') {
+      toast.error('기본 폴더는 삭제할 수 없습니다.');
+      return;
+    }
+
+    const confirmed = window.confirm('정말로 이 폴더를 삭제하시겠습니까?');
+    if (!confirmed) return;
+
+    try {
+      await deleteFolder(folderId);
+      await reloadBookmarks();
+      navigate(`/bookmark/${parentId}`);
+    } catch (error) {
+      console.error('폴더 삭제 실패:', error);
+    }
+  };
+
+  const isRootFolder = folderId === '1' || folderId === '2';
+
   return (
     <>
       <div className="flex flex-col justify-start items-start gap-5">
-        {folderId === '1' || folderId === '2' ? (
+        {isRootFolder ? (
           <TextButton
             className="button__text"
             buttonName={`MyBookMark /`}
@@ -125,9 +136,20 @@ export default function Header({
         <div className="flex justify-start items-baseline gap-8">
           <Title title={currentTitle ?? 'MyBookMark'} />
           {currentTitle !== 'MyBookMark' && (
-            <span className="button__text" onClick={handleOpen}>
-              <SettingIcon />
-            </span>
+            <div className="flex gap-4">
+              <span
+                className={`button__text  ${isRootFolder ? 'hidden' : ''}`}
+                onClick={handleOpen}
+              >
+                <SettingIcon />
+              </span>
+              <span
+                className={`button__text ${isRootFolder ? 'hidden' : ''}`}
+                onClick={handleDeleteFolder}
+              >
+                <Trash size="1em" />
+              </span>
+            </div>
           )}
         </div>
       </div>
