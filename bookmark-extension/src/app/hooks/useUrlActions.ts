@@ -1,9 +1,10 @@
 import { useCallback } from 'react';
 import toast from 'react-hot-toast';
 
-type CreateUrlParams = {
+export type CreateUrlParams = {
   title: string;
   parentId?: string; // 부모 폴더 id (생략하면 기본 위치에 생성)
+  url: string;
 };
 
 type UpdateUrlParams = {
@@ -14,7 +15,7 @@ type UpdateUrlParams = {
 export function useUrlActions() {
   const index = 0;
   const createUrl = useCallback((params: CreateUrlParams) => {
-    const { title, parentId } = params;
+    const { title, parentId, url } = params;
 
     return new Promise<chrome.bookmarks.BookmarkTreeNode>((resolve, reject) => {
       if (!chrome?.bookmarks) {
@@ -27,6 +28,7 @@ export function useUrlActions() {
           title,
           parentId,
           index,
+          url,
         },
         (result) => {
           const error = chrome.runtime.lastError;
