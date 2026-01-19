@@ -18,7 +18,7 @@ export default function TextButton({
   return (
     <button className={textStyle} onClick={onClick}>
       {children}
-      <span>{buttonName}</span>
+      {buttonName}
     </button>
   );
 }
