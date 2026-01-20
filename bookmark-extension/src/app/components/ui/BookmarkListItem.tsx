@@ -3,7 +3,6 @@ import IconDefault from '../../assets/icon/bookmark.svg?react';
 import Ellipsis from '../../assets/icon/ellipsis.svg?react';
 import SelectBox from './SelectBox';
 import ReactDOM from 'react-dom';
-import { Link } from 'react-router';
 import { useBookmarksData } from '@/app/BookmarksContext';
 import { useUrlActions } from '@/app/hooks/useUrlActions';
 import toast from 'react-hot-toast';
@@ -47,6 +46,14 @@ export default function BookmarkListItem({
     }
 
     setIsOpen(true);
+  };
+
+  const handleItemClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+
+    if (target.closest('[data-ignore-link]')) return;
+
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const handleModify = () => {
@@ -113,30 +120,22 @@ export default function BookmarkListItem({
     <>
       <li
         draggable
+        onClick={handleItemClick}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         className={[
-          'flex relative justify-between items-center glass rounded-lg gap-4 px-6 py-3 glass--hover cursor-pointer min-w-[500px]',
+          'flex relative justify-between items-center glass rounded-lg gap-4 px-6 py-3 glass--hover cursor-pointer min-w-[500px] hover:underline',
           isDragging
             ? 'opacity-60 scale-[0.995] glass--hover:!bg-transparent'
             : '',
         ].join(' ')}
       >
-        <div className="flex flex-1 min-w-0 justify-start items-center gap-4">
+        <div className="flex flex-1 min-w-0 justify-start items-center gap-4  ">
           <div className="flex flex-1 min-w-0 items-center gap-4 ">
             <IconDefault width={20} height={20} className="shrink-0" />
-            <Link
-              to={url}
-              className="text-base font-['LeferiBaseRegular'] align-middle truncate  hover:underline"
-              target="_blank"
-              draggable={false}
-              onDragStart={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-            >
+            <span className="text-base font-['LeferiBaseRegular'] align-middle truncate">
               {title}
-            </Link>
+            </span>
           </div>
           {isNew && (
             <span className="text-xs text-(--color-yellow) glass px-1 rounded-md max-h-[18px]">
@@ -146,6 +145,7 @@ export default function BookmarkListItem({
         </div>
         <div
           ref={buttonRef}
+          data-ignore-link
           className="hover:text-(--color-gray-dark) cursor-pointer"
           onClick={handleOpen}
         >
