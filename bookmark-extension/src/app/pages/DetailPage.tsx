@@ -194,7 +194,7 @@ export default function DetailPage() {
       {ReactDOM.createPortal(
         <div
           ref={listRef}
-          className="left-side fixed left-20 top-[33.333%] max-h-[calc(100vh-33.333%-16px)] overflow-y-auto wrap"
+          className="left-side fixed left-20 top-[33.333%] max-h-[calc(100vh-33.333%-16px)] min-w-0 w-[200px] overflow-y-auto wrap"
         >
           <div className="flex flex-col gap-8 items-start">
             <div className="flex justify-between items-center w-full px-6">
