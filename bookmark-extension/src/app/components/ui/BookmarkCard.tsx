@@ -7,6 +7,7 @@ import { useFolderActions } from '@/app/hooks/useFoldersActions';
 import { useBookmarksData } from '@/app/BookmarksContext';
 import toast from 'react-hot-toast';
 import FolderEditModal from '../FolderEditModal';
+import { Pin } from 'lucide-react';
 
 export default function BookmarkCard({
   title,
@@ -209,11 +210,17 @@ export default function BookmarkCard({
 
         <div
           ref={buttonRef}
-          className="shrink-0 hover:text-(--color-gray-dark) cursor-pointer"
+          className={`shrink-0 hover:text-(--color-gray-dark) cursor-pointer ${targetFolderId === '1' || targetFolderId === '2' ? 'hidden' : ''}`}
           onClick={handleOpen}
           draggable={false}
         >
           <Ellipsis />
+        </div>
+        <div
+          className={`shrink-0 text-(--color-gray-light) pin-tilt ${targetFolderId === '1' || targetFolderId === '2' ? '' : 'hidden'} `}
+          draggable={false}
+        >
+          <Pin size={20} />
         </div>
 
         {isOpen &&

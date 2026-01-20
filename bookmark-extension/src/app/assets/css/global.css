@@ -185,3 +185,8 @@ h2 {
   color: var(--color-yellow);
   border: solid 1px #dfc43b4d;
 }
+
+.pin-tilt {
+  transform: rotate(45deg);
+  transform-origin: center;
+}

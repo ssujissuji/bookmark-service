@@ -93,6 +93,16 @@ export default function BookMarkCardList({
   return (
     <div className="flex flex-col items-center mx-auto gap-5 w-full">
       <ul className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4 mt-4 w-full">
+        <BookmarkCard
+          title={'북마크바'}
+          type="bookmarkBar"
+          onClick={() => navigate('/bookmark/1')}
+        />
+        <BookmarkCard
+          title={'기타 북마크'}
+          type="others"
+          onClick={() => navigate('/bookmark/2')}
+        />
         {hasSearch && sortedFolderList.length === 0 ? (
           <p className="mt-4 text-sm text-gray-400">검색 결과가 없습니다.</p>
         ) : (
@@ -106,17 +116,6 @@ export default function BookMarkCardList({
             />
           ))
         )}
-
-        <BookmarkCard
-          title={'북마크바'}
-          type="bookmarkBar"
-          onClick={() => navigate('/bookmark/1')}
-        />
-        <BookmarkCard
-          title={'기타 북마크'}
-          type="others"
-          onClick={() => navigate('/bookmark/2')}
-        />
 
         <NewBookMark />
       </ul>
