@@ -13,11 +13,13 @@ export default function BookmarkCard({
   title,
   type,
   id,
+  dateAdded,
   onClick,
 }: {
   title: string;
   type: string;
   id?: string;
+  dateAdded?: string;
   onClick: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -52,6 +54,8 @@ export default function BookmarkCard({
   };
 
   const handleDelete = async () => {
+    const confirmed = window.confirm('정말로 이 폴더를 삭제하시겠습니까?');
+    if (!confirmed) return;
     if (!id) return;
     try {
       deleteFolder(id);
@@ -162,6 +166,14 @@ export default function BookmarkCard({
     onClick();
   };
 
+  const isNew = (() => {
+    if (!dateAdded) return false;
+    const createdAt = new Date(dateAdded);
+    const now = new Date();
+    const diffInMs = now.getTime() - createdAt.getTime();
+    const diffInMinutes = diffInMs / (1000 * 60);
+    return diffInMinutes <= 5;
+  })();
   return (
     <>
       <li
@@ -194,16 +206,23 @@ export default function BookmarkCard({
             height={60}
           />
           <div className="flex min-w-0 flex-col justify-center rounded-xl gap-2">
-            {type === 'bookmarkBar' && (
-              <div className="w-fit px-1.5 py-1 bookmark-tag bookmark-tag__bar rounded-sm">
-                bookmark-bar
-              </div>
-            )}
-            {type === 'others' && (
-              <div className="w-fit px-1.5 py-1 bookmark-tag bookmark-tag__other rounded-sm">
-                others
-              </div>
-            )}
+            <div className="flex justify-start items-center gap-2">
+              {type === 'bookmarkBar' && (
+                <div className="w-fit px-1.5 py-1 bookmark-tag bookmark-tag__bar rounded-sm">
+                  bookmark-bar
+                </div>
+              )}
+              {type === 'others' && (
+                <div className="w-fit px-1.5 py-1 bookmark-tag bookmark-tag__other rounded-sm">
+                  others
+                </div>
+              )}
+              {isNew && (
+                <span className="text-xs text-(--color-yellow) glass px-1 py-1 rounded-sm ">
+                  new
+                </span>
+              )}
+            </div>
             <p className="text-xl font-['LeferiBaseBold'] truncate">{title}</p>
           </div>
         </div>

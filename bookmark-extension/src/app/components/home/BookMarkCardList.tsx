@@ -111,6 +111,7 @@ export default function BookMarkCardList({
               key={list.id}
               title={list.title}
               id={list.id}
+              dateAdded={list.dateAdded}
               type="bookmarkBar"
               onClick={() => navigate(`/bookmark/${list.id}`)}
             />

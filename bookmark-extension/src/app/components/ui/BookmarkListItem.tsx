@@ -41,8 +41,8 @@ export default function BookmarkListItem({
       const rect = buttonRef.current.getBoundingClientRect();
 
       setPos({
-        top: rect.bottom + window.scrollY + 6, // 버튼 아래 6px 여백
-        left: rect.right + window.scrollX - 80, // SelectBox 너비(130px)만큼 왼쪽으로
+        top: rect.bottom + window.scrollY + 6,
+        left: rect.right + window.scrollX - 80,
       });
     }
 
@@ -74,6 +74,8 @@ export default function BookmarkListItem({
   };
 
   const handleDelete = async () => {
+    const confirmed = window.confirm('정말로 삭제하시겠습니까?');
+    if (!confirmed) return;
     if (!id) return;
 
     try {
