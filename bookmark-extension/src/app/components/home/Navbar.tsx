@@ -29,7 +29,7 @@ export default function Navbar({
 
   return (
     <div className="flex justify-between items-end w-full mt-12">
-      <div className="flex justify-start items-center gap-6 min-w-[120px]">
+      <div className="flex justify-start items-center min-w-[120px]">
         <TextButton
           buttonName="최신순"
           onClick={handleRecentClick}
