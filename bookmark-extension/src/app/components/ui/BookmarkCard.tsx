@@ -44,7 +44,7 @@ export default function BookmarkCard({
       const rect = buttonRef.current.getBoundingClientRect();
       setPos({
         top: rect.bottom + window.scrollY + 4,
-        left: rect.right - 120,
+        left: rect.right - 80,
       });
     }
     setIsOpen(true);
@@ -152,7 +152,6 @@ export default function BookmarkCard({
     }
   };
 
-  // ✅ 드래그 중 클릭이 같이 터지는 것 방지(UX 좋아짐)
   const handleCardClick = (e: React.MouseEvent<HTMLElement>) => {
     if (isDragging) {
       e.preventDefault();
@@ -212,7 +211,6 @@ export default function BookmarkCard({
           ref={buttonRef}
           className="shrink-0 hover:text-(--color-gray-dark) cursor-pointer"
           onClick={handleOpen}
-          // ✅ 드래그 시작이 Ellipsis에서 튀는 거 방지(선택이지만 안정적)
           draggable={false}
         >
           <Ellipsis />
@@ -223,7 +221,11 @@ export default function BookmarkCard({
             <>
               <div
                 className="fixed inset-0 bg-transparent z-9998"
-                onClick={() => setIsOpen(false)}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsOpen(false);
+                }}
               ></div>
 
               <div

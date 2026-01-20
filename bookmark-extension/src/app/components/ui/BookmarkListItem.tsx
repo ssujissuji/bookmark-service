@@ -42,7 +42,7 @@ export default function BookmarkListItem({
 
       setPos({
         top: rect.bottom + window.scrollY + 6, // 버튼 아래 6px 여백
-        left: rect.right + window.scrollX - 130, // SelectBox 너비(130px)만큼 왼쪽으로
+        left: rect.right + window.scrollX - 80, // SelectBox 너비(130px)만큼 왼쪽으로
       });
     }
 
@@ -154,7 +154,11 @@ export default function BookmarkListItem({
             <>
               <div
                 className="fixed inset-0 bg-transparent z-9998"
-                onClick={() => setIsOpen(false)}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsOpen(false);
+                }}
               ></div>
 
               <div
@@ -182,12 +186,6 @@ export default function BookmarkListItem({
               className="relative z-10001"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* <FolderEditModal
-                type="edit"
-                initialValue={editInitialValue.title}
-                onCancel={() => setIsEditOpen(false)}
-                onSubmit={handleEditSubmit}
-              /> */}
               <BookmarkEditModal
                 mode="edit"
                 initialValue={editInitialValue}
