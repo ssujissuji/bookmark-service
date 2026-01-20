@@ -35,13 +35,11 @@ export default function DetailPage() {
   const rootNodes = data?.[0]?.children ?? [];
 
   const { bookmarkBarRoot, otherRoot } = useMemo(() => {
-    const bookmarkBar = rootNodes.find(
-      (n: BookmarkItemType) => n.title === '북마크바',
-    );
+    const bookmarkBar = rootNodes.find((n: BookmarkItemType) => n.id === '1');
 
     const other =
-      rootNodes.find((n: BookmarkItemType) => n.title === '기타 북마크') ??
-      rootNodes.find((n: BookmarkItemType) => n.title !== '북마크바');
+      rootNodes.find((n: BookmarkItemType) => n.id === '2') ??
+      rootNodes.find((n: BookmarkItemType) => n.id !== '1');
 
     return { bookmarkBarRoot: bookmarkBar, otherRoot: other };
   }, [rootNodes]);
