@@ -6,9 +6,9 @@ import ReactDOM from 'react-dom';
 import { useBookmarksData } from '@/app/BookmarksContext';
 import { useUrlActions } from '@/app/hooks/useUrlActions';
 import toast from 'react-hot-toast';
-// import FolderEditModal from '../FolderEditModal';
 import BookmarkEditModal, { BookmarkSubmitValue } from '../BookmarkEditModal';
 import { isRecentlyAdded } from '@/app/utils/timeUtils';
+import { useDragGhostDnD } from '@/app/hooks/useDragGhostDnD';
 
 export default function BookmarkListItem({
   url,
@@ -95,18 +95,26 @@ export default function BookmarkListItem({
     setIsOpen(false);
   };
 
-  const handleDragStart = (e: React.DragEvent) => {
-    if (!id) return;
-
-    setIsDragging(true);
-    setIsOpen(false);
-    e.dataTransfer.setData('text/plain', String(id));
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragEnd = (_e: React.DragEvent) => {
-    setIsDragging(false);
-  };
+  const { onDragStart, onDragEnd } = useDragGhostDnD({
+    draggedId: id,
+    payloadPrefix: 'folder',
+    disabled: !id,
+    onDragStartUI: () => {
+      setIsDragging(true);
+      setIsOpen(false);
+    },
+    onDragEndUI: () => {
+      setIsDragging(false);
+    },
+    ghost: {
+      scale: 0.55,
+      opacity: 0.12,
+      blurPx: 0.6,
+      grayscale: true,
+      offsetX: 10,
+      offsetY: 10,
+    },
+  });
 
   const isNew = isRecentlyAdded(dateAdded);
 
@@ -115,12 +123,12 @@ export default function BookmarkListItem({
       <li
         draggable
         onClick={handleItemClick}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
         className={[
           'flex relative justify-between items-center glass rounded-lg gap-4 px-6 py-3 glass--hover cursor-pointer min-w-[500px] hover:underline',
           isDragging
-            ? 'opacity-60 scale-[0.995] glass--hover:!bg-transparent'
+            ? 'opacity-30 blur-[0.5px] cursor-grabbing transition-opacity duration-150 ease-out'
             : '',
         ].join(' ')}
       >
