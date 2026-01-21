@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import FolderEditModal from '../FolderEditModal';
 import { Pin } from 'lucide-react';
 import { isRecentlyAdded } from '@/app/utils/timeUtils';
+import { useDragGhostDnD } from '@/app/hooks/useDragGhostDnD';
 
 export default function BookmarkCard({
   title,
@@ -91,19 +92,26 @@ export default function BookmarkCard({
     }
   };
 
-  const handleDragStart = (e: React.DragEvent<HTMLElement>) => {
-    if (!targetFolderId || isRootFolder) return;
-
-    setIsDragging(true);
-    setIsOpen(false);
-
-    e.dataTransfer.setData('text/plain', `folder:${String(targetFolderId)}`);
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragEnd = (_e: React.DragEvent<HTMLElement>) => {
-    setIsDragging(false);
-  };
+  const { onDragStart, onDragEnd } = useDragGhostDnD({
+    draggedId: targetFolderId,
+    payloadPrefix: 'folder',
+    disabled: !targetFolderId || isRootFolder,
+    onDragStartUI: () => {
+      setIsDragging(true);
+      setIsOpen(false);
+    },
+    onDragEndUI: () => {
+      setIsDragging(false);
+    },
+    ghost: {
+      scale: 0.75,
+      opacity: 0.12,
+      blurPx: 0.6,
+      grayscale: true,
+      offsetX: 10,
+      offsetY: 10,
+    },
+  });
 
   const onDragEnter = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
@@ -172,8 +180,8 @@ export default function BookmarkCard({
     <>
       <li
         draggable={!isRootFolder}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
         onDragOver={onDragOver}
@@ -182,11 +190,11 @@ export default function BookmarkCard({
         title={title}
         className={[
           'flex relative justify-between items-center glass rounded-xl gap-4 px-6 py-4 w-full min-h-[120px] glass--hover',
-          isDragging ? 'opacity-60 scale-[0.995]' : '',
-
-          isDragHover
-            ? 'ring-2 ring-(--color-yellow) bg-(--color-main-red)'
+          isDragging
+            ? 'opacity-30 blur-[0.5px] cursor-grabbing transition-opacity duration-150 ease-out'
             : '',
+
+          isDragHover ? 'outline-2 outline-(--color-main-red)' : '',
         ].join(' ')}
       >
         <div className="flex flex-1 min-w-0 gap-5 cursor-pointer">
