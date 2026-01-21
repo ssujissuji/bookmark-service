@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router';
 import { useBookmarksData } from '../BookmarksContext';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
+import { isRecentlyAdded } from '../utils/timeUtils';
+import { useDragGhostDnD } from '../hooks/useDragGhostDnD';
 
 type FolderListProps = {
   node: BookmarkItemType;
@@ -26,6 +28,7 @@ export default function FolderList({
 
   const [isDropping, setIsDropping] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isDragHover, setIsDragHover] = useState(false);
 
   const enterCounterRef = useRef(0);
 
@@ -57,6 +60,7 @@ export default function FolderList({
     e.stopPropagation();
 
     enterCounterRef.current += 1;
+    setIsDragHover(true);
   };
 
   const onDragLeave = (e: React.DragEvent<HTMLElement>) => {
@@ -68,6 +72,8 @@ export default function FolderList({
     if (enterCounterRef.current <= 0) {
       enterCounterRef.current = 0;
     }
+
+    setIsDragHover(false);
   };
 
   const onDragOver = (e: React.DragEvent<HTMLElement>) => {
@@ -82,6 +88,7 @@ export default function FolderList({
     e.stopPropagation();
 
     enterCounterRef.current = 0;
+    setIsDragHover(false);
 
     const draggedBookmarkId = e.dataTransfer.getData('text/plain');
     if (!draggedBookmarkId || !node.id) return;
@@ -107,27 +114,28 @@ export default function FolderList({
     }
   };
 
-  const handleDragStart = (e: React.DragEvent) => {
-    if (!node.id) return;
+  const { onDragStart, onDragEnd } = useDragGhostDnD({
+    draggedId: node.id,
+    payloadPrefix: 'folder',
+    disabled: !node.id,
+    onDragStartUI: () => {
+      setIsDragging(true);
+      // setIsOpen(false);
+    },
+    onDragEndUI: () => {
+      setIsDragging(false);
+    },
+    ghost: {
+      scale: 0.55,
+      opacity: 0.12,
+      blurPx: 0.6,
+      grayscale: true,
+      offsetX: 10,
+      offsetY: 10,
+    },
+  });
 
-    setIsDragging(true);
-
-    e.dataTransfer.setData('text/plain', String(node.id));
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragEnd = (_e: React.DragEvent) => {
-    setIsDragging(false);
-  };
-
-  const isNewFolder = (() => {
-    if (!node.dateAdded) return false;
-    const createdAt = new Date(node.dateAdded);
-    const now = new Date();
-    const diffInMs = now.getTime() - createdAt.getTime();
-    const diffInMinutes = diffInMs / (1000 * 60);
-    return diffInMinutes <= 5;
-  })();
+  const isNew = isRecentlyAdded(node.dateAdded);
 
   return (
     <li className="flex flex-col  justify-start items-start max-w-50 min-w-0">
@@ -139,16 +147,21 @@ export default function FolderList({
         onDragLeave={onDragLeave}
         onDragOver={onDragOver}
         onDrop={onDrop}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
         className={[
           'flex flex-1 gap-1 w-full min-w-0',
-          isDragging ? 'opacity-60 scale-[0.995]' : '',
+          isDragging
+            ? 'opacity-30 blur-[0.5px] cursor-grabbing transition-opacity duration-150 ease-out'
+            : '',
+          isDragHover ? 'underline text-(--color-main-red)' : '',
         ].join(' ')}
       >
         <TextButton
           className={`tracking-widest cursor-pointer flex items-start text-left hover:text-(--color-main-red) whitespace-normal break-all min-w-0 flex-1 ${
             isActive ? 'text-(--color-yellow) font-semibold' : ''
+          },
+           
           }`}
           buttonName={node.title}
         >
@@ -161,7 +174,7 @@ export default function FolderList({
             className="inline mr-2.5 ml-2.5 shrink-0"
           />
         </TextButton>
-        {isNewFolder && (
+        {isNew && (
           <span className="text-xs text-(--color-yellow) glass px-1 rounded-md max-h-[18px]">
             new
           </span>
