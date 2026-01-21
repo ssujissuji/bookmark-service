@@ -3,12 +3,12 @@ import IconDefault from '../../assets/icon/bookmark.svg?react';
 import Ellipsis from '../../assets/icon/ellipsis.svg?react';
 import SelectBox from './SelectBox';
 import ReactDOM from 'react-dom';
-import { Link } from 'react-router';
 import { useBookmarksData } from '@/app/BookmarksContext';
 import { useUrlActions } from '@/app/hooks/useUrlActions';
 import toast from 'react-hot-toast';
-// import FolderEditModal from '../FolderEditModal';
 import BookmarkEditModal, { BookmarkSubmitValue } from '../BookmarkEditModal';
+import { isRecentlyAdded } from '@/app/utils/timeUtils';
+import { useDragGhostDnD } from '@/app/hooks/useDragGhostDnD';
 
 export default function BookmarkListItem({
   url,
@@ -19,7 +19,7 @@ export default function BookmarkListItem({
   url: string;
   title: string;
   id: string;
-  dateAdded?: number;
+  dateAdded: number;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
@@ -41,12 +41,20 @@ export default function BookmarkListItem({
       const rect = buttonRef.current.getBoundingClientRect();
 
       setPos({
-        top: rect.bottom + window.scrollY + 6, // 버튼 아래 6px 여백
-        left: rect.right + window.scrollX - 130, // SelectBox 너비(130px)만큼 왼쪽으로
+        top: rect.bottom + window.scrollY + 6,
+        left: rect.right + window.scrollX - 80,
       });
     }
 
     setIsOpen(true);
+  };
+
+  const handleItemClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+
+    if (target.closest('[data-ignore-link]')) return;
+
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const handleModify = () => {
@@ -74,6 +82,8 @@ export default function BookmarkListItem({
   };
 
   const handleDelete = async () => {
+    const confirmed = window.confirm('정말로 삭제하시겠습니까?');
+    if (!confirmed) return;
     if (!id) return;
 
     try {
@@ -85,56 +95,49 @@ export default function BookmarkListItem({
     setIsOpen(false);
   };
 
-  const handleDragStart = (e: React.DragEvent) => {
-    if (!id) return;
+  const { onDragStart, onDragEnd } = useDragGhostDnD({
+    draggedId: id,
+    payloadPrefix: 'folder',
+    disabled: !id,
+    onDragStartUI: () => {
+      setIsDragging(true);
+      setIsOpen(false);
+    },
+    onDragEndUI: () => {
+      setIsDragging(false);
+    },
+    ghost: {
+      scale: 0.55,
+      opacity: 0.12,
+      blurPx: 0.6,
+      grayscale: true,
+      offsetX: 10,
+      offsetY: 10,
+    },
+  });
 
-    setIsDragging(true);
-    setIsOpen(false);
-    e.dataTransfer.setData('text/plain', String(id));
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragEnd = (_e: React.DragEvent) => {
-    setIsDragging(false);
-  };
-
-  const isNew = (() => {
-    if (!dateAdded) return false;
-    const createdAt = new Date(dateAdded);
-    const now = new Date();
-    const diffInMs = now.getTime() - createdAt.getTime();
-    const diffInMinutes = diffInMs / (1000 * 60);
-    return diffInMinutes <= 5;
-  })();
+  const isNew = isRecentlyAdded(dateAdded);
 
   return (
     <>
       <li
         draggable
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
+        onClick={handleItemClick}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
         className={[
-          'flex relative justify-between items-center glass rounded-lg gap-4 px-6 py-3 glass--hover cursor-pointer min-w-[500px]',
+          'flex relative justify-between items-center glass rounded-lg gap-4 px-6 py-3 glass--hover cursor-pointer min-w-[500px] hover:underline',
           isDragging
-            ? 'opacity-60 scale-[0.995] glass--hover:!bg-transparent'
+            ? 'opacity-30 blur-[0.5px] cursor-grabbing transition-opacity duration-150 ease-out'
             : '',
         ].join(' ')}
       >
-        <div className="flex flex-1 min-w-0 justify-start items-center gap-4">
+        <div className="flex flex-1 min-w-0 justify-start items-center gap-4  ">
           <div className="flex flex-1 min-w-0 items-center gap-4 ">
             <IconDefault width={20} height={20} className="shrink-0" />
-            <Link
-              to={url}
-              className="text-base font-['LeferiBaseRegular'] align-middle truncate  hover:underline"
-              target="_blank"
-              draggable={false}
-              onDragStart={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-            >
+            <span className="text-base font-['LeferiBaseRegular'] align-middle truncate">
               {title}
-            </Link>
+            </span>
           </div>
           {isNew && (
             <span className="text-xs text-(--color-yellow) glass px-1 rounded-md max-h-[18px]">
@@ -144,6 +147,7 @@ export default function BookmarkListItem({
         </div>
         <div
           ref={buttonRef}
+          data-ignore-link
           className="hover:text-(--color-gray-dark) cursor-pointer"
           onClick={handleOpen}
         >
@@ -154,7 +158,11 @@ export default function BookmarkListItem({
             <>
               <div
                 className="fixed inset-0 bg-transparent z-9998"
-                onClick={() => setIsOpen(false)}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsOpen(false);
+                }}
               ></div>
 
               <div
@@ -182,12 +190,6 @@ export default function BookmarkListItem({
               className="relative z-10001"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* <FolderEditModal
-                type="edit"
-                initialValue={editInitialValue.title}
-                onCancel={() => setIsEditOpen(false)}
-                onSubmit={handleEditSubmit}
-              /> */}
               <BookmarkEditModal
                 mode="edit"
                 initialValue={editInitialValue}
