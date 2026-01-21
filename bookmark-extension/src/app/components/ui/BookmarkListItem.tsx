@@ -8,6 +8,7 @@ import { useUrlActions } from '@/app/hooks/useUrlActions';
 import toast from 'react-hot-toast';
 // import FolderEditModal from '../FolderEditModal';
 import BookmarkEditModal, { BookmarkSubmitValue } from '../BookmarkEditModal';
+import { isRecentlyAdded } from '@/app/utils/timeUtils';
 
 export default function BookmarkListItem({
   url,
@@ -18,7 +19,7 @@ export default function BookmarkListItem({
   url: string;
   title: string;
   id: string;
-  dateAdded?: number;
+  dateAdded: number;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
@@ -107,14 +108,7 @@ export default function BookmarkListItem({
     setIsDragging(false);
   };
 
-  const isNew = (() => {
-    if (!dateAdded) return false;
-    const createdAt = new Date(dateAdded);
-    const now = new Date();
-    const diffInMs = now.getTime() - createdAt.getTime();
-    const diffInMinutes = diffInMs / (1000 * 60);
-    return diffInMinutes <= 5;
-  })();
+  const isNew = isRecentlyAdded(dateAdded);
 
   return (
     <>

@@ -8,6 +8,7 @@ import { useBookmarksData } from '@/app/BookmarksContext';
 import toast from 'react-hot-toast';
 import FolderEditModal from '../FolderEditModal';
 import { Pin } from 'lucide-react';
+import { isRecentlyAdded } from '@/app/utils/timeUtils';
 
 export default function BookmarkCard({
   title,
@@ -19,7 +20,7 @@ export default function BookmarkCard({
   title: string;
   type: string;
   id?: string;
-  dateAdded?: string;
+  dateAdded?: number;
   onClick: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -166,14 +167,7 @@ export default function BookmarkCard({
     onClick();
   };
 
-  const isNew = (() => {
-    if (!dateAdded) return false;
-    const createdAt = new Date(dateAdded);
-    const now = new Date();
-    const diffInMs = now.getTime() - createdAt.getTime();
-    const diffInMinutes = diffInMs / (1000 * 60);
-    return diffInMinutes <= 5;
-  })();
+  const isNew = isRecentlyAdded(dateAdded);
   return (
     <>
       <li
