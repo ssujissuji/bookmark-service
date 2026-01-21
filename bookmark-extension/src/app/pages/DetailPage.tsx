@@ -33,7 +33,8 @@ export default function DetailPage() {
   const { sortType, keyword } = useOutletContext<OutletContextType>();
 
   const rootNodes = data?.[0]?.children ?? [];
-
+  const [isRootDragHover, setIsRootDragHover] = useState(false);
+  const rootEnterCounterRef = useRef(0);
   const { bookmarkBarRoot, otherRoot } = useMemo(() => {
     const bookmarkBar = rootNodes.find((n: BookmarkItemType) => n.id === '1');
 
@@ -106,6 +107,24 @@ export default function DetailPage() {
     return plain;
   };
 
+  const onRootDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    rootEnterCounterRef.current += 1;
+    setIsRootDragHover(true);
+  };
+
+  const onRootDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    rootEnterCounterRef.current -= 1;
+
+    if (rootEnterCounterRef.current <= 0) {
+      rootEnterCounterRef.current = 0;
+      setIsRootDragHover(false);
+    }
+  };
+
   const onRootDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -115,6 +134,9 @@ export default function DetailPage() {
   const onRootDrop = async (e: React.DragEvent, destinationRootId: string) => {
     e.preventDefault();
     e.stopPropagation();
+
+    rootEnterCounterRef.current = 0;
+    setIsRootDragHover(false);
 
     const draggedId = getDraggedId(e);
     if (!draggedId) return;
@@ -192,9 +214,9 @@ export default function DetailPage() {
       {ReactDOM.createPortal(
         <div
           ref={listRef}
-          className="left-side fixed left-20 top-[33.333%] max-h-[calc(100vh-33.333%-16px)] min-w-0 w-[200px] overflow-y-auto wrap"
+          className="left-side fixed left-20 top-[33.333%] bottom-6 min-w-0 w-[200px] flex flex-col"
         >
-          <div className="flex flex-col gap-8 items-start">
+          <div className="flex flex-col gap-8 items-start min-h-0 flex-1 w-full">
             <div className="flex justify-between items-center w-full px-6">
               <TextButton
                 buttonName="+ 새폴더"
@@ -212,6 +234,8 @@ export default function DetailPage() {
               <button
                 type="button"
                 onClick={() => goToFolder(otherSideRootNode.id)}
+                onDragEnter={onRootDragEnter}
+                onDragLeave={onRootDragLeave}
                 onDragOver={onRootDragOver}
                 onDrop={(e) => onRootDrop(e, String(otherSideRootNode.id))}
                 className={[
@@ -221,6 +245,7 @@ export default function DetailPage() {
                   'rounded-[10rem] px-2 py-3',
                   'border border-white/10',
                   isRootDropping ? 'opacity-60' : '',
+                  isRootDragHover ? 'outline-2 outline-(--color-main-red)' : '',
                 ].join(' ')}
                 title="여기로 드롭하면 반대 루트로 이동"
               >
@@ -230,7 +255,7 @@ export default function DetailPage() {
                 </span>
               </button>
             )}
-            <ul className="flex flex-col justify-start items-start gap-2">
+            <ul className="flex flex-col gap-2 min-w-0 w-[200px] wrap hide-scrollbar overflow-y-auto flex-1 min-h-0">
               {currentRootNode ? (
                 <FolderList node={currentRootNode} folderId={folderId} />
               ) : (
@@ -240,6 +265,7 @@ export default function DetailPage() {
               )}
             </ul>
           </div>
+          <div className="h-6" />
         </div>,
         document.body,
       )}

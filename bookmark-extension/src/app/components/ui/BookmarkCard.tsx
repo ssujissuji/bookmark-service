@@ -7,16 +7,21 @@ import { useFolderActions } from '@/app/hooks/useFoldersActions';
 import { useBookmarksData } from '@/app/BookmarksContext';
 import toast from 'react-hot-toast';
 import FolderEditModal from '../FolderEditModal';
+import { Pin } from 'lucide-react';
+import { isRecentlyAdded } from '@/app/utils/timeUtils';
+import { useDragGhostDnD } from '@/app/hooks/useDragGhostDnD';
 
 export default function BookmarkCard({
   title,
   type,
   id,
+  dateAdded,
   onClick,
 }: {
   title: string;
   type: string;
   id?: string;
+  dateAdded?: number;
   onClick: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,13 +49,15 @@ export default function BookmarkCard({
       const rect = buttonRef.current.getBoundingClientRect();
       setPos({
         top: rect.bottom + window.scrollY + 4,
-        left: rect.right - 120,
+        left: rect.right - 80,
       });
     }
     setIsOpen(true);
   };
 
   const handleDelete = async () => {
+    const confirmed = window.confirm('정말로 이 폴더를 삭제하시겠습니까?');
+    if (!confirmed) return;
     if (!id) return;
     try {
       deleteFolder(id);
@@ -85,19 +92,26 @@ export default function BookmarkCard({
     }
   };
 
-  const handleDragStart = (e: React.DragEvent<HTMLElement>) => {
-    if (!targetFolderId || isRootFolder) return;
-
-    setIsDragging(true);
-    setIsOpen(false);
-
-    e.dataTransfer.setData('text/plain', `folder:${String(targetFolderId)}`);
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragEnd = (_e: React.DragEvent<HTMLElement>) => {
-    setIsDragging(false);
-  };
+  const { onDragStart, onDragEnd } = useDragGhostDnD({
+    draggedId: targetFolderId,
+    payloadPrefix: 'folder',
+    disabled: !targetFolderId || isRootFolder,
+    onDragStartUI: () => {
+      setIsDragging(true);
+      setIsOpen(false);
+    },
+    onDragEndUI: () => {
+      setIsDragging(false);
+    },
+    ghost: {
+      scale: 0.75,
+      opacity: 0.12,
+      blurPx: 0.6,
+      grayscale: true,
+      offsetX: 10,
+      offsetY: 10,
+    },
+  });
 
   const onDragEnter = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
@@ -152,7 +166,6 @@ export default function BookmarkCard({
     }
   };
 
-  // ✅ 드래그 중 클릭이 같이 터지는 것 방지(UX 좋아짐)
   const handleCardClick = (e: React.MouseEvent<HTMLElement>) => {
     if (isDragging) {
       e.preventDefault();
@@ -162,12 +175,13 @@ export default function BookmarkCard({
     onClick();
   };
 
+  const isNew = isRecentlyAdded(dateAdded);
   return (
     <>
       <li
         draggable={!isRootFolder}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
         onDragOver={onDragOver}
@@ -176,11 +190,11 @@ export default function BookmarkCard({
         title={title}
         className={[
           'flex relative justify-between items-center glass rounded-xl gap-4 px-6 py-4 w-full min-h-[120px] glass--hover',
-          isDragging ? 'opacity-60 scale-[0.995]' : '',
-
-          isDragHover
-            ? 'ring-2 ring-(--color-yellow) bg-(--color-main-red)'
+          isDragging
+            ? 'opacity-30 blur-[0.5px] cursor-grabbing transition-opacity duration-150 ease-out'
             : '',
+
+          isDragHover ? 'outline-2 outline-(--color-main-red)' : '',
         ].join(' ')}
       >
         <div className="flex flex-1 min-w-0 gap-5 cursor-pointer">
@@ -194,28 +208,40 @@ export default function BookmarkCard({
             height={60}
           />
           <div className="flex min-w-0 flex-col justify-center rounded-xl gap-2">
-            {type === 'bookmarkBar' && (
-              <div className="w-fit px-1.5 py-1 bookmark-tag bookmark-tag__bar rounded-sm">
-                bookmark-bar
-              </div>
-            )}
-            {type === 'others' && (
-              <div className="w-fit px-1.5 py-1 bookmark-tag bookmark-tag__other rounded-sm">
-                others
-              </div>
-            )}
+            <div className="flex justify-start items-center gap-2">
+              {type === 'bookmarkBar' && (
+                <div className="w-fit px-1.5 py-1 bookmark-tag bookmark-tag__bar rounded-sm">
+                  bookmark-bar
+                </div>
+              )}
+              {type === 'others' && (
+                <div className="w-fit px-1.5 py-1 bookmark-tag bookmark-tag__other rounded-sm">
+                  others
+                </div>
+              )}
+              {isNew && (
+                <span className="text-xs text-(--color-yellow) glass px-1 py-1 rounded-sm ">
+                  new
+                </span>
+              )}
+            </div>
             <p className="text-xl font-['LeferiBaseBold'] truncate">{title}</p>
           </div>
         </div>
 
         <div
           ref={buttonRef}
-          className="shrink-0 hover:text-(--color-gray-dark) cursor-pointer"
+          className={`shrink-0 hover:text-(--color-gray-dark) cursor-pointer ${targetFolderId === '1' || targetFolderId === '2' ? 'hidden' : ''}`}
           onClick={handleOpen}
-          // ✅ 드래그 시작이 Ellipsis에서 튀는 거 방지(선택이지만 안정적)
           draggable={false}
         >
           <Ellipsis />
+        </div>
+        <div
+          className={`shrink-0 text-(--color-gray-light) pin-tilt ${targetFolderId === '1' || targetFolderId === '2' ? '' : 'hidden'} `}
+          draggable={false}
+        >
+          <Pin size={20} />
         </div>
 
         {isOpen &&
@@ -223,7 +249,11 @@ export default function BookmarkCard({
             <>
               <div
                 className="fixed inset-0 bg-transparent z-9998"
-                onClick={() => setIsOpen(false)}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsOpen(false);
+                }}
               ></div>
 
               <div
