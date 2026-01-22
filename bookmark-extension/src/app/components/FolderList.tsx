@@ -160,8 +160,7 @@ export default function FolderList({
         <TextButton
           className={`tracking-widest cursor-pointer flex items-start text-left hover:text-(--color-main-red) whitespace-normal break-all min-w-0 flex-1 ${
             isActive ? 'text-(--color-yellow) font-semibold' : ''
-          },
-           
+          }
           }`}
           buttonName={node.title}
         >
