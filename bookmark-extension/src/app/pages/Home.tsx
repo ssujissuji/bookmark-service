@@ -16,9 +16,7 @@ export default function Home() {
     }
 
     const rootLevel = data[0].children;
-    const rootBar = rootLevel.find(
-      (node: BookmarkTreeType) => node.title === '북마크바',
-    );
+    const rootBar = rootLevel.find((node: BookmarkTreeType) => node.id === '1');
 
     if (rootBar?.children) {
       setBookmarkBarData(rootBar.children);
