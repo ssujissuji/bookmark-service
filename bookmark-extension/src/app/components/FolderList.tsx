@@ -83,37 +83,6 @@ export default function FolderList({
     e.dataTransfer.dropEffect = 'move';
   };
 
-  const onDrop = async (e: React.DragEvent<HTMLElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    enterCounterRef.current = 0;
-    setIsDragHover(false);
-
-    const draggedBookmarkId = e.dataTransfer.getData('text/plain');
-    if (!draggedBookmarkId || !node.id) return;
-    setIsDropping(true);
-
-    const destinationFolderId = String(node.id);
-
-    try {
-      await chrome.bookmarks.move(draggedBookmarkId, {
-        parentId: destinationFolderId,
-      });
-
-      if (mountedRef.current) {
-        await reloadBookmarks();
-        toast.success('이동되었습니다!');
-      }
-    } catch (err) {
-      console.error('북마크 이동 실패:', err);
-    } finally {
-      setTimeout(() => {
-        if (mountedRef.current) setIsDropping(false);
-      }, 50);
-    }
-  };
-
   const { onDragStart, onDragEnd } = useDragGhostDnD({
     draggedId: node.id,
     payloadPrefix: 'folder',
@@ -134,6 +103,39 @@ export default function FolderList({
       offsetY: 10,
     },
   });
+
+  const onDrop = async (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    enterCounterRef.current = 0;
+    setIsDragHover(false);
+
+    const raw = e.dataTransfer.getData('text/plain');
+    if (!raw || !node.id) return;
+
+    let draggedId = raw;
+    if (raw.startsWith('folder:')) draggedId = raw.replace('folder:', '');
+    if (raw.startsWith('bookmark:')) draggedId = raw.replace('bookmark:', '');
+
+    if (String(draggedId) === String(node.id)) return;
+    try {
+      await chrome.bookmarks.move(draggedId, {
+        parentId: node.id,
+      });
+
+      if (mountedRef.current) {
+        await reloadBookmarks();
+        toast.success('이동되었습니다!');
+      }
+    } catch (err) {
+      console.error('북마크 이동 실패:', err);
+    } finally {
+      setTimeout(() => {
+        if (mountedRef.current) setIsDropping(false);
+      }, 50);
+    }
+  };
 
   const isNew = isRecentlyAdded(node.dateAdded);
 
