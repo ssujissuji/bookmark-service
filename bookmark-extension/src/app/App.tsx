@@ -10,7 +10,7 @@ export default function App() {
       <Routes>
         <Route element={<RootLayout />}>
           <Route index element={<Home />} />
-          <Route path="/bookmark/:folderId" element={<DetailPage />} />
+          <Route path="bookmark/:folderId" element={<DetailPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
