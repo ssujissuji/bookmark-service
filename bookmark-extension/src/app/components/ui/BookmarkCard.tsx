@@ -194,15 +194,15 @@ export default function BookmarkCard({
             ? 'opacity-30 blur-[0.5px] cursor-grabbing transition-opacity duration-150 ease-out'
             : '',
 
-          isDragHover ? 'outline-2 outline-(--color-main-red)' : '',
+          isDragHover ? 'outline-2 outline-(--text-hover)' : '',
         ].join(' ')}
       >
         <div className="flex flex-1 min-w-0 gap-5 cursor-pointer">
           <IconDefault
             className={
               type === 'bookmarkBar'
-                ? 'text-(--color-main-red) shrink-0'
-                : 'text-(--color-yellow) shrink-0'
+                ? 'text-(--text-hover) shrink-0'
+                : 'text-(--text-selected) shrink-0'
             }
             width={40}
             height={60}
@@ -220,7 +220,7 @@ export default function BookmarkCard({
                 </div>
               )}
               {isNew && (
-                <span className="text-xs text-(--color-yellow) glass px-1 py-1 rounded-sm ">
+                <span className="text-xs text-(--text-selected) glass px-1 py-1 rounded-sm ">
                   new
                 </span>
               )}

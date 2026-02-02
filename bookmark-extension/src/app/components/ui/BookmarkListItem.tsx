@@ -140,7 +140,7 @@ export default function BookmarkListItem({
             </span>
           </div>
           {isNew && (
-            <span className="text-xs text-(--color-yellow) glass px-1 rounded-md max-h-[18px]">
+            <span className="text-xs text-(--text-selected) glass px-1 rounded-md max-h-[18px]">
               new
             </span>
           )}

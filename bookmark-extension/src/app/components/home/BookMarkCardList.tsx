@@ -131,7 +131,7 @@ export default function BookMarkCardList({
               className={[
                 'px-4 py-2 rounded-lg text-sm transition cursor-pointer',
                 activeTab === 'recent'
-                  ? 'text-lg font-semibold text-(--color-yellow)'
+                  ? 'text-lg font-semibold text-(--text-selected)'
                   : 'text-(--color-gray-light) hover:bg-white/10',
               ].join(' ')}
             >
@@ -144,7 +144,7 @@ export default function BookMarkCardList({
               className={[
                 'px-4 py-2 rounded-lg text-sm transition cursor-pointer',
                 activeTab === 'barUrls'
-                  ? 'text-lg font-semibold text-(--color-yellow)'
+                  ? 'text-lg font-semibold text-(--text-selected)'
                   : ' text-(--color-gray-light) hover:bg-white/10',
               ].join(' ')}
             >
@@ -185,7 +185,7 @@ export default function BookMarkCardList({
                   />
                 ))
               ) : (
-                <p className="flex justify-center mt-4 text-sm text-(--color-main-red)">
+                <p className="flex justify-center mt-4 text-sm text-(--text-hover)">
                   북마크바에 URL이 없습니다.
                 </p>
               )}

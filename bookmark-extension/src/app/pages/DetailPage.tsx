@@ -259,7 +259,7 @@ export default function DetailPage() {
                   'rounded-[10rem] px-2 py-3',
                   'border border-white/10',
                   isRootDropping ? 'opacity-60' : '',
-                  isRootDragHover ? 'outline-2 outline-(--color-main-red)' : '',
+                  isRootDragHover ? 'outline-2 outline-(--text-hover)' : '',
                 ].join(' ')}
                 title="여기로 드롭하면 반대 루트로 이동"
               >
