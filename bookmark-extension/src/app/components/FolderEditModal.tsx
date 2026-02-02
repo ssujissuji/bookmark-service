@@ -42,51 +42,47 @@ export default function FolderEditModal({
   };
 
   return (
-    <div className="glass glass__dark flex flex-col justify-between  gap-4 pt-8 px-16 rounded-2xl">
-      <h2 className="w-full flex justify-center items-center">{option}</h2>
-      <div className="flex justify-start items-center gap-10">
-        <div className="flex flex-col w-full justify-between  gap-6">
-          <InputComponent
-            id="name"
-            placeholder={
-              type === 'new'
-                ? '폴더명을 입력해주세요.'
-                : folderName.length > 0
-                  ? folderName
-                  : '수정할 폴더명을 입력해주세요.'
-            }
-            label="폴더명"
-            type="text"
-            value={folderName}
-            mode="folder"
-            onChange={(e) => setFolderName(e.target.value)}
-          />
-          {/* <InputComponent
-            id="desc"
-            placeholder={
-              type === 'new'
-                ? '해당 폴더의 설명을 입력해주세요.'
-                : folderDesc.length > 0
-                  ? folderDesc
-                  : '수정할 폴더의 설명을 입력해주세요.'
-            }
-            label="설명"
-            type="text"
-            value={folderDesc}
-            onChange={(e) => setFolderDesc(e.target.value)}
-          /> */}
-        </div>
-        {/* <IconSelectComponent /> */}
+    <div
+      className="
+    glass glass__dark
+    flex flex-col gap-8
+    w-[min(92vw,420px)] sm:w-[480px]
+    mx-auto
+    px-6 sm:px-10
+    pt-8 pb-6
+    rounded-2xl
+  "
+    >
+      <h2 className="w-full text-center">{option}</h2>
+
+      <div className="flex flex-col gap-6">
+        <InputComponent
+          id="name"
+          placeholder={
+            type === 'new'
+              ? '폴더명을 입력해주세요.'
+              : folderName.length > 0
+                ? folderName
+                : '수정할 폴더명을 입력해주세요.'
+          }
+          label="폴더명"
+          type="text"
+          value={folderName}
+          mode="folder"
+          onChange={(e) => setFolderName(e.target.value)}
+        />
       </div>
-      <div className="flex px-40 pb-13 pt-8 gap-12">
+
+      {/* 버튼 영역: 가운데 정렬 + 폭 안정 */}
+      <div className="flex justify-center gap-6 pt-2">
         <TextButton
           buttonName="취소"
-          className=" button__text__folder tracking-[2.2em]"
+          className="button__text__folder tracking-[0.25em]"
           onClick={onCancel}
         />
         <TextButton
           buttonName={type === 'new' ? '생성' : '수정'}
-          className="button__text__folder tracking-[2.2em]"
+          className="button__text__folder tracking-[0.25em]"
           onClick={handleSubmitClick}
         />
       </div>
