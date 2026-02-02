@@ -16,6 +16,7 @@ import { useFolderActions } from '../hooks/useFoldersActions';
 import toast from 'react-hot-toast';
 import { CreateUrlParams, useUrlActions } from '../hooks/useUrlActions';
 import BookmarkEditModal from '../components/BookmarkEditModal';
+import FolderEditModal from '../components/FolderEditModal';
 
 export type OutletContextType = {
   sortType: SortType;
@@ -60,7 +61,8 @@ export default function DetailPage() {
 
   const { bookmarks } = separateFolderAndBookmarks(children);
   const { createUrl } = useUrlActions();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenBookmarkEdit, setIsOpenBookmarkEdit] = useState(false);
+  const [isOpenFolderEdit, setIsOpenFolderEdit] = useState(false);
 
   const sortedBookmarks = useMemo(
     () => sortBookmarks(bookmarks, sortType),
@@ -81,11 +83,19 @@ export default function DetailPage() {
   }, [sortedBookmarks, normalizedKeyword]);
 
   const { createFolder } = useFolderActions();
+  const handleSubmitFolder = async (name: string) => {
+    try {
+      await createFolder({
+        title: name,
+        parentId: folderId,
+      });
+      console.log('새 폴더 생성 데이터:', { name });
 
-  const createFolderHandler = () => {
-    if (!folderId) return;
-    confirm('이 폴더에 새 폴더를 생성하시겠습니까?') &&
-      createFolder({ title: '새 폴더', parentId: folderId });
+      await reloadBookmarks();
+      setIsOpenFolderEdit(false);
+    } catch (error) {
+      console.error('폴더 생성 실패:', error);
+    }
   };
 
   const [isRootDropping, setIsRootDropping] = useState(false);
@@ -160,12 +170,16 @@ export default function DetailPage() {
   };
 
   const createOpenhandler = () => {
-    setIsOpen(true);
+    setIsOpenBookmarkEdit(true);
   };
-  const handleSubmit = ({ title, url }: CreateUrlParams) => {
+  const handleSubmitBookmark = ({ title, url }: CreateUrlParams) => {
     createUrl({ title, url, parentId: folderId ?? '1' });
     reloadBookmarks();
-    setIsOpen(false);
+    setIsOpenBookmarkEdit(false);
+  };
+
+  const createOpenHandlerFolder = () => {
+    setIsOpenFolderEdit(true);
   };
 
   if (status !== 'success' || !data) {
@@ -214,19 +228,19 @@ export default function DetailPage() {
       {ReactDOM.createPortal(
         <div
           ref={listRef}
-          className="left-side fixed left-20 top-[33.333%] bottom-6 min-w-0 w-[200px] flex flex-col"
+          className="left-side fixed left-20 top-[33.333%] bottom-6 min-w-0 w-[200px] flex flex-col mb-12"
         >
           <div className="flex flex-col gap-8 items-start min-h-0 flex-1 w-full">
             <div className="flex justify-between items-center w-full px-6">
               <TextButton
                 buttonName="+ 새폴더"
-                onClick={createFolderHandler}
-                className="text-xs button__text cursor-pointer"
+                onClick={createOpenHandlerFolder}
+                className="text-xs button__text button__text__add cursor-pointer"
               />
-              <span className="text-xs text-(--color-gray-light)">|</span>
+              <span className="text-xs text-(--text-main)">|</span>
               <TextButton
                 buttonName="+ 새북마크"
-                className="text-xs button__text cursor-pointer"
+                className="text-xs button__text button__text__add cursor-pointer"
                 onClick={createOpenhandler}
               />
             </div>
@@ -269,11 +283,11 @@ export default function DetailPage() {
         </div>,
         document.body,
       )}
-      {isOpen &&
+      {isOpenBookmarkEdit &&
         ReactDOM.createPortal(
           <div
             className="fixed inset-0 z-9999 flex items-center justify-center"
-            onClick={() => setIsOpen(false)}
+            onClick={() => setIsOpenBookmarkEdit(false)}
           >
             <div className="absolute inset-0 bg-black/40" />
             <div
@@ -283,11 +297,34 @@ export default function DetailPage() {
               <BookmarkEditModal
                 mode="new"
                 initialValue={{ title: '', url: '' }}
-                onCancel={() => setIsOpen(false)}
-                onSubmit={handleSubmit}
+                onCancel={() => setIsOpenBookmarkEdit(false)}
+                onSubmit={handleSubmitBookmark}
               />
             </div>
           </div>,
+          document.body,
+        )}
+      {isOpenFolderEdit &&
+        ReactDOM.createPortal(
+          <>
+            {/* 화면 전체 덮는 오버레이 */}
+            <div
+              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-9998"
+              onClick={() => {
+                setIsOpenFolderEdit(false);
+              }}
+            ></div>
+            <div
+              className="fixed z-9999 inset-0 flex justify-center items-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <FolderEditModal
+                type="new"
+                onCancel={() => setIsOpenFolderEdit(false)}
+                onSubmit={handleSubmitFolder}
+              />
+            </div>
+          </>,
           document.body,
         )}
     </div>
