@@ -103,23 +103,24 @@ export default function BookMarkCardList({
           type="others"
           onClick={() => navigate('/bookmark/2')}
         />
-        {hasSearch && sortedFolderList.length === 0 ? (
-          <p className="mt-4 text-sm text-gray-400">검색 결과가 없습니다.</p>
-        ) : (
-          sortedFolderList.map((list) => (
-            <BookmarkCard
-              key={list.id}
-              title={list.title}
-              id={list.id}
-              dateAdded={list.dateAdded}
-              type="bookmarkBar"
-              onClick={() => navigate(`/bookmark/${list.id}`)}
-            />
-          ))
-        )}
+        {hasSearch && sortedFolderList.length === 0
+          ? ''
+          : sortedFolderList.map((list) => (
+              <BookmarkCard
+                key={list.id}
+                title={list.title}
+                id={list.id}
+                dateAdded={list.dateAdded}
+                type="bookmarkBar"
+                onClick={() => navigate(`/bookmark/${list.id}`)}
+              />
+            ))}
 
         <NewBookMark />
       </ul>
+      {hasSearch && sortedFolderList.length === 0 && (
+        <p className="mt-4 text-sm text-gray-400">검색 결과가 없습니다.</p>
+      )}
 
       <div className="flex flex-col justify-start items-start w-full gap-4">
         <div className="w-full flex justify-between items-center">
@@ -130,7 +131,7 @@ export default function BookMarkCardList({
               className={[
                 'px-4 py-2 rounded-lg text-sm transition cursor-pointer',
                 activeTab === 'recent'
-                  ? 'text-lg font-semibold text-(--color-yellow)'
+                  ? 'text-lg font-semibold text-(--text-selected)'
                   : 'text-(--color-gray-light) hover:bg-white/10',
               ].join(' ')}
             >
@@ -143,7 +144,7 @@ export default function BookMarkCardList({
               className={[
                 'px-4 py-2 rounded-lg text-sm transition cursor-pointer',
                 activeTab === 'barUrls'
-                  ? 'text-lg font-semibold text-(--color-yellow)'
+                  ? 'text-lg font-semibold text-(--text-selected)'
                   : ' text-(--color-gray-light) hover:bg-white/10',
               ].join(' ')}
             >
@@ -184,7 +185,7 @@ export default function BookMarkCardList({
                   />
                 ))
               ) : (
-                <p className="flex justify-center mt-4 text-sm text-(--color-main-red)">
+                <p className="flex justify-center mt-4 text-sm text-(--text-hover)">
                   북마크바에 URL이 없습니다.
                 </p>
               )}

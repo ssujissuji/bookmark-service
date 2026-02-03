@@ -93,41 +93,50 @@ export default function BookmarkEditModal({
   };
 
   return (
-    <div className="glass glass__dark flex flex-col justify-between gap-4 pt-8 px-16 rounded-2xl">
-      <h2 className="w-full flex justify-center items-center">{option}</h2>
+    <div
+      className="
+  glass glass__dark
+    flex flex-col gap-8
+    w-[min(92vw,420px)] sm:w-[480px]
+    mx-auto
+    px-6 sm:px-10
+    pt-8 pb-6
+    rounded-2xl
+  "
+    >
+      <h2 className="w-full text-center">{option}</h2>
 
-      <div className="flex justify-start items-center gap-10">
-        <div className="flex flex-col w-full justify-between gap-6">
-          <InputComponent
-            id="bookmark-title"
-            placeholder="북마크 이름을 입력해주세요."
-            label="북마크 이름"
-            type="text"
-            value={title}
-            mode="bookmark"
-            onChange={(e) => setTitle(e.target.value)}
-          />
+      <div className="flex flex-col gap-6">
+        <InputComponent
+          id="bookmark-title"
+          placeholder="북마크 이름을 입력해주세요."
+          label="북마크 이름"
+          type="text"
+          value={title}
+          mode="bookmark"
+          onChange={(e) => setTitle(e.target.value)}
+        />
 
-          <InputComponent
-            id="bookmark-url"
-            placeholder="https://example.com"
-            label="URL"
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
-        </div>
+        <InputComponent
+          id="bookmark-url"
+          placeholder="https://example.com"
+          label="URL"
+          type="text"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+        />
       </div>
 
-      <div className="flex px-40 pb-13 pt-8 gap-12">
+      {/* 버튼 영역 */}
+      <div className="flex justify-center gap-6 pt-2">
         <TextButton
           buttonName="취소"
-          className="button__text__folder tracking-[2.2em]"
+          className="button__text__folder tracking-[0.25em]"
           onClick={onCancel}
         />
         <TextButton
           buttonName={mode === 'new' ? '생성' : '수정'}
-          className="button__text__folder tracking-[2.2em]"
+          className="button__text__folder tracking-[0.25em]"
           onClick={handleSubmitClick}
         />
       </div>

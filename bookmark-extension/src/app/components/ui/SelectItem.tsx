@@ -17,7 +17,7 @@ export default function SelectItem({
         className={`glass px-5 py-2 flex justify-center items-center ${className}`}
       >
         <TextButton
-          className="text-base font-['LeferiBaseRegular'] tracking-widest text-(--color-main-white) hover:text-(--color-main-red) cursor-pointer"
+          className="text-base font-['LeferiBaseRegular'] tracking-widest text-(--color-main-white) hover:text-(--text-hover) cursor-pointer"
           buttonName={selectOption}
           onClick={onClick}
         ></TextButton>

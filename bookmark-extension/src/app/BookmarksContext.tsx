@@ -77,7 +77,6 @@ export function BookmarksProvider({ children }: BookmarksProviderProps) {
           });
           reject(lastError);
         } else {
-          console.log('📂 북마크 데이터 로드:', bookmarks);
           setState({
             status: 'success',
             data: bookmarks as BookmarkTreeType[],

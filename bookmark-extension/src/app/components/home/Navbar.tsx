@@ -34,20 +34,20 @@ export default function Navbar({
           buttonName="최신순"
           onClick={handleRecentClick}
           className={[
-            'px-4 py-2 rounded-lg text-sm transition',
+            'px-4 py-2 rounded-lg text-sm transition cursor-pointer',
             isRecent
-              ? 'text-lg font-semibold text-(--color-yellow)'
-              : ' text-(--color-gray-light) hover:bg-white/10',
+              ? 'text-lg font-semibold text-(--text-selected)'
+              : ' text-(--text-muted) hover:bg-white/10',
           ].join(' ')}
         />
         <TextButton
           buttonName="이름순"
           onClick={handleNameClick}
           className={[
-            'px-4 py-2 rounded-lg text-sm transition',
+            'px-4 py-2 rounded-lg text-sm transition cursor-pointer',
             isName
-              ? 'text-lg font-semibold text-(--color-yellow)'
-              : ' text-(--color-gray-light) hover:bg-white/10',
+              ? 'text-lg font-semibold text-(--text-selected)'
+              : 'text-(--text-muted) hover:bg-white/20',
           ].join(' ')}
         />
       </div>

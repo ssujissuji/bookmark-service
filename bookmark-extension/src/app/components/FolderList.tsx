@@ -83,37 +83,6 @@ export default function FolderList({
     e.dataTransfer.dropEffect = 'move';
   };
 
-  const onDrop = async (e: React.DragEvent<HTMLElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    enterCounterRef.current = 0;
-    setIsDragHover(false);
-
-    const draggedBookmarkId = e.dataTransfer.getData('text/plain');
-    if (!draggedBookmarkId || !node.id) return;
-    setIsDropping(true);
-
-    const destinationFolderId = String(node.id);
-
-    try {
-      await chrome.bookmarks.move(draggedBookmarkId, {
-        parentId: destinationFolderId,
-      });
-
-      if (mountedRef.current) {
-        await reloadBookmarks();
-        toast.success('이동되었습니다!');
-      }
-    } catch (err) {
-      console.error('북마크 이동 실패:', err);
-    } finally {
-      setTimeout(() => {
-        if (mountedRef.current) setIsDropping(false);
-      }, 50);
-    }
-  };
-
   const { onDragStart, onDragEnd } = useDragGhostDnD({
     draggedId: node.id,
     payloadPrefix: 'folder',
@@ -135,10 +104,43 @@ export default function FolderList({
     },
   });
 
+  const onDrop = async (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    enterCounterRef.current = 0;
+    setIsDragHover(false);
+
+    const raw = e.dataTransfer.getData('text/plain');
+    if (!raw || !node.id) return;
+
+    let draggedId = raw;
+    if (raw.startsWith('folder:')) draggedId = raw.replace('folder:', '');
+    if (raw.startsWith('bookmark:')) draggedId = raw.replace('bookmark:', '');
+
+    if (String(draggedId) === String(node.id)) return;
+    try {
+      await chrome.bookmarks.move(draggedId, {
+        parentId: node.id,
+      });
+
+      if (mountedRef.current) {
+        await reloadBookmarks();
+        toast.success('이동되었습니다!');
+      }
+    } catch (err) {
+      console.error('북마크 이동 실패:', err);
+    } finally {
+      setTimeout(() => {
+        if (mountedRef.current) setIsDropping(false);
+      }, 50);
+    }
+  };
+
   const isNew = isRecentlyAdded(node.dateAdded);
 
   return (
-    <li className="flex flex-col  justify-start items-start max-w-50 min-w-0">
+    <li className="flex flex-col justify-start items-start max-w-50 min-w-0">
       <div
         style={indentStyle}
         draggable
@@ -154,14 +156,13 @@ export default function FolderList({
           isDragging
             ? 'opacity-30 blur-[0.5px] cursor-grabbing transition-opacity duration-150 ease-out'
             : '',
-          isDragHover ? 'underline text-(--color-main-red)' : '',
+          isDragHover ? 'underline text-(--text-hover)' : '',
         ].join(' ')}
       >
         <TextButton
-          className={`tracking-widest cursor-pointer flex items-start text-left hover:text-(--color-main-red) whitespace-normal break-all min-w-0 flex-1 ${
-            isActive ? 'text-(--color-yellow) font-semibold' : ''
-          },
-           
+          className={`tracking-wide cursor-pointer flex items-start text-left hover:text-(--text-hover) whitespace-normal break-all min-w-0 flex-1 ${
+            isActive ? 'text-(--text-selected) text-sm' : ''
+          }
           }`}
           buttonName={node.title}
         >
@@ -175,7 +176,7 @@ export default function FolderList({
           />
         </TextButton>
         {isNew && (
-          <span className="text-xs text-(--color-yellow) glass px-1 rounded-md max-h-[18px]">
+          <span className="text-xs text-(--text-selected) glass px-1 rounded-md max-h-[18px]">
             new
           </span>
         )}

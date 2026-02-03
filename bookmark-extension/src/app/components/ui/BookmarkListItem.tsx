@@ -19,7 +19,7 @@ export default function BookmarkListItem({
   url: string;
   title: string;
   id: string;
-  dateAdded: number;
+  dateAdded?: number;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
@@ -140,7 +140,7 @@ export default function BookmarkListItem({
             </span>
           </div>
           {isNew && (
-            <span className="text-xs text-(--color-yellow) glass px-1 rounded-md max-h-[18px]">
+            <span className="text-xs text-(--text-selected) glass px-1 rounded-md max-h-[18px]">
               new
             </span>
           )}
