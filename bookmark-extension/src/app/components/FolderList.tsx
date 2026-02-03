@@ -140,7 +140,7 @@ export default function FolderList({
   const isNew = isRecentlyAdded(node.dateAdded);
 
   return (
-    <li className="flex flex-col  justify-start items-start max-w-50 min-w-0">
+    <li className="flex flex-col justify-start items-start max-w-50 min-w-0">
       <div
         style={indentStyle}
         draggable
@@ -156,12 +156,12 @@ export default function FolderList({
           isDragging
             ? 'opacity-30 blur-[0.5px] cursor-grabbing transition-opacity duration-150 ease-out'
             : '',
-          isDragHover ? 'underline text-(--color-main-red)' : '',
+          isDragHover ? 'underline text-(--text-hover)' : '',
         ].join(' ')}
       >
         <TextButton
-          className={`tracking-widest cursor-pointer flex items-start text-left hover:text-(--color-main-red) whitespace-normal break-all min-w-0 flex-1 ${
-            isActive ? 'text-(--color-yellow) font-semibold' : ''
+          className={`tracking-wide cursor-pointer flex items-start text-left hover:text-(--text-hover) whitespace-normal break-all min-w-0 flex-1 ${
+            isActive ? 'text-(--text-selected) text-sm' : ''
           }
           }`}
           buttonName={node.title}
@@ -176,7 +176,7 @@ export default function FolderList({
           />
         </TextButton>
         {isNew && (
-          <span className="text-xs text-(--color-yellow) glass px-1 rounded-md max-h-[18px]">
+          <span className="text-xs text-(--text-selected) glass px-1 rounded-md max-h-[18px]">
             new
           </span>
         )}

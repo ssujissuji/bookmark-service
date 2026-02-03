@@ -14,9 +14,7 @@ export default defineManifest({
     },
     default_title: 'MyBookmark',
   },
-  permissions: [
-    'bookmarks', // ✅ 북마크 API 접근
-  ],
+  permissions: ['bookmarks', 'tabs'],
   background: { service_worker: 'src/background.ts', type: 'module' },
   options_ui: {
     page: 'src/popup/index.html',

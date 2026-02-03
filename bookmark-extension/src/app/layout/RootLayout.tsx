@@ -1,6 +1,9 @@
 import { Outlet, useLocation } from 'react-router';
 import Header from '../components/home/Header';
 import { useEffect, useState } from 'react';
+import Footer from '../components/home/Footer';
+
+import { applyTheme, loadTheme, saveTheme, type ThemeId } from '../utils/theme';
 
 export type SortType = 'recent' | 'name';
 
@@ -9,7 +12,15 @@ export default function RootLayout() {
   const [inputValue, setInputValue] = useState<string>('');
   const [searchKeyword, setSearchKeyword] = useState<string>('');
 
+  const [activeThemeId, setActiveThemeId] = useState<ThemeId>(() =>
+    loadTheme('default'),
+  );
+
   const location = useLocation();
+
+  useEffect(() => {
+    applyTheme(activeThemeId);
+  }, [activeThemeId]);
 
   useEffect(() => {
     setInputValue('');
@@ -39,8 +50,13 @@ export default function RootLayout() {
     setSearchKeyword('');
   };
 
+  const handleChangeTheme = (themeId: ThemeId) => {
+    setActiveThemeId(themeId);
+    saveTheme(themeId);
+  };
+
   return (
-    <div className="w-full mx-auto flex flex-col gap-4 pb-25 pt-16">
+    <div className="w-full mx-auto flex flex-col gap-4 pb-32 pt-16">
       <Header
         sortType={sortType}
         onChangeSort={setSortType}
@@ -50,6 +66,12 @@ export default function RootLayout() {
         onReset={handleReset}
       />
       <Outlet context={{ sortType, keyword: searchKeyword }} />
+      <Footer
+        activeThemeId={activeThemeId}
+        onChangeTheme={handleChangeTheme}
+        teamName="buttonn_"
+        storeUrl="#"
+      />
     </div>
   );
 }
