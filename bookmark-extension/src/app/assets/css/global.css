@@ -97,7 +97,7 @@ html[data-theme='dark'] {
 }
 
 html[data-theme='bed'] {
-  --bg-image: url('../images/bg-bed 1.webp');
+  --bg-image: url('../images/bg-bed.webp');
   --bg-color: #000000ad;
 
   --glass-dark: rgba(255, 255, 255, 0.72);
