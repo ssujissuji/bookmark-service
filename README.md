@@ -8,9 +8,9 @@
 
 | 홈 | 디테일 |
 |---|---|
-| ![홈](../images/bookmark_home.jpg) | ![디테일](../images/bookmark_detail.jpg) |
+| ![홈](images/bookmark_home.jpg) | ![디테일](images/bookmark_detail.jpg) |
 | 테마 - black | 테마 - bed |
-| ![검색](../images/bookmark_theme_black.jpg) | ![정렬](../images/bookmark_theme_bed.jpg) |
+| ![검색](images/bookmark_theme_black.jpg) | ![정렬](images/bookmark_theme_bed.jpg) |
 
 
 
