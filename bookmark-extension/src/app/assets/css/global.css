@@ -281,7 +281,7 @@ h2 {
   cursor: pointer;
 }
 
-.button__text_add:hover {
+.button__text__add:hover {
   color: var(--text-hover);
 }
 
