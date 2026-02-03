@@ -199,7 +199,7 @@ export default function BookMarkCardList({
             className="fixed inset-0 z-9999 flex items-center justify-center"
             onClick={() => setIsOpen(false)}
           >
-            <div className="absolute inset-0 bg-black/40" />
+            <div className="absolute inset-0  bg-black/30 backdrop-blur-sm" />
             <div
               className="relative z-10001"
               onClick={(e) => e.stopPropagation()}
