@@ -1,14 +1,20 @@
 # Bookmark Extension
 
-## 프로젝트 소개
+## 📙 프로젝트 소개
 
-- 크롬 브라우저에서 바로 북마크를 확인하고 정렬·검색할 수 있게 해주는 확장 프로그램
+- Bookmark Extension은 Google Chrome에서 북마크를 더 빠르게 확인하고, 정렬/검색해서 관리할 수 있게 도와주는 확장 프로그램입니다.
+- 보다 더 직관적인 UI로 편하게 북마크 관리를 할 수 있습니다. 
+- 크롬 확장 프로그램 다운 링크 [Chrome Extension](https://chromewebstore.google.com/detail/gibfpdopdjmfjfablclemgpbfgihlbne?utm_source=item-share-cb)
+
+| 홈 | 디테일 |
+|---|---|
+| ![홈](images/bookmark_home.jpg) | ![디테일](images/bookmark_detail.jpg) |
+| 테마 - black | 테마 - bed |
+| ![검색](images/bookmark_theme_black.jpg) | ![정렬](images/bookmark_theme_bed.jpg) |
 
 
----
 
-
-## 폴더 구조
+## 📁 폴더 구조
 
 ```
 bookmark-extension/
@@ -27,41 +33,50 @@ bookmark-extension/
 
 ---
 
-## 실행 방법
+## 🧙‍♂️ 실행 방법
 
-### 1. 의존성 설치
 
-프로젝트 루트 디렉토리에서 아래 명령어를 실행하여 필요한 패키지를 설치합니다.
 
-```bash
-npm install
-```
+#### 설치 방법
 
-### 2. 개발 서버 실행
+1) Chrome 웹스토어에서 설치 [Chrome Extension](https://chromewebstore.google.com/detail/gibfpdopdjmfjfablclemgpbfgihlbne?utm_source=item-share-cb)
 
-아래 명령어를 실행하여 개발 환경에서 확장 프로그램을 실행합니다.
+       - Chrome 웹스토어에서 Bookmark Extension을 검색합니다.
+       - Chrome에 추가를 눌러 설치합니다.
+       - 설치가 완료되면 브라우저 오른쪽 상단에 확장 프로그램 아이콘이 표시됩니다.
 
-```bash
-npm run dev
-```
 
-### 3. 확장 프로그램 빌드
+#### 사용 방법
 
-프로덕션 환경에서 사용할 확장 프로그램을 빌드하려면 아래 명령어를 실행합니다.
+1) 실행
+	•	브라우저 우측 상단의 확장 프로그램 아이콘을 클릭하면 팝업이 열립니다.
 
-```bash
-npm run build
-```
+2) 북마크 확인
+	•	Chrome에 저장된 북마크/폴더 구조를 그대로 불러와서 목록으로 보여줍니다.
 
-### 4. 브라우저에 로드
+3) 정렬 / 검색
 
-1. 빌드가 완료되면 `release/` 폴더가 생성됩니다.
-2. 브라우저의 확장 프로그램 관리 페이지에서 "압축 해제된 확장 프로그램 로드"를 선택합니다.
-3. `release/` 폴더를 선택하여 확장 프로그램을 로드합니다.
+        -	정렬: 최신순 / 이름순 (프로젝트 구현 기준에 맞게 표기)
+        -	검색: 키워드로 북마크 빠르게 찾기
+
+
+#### 주요 기능
+
+    - 크롬 북마크 자동 불러오기
+    - 폴더별 북마크 탐색
+    - 정렬 기능 (예: 최신순 / 이름순)
+    - 검색 기능 (키워드 기반)
+    - 새로운 폴더 생성
+    - 새로운 북마크 생성 
+    - 북마크의 폴더 위치 이동 (드래그앤드랍)
+    - 폴더의 위치 이동 (드래그앤드랍)
+    - 폴더 및 북마크 삭제
+    - 테마 변경
+
 
 ---
 
-## 기술 스택
+## ⚒️ 기술 스택
 
 - **프론트엔드**: React, TypeScript
 - **번들러**: Vite
