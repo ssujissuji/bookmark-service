@@ -1,5 +1,6 @@
-import React, { useRef, useState } from 'react';
-import IconDefault from '../../assets/icon/bookmark.svg?react';
+import React, { useMemo, useRef, useState } from 'react';
+// import IconDefault from '../../assets/icon/bookmark.svg?react';
+import IconFolder from '../../assets/icon/folder_fill.svg?react';
 import Ellipsis from '../../assets/icon/ellipsis.svg?react';
 import SelectBox from './SelectBox';
 import ReactDOM from 'react-dom';
@@ -10,18 +11,26 @@ import FolderEditModal from '../FolderEditModal';
 import { Pin } from 'lucide-react';
 import { isRecentlyAdded } from '@/app/utils/timeUtils';
 import { useDragGhostDnD } from '@/app/hooks/useDragGhostDnD';
+import { useFolderColor } from '@/app/features/folderColor/FolderColorContext';
+import {
+  COLOR_TOKENS,
+  DEFAULT_COLOR_TOKEN,
+} from '@/app/features/folderColor/constants';
+import type { ColorToken } from '@/app/features/folderColor/types';
 
 export default function BookmarkCard({
   title,
   type,
   id,
   dateAdded,
+  iconColor,
   onClick,
 }: {
   title: string;
   type: string;
   id?: string;
   dateAdded?: number;
+  iconColor?: string;
   onClick: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -41,6 +50,16 @@ export default function BookmarkCard({
   const [isDragging, setIsDragging] = useState(false);
   const [isDragHover, setIsDragHover] = useState(false);
   const enterCounterRef = useRef(0);
+
+  const [isColorOpen, setIsColorOpen] = useState(false);
+  const [folderPos, setFolderPos] = useState({ top: 0, left: 0 });
+  const folderIconRef = useRef<SVGSVGElement | null>(null);
+  const { colorMap, setFolderColor } = useFolderColor();
+
+  const token: ColorToken = useMemo(() => {
+    if (!targetFolderId) return DEFAULT_COLOR_TOKEN;
+    return colorMap[String(targetFolderId)] ?? DEFAULT_COLOR_TOKEN;
+  }, [colorMap, targetFolderId]);
 
   const handleOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -175,7 +194,21 @@ export default function BookmarkCard({
     onClick();
   };
 
+  const handleFolderIcon = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (folderIconRef.current) {
+      const rect = folderIconRef.current.getBoundingClientRect();
+      setFolderPos({
+        top: rect.bottom + window.scrollY + 4,
+        left: rect.right - 80,
+      });
+    }
+    setIsColorOpen(true);
+  };
+
   const isNew = isRecentlyAdded(dateAdded);
+
   return (
     <>
       <li
@@ -198,24 +231,89 @@ export default function BookmarkCard({
         ].join(' ')}
       >
         <div className="flex flex-1 min-w-0 gap-5 cursor-pointer">
-          <IconDefault
-            className={
-              type === 'bookmarkBar'
-                ? 'text-(--text-hover) shrink-0'
-                : 'text-(--text-selected) shrink-0'
-            }
-            width={40}
-            height={60}
-          />
-          <div className="flex min-w-0 flex-col justify-center rounded-xl gap-2">
+          <div className="relative shrink-0">
+            <button
+              type="button"
+              draggable={false}
+              className="cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (isDragging) return;
+
+                setIsColorOpen((v) => !v);
+              }}
+            >
+              <IconFolder
+                ref={folderIconRef}
+                width={60}
+                height={60}
+                className="shrink-0"
+                style={{
+                  color: iconColor ?? `var(--folder-${token})`,
+                }}
+                onClick={handleFolderIcon}
+              />
+            </button>
+
+            {isColorOpen &&
+              ReactDOM.createPortal(
+                <>
+                  <div
+                    className="fixed inset-0 "
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setIsColorOpen(false);
+                    }}
+                  />
+                  <div
+                    className="absolute  w-fit min-w-36 z-9999 mt-2 left-0 glass__dark p-2 px-3 rounded-lg"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    style={{
+                      top: `${folderPos.top}px`,
+                      left: `${folderPos.left}px`,
+                    }}
+                  >
+                    <div className="flex gap-2 ">
+                      {COLOR_TOKENS.map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          className={[
+                            'w-4 h-4 rounded-full border',
+                            t === token ? 'border-white/80' : 'border-white/20',
+                          ].join(' ')}
+                          style={{ backgroundColor: `var(--folder-${t})` }}
+                          onClick={async () => {
+                            if (!targetFolderId) return;
+                            try {
+                              await setFolderColor(String(targetFolderId), t);
+                            } finally {
+                              setIsColorOpen(false);
+                            }
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </>,
+                document.body,
+              )}
+          </div>
+          <div className="flex min-w-0 flex-col justify-center rounded-xl gap-1.5">
             <div className="flex justify-start items-center gap-2">
               {type === 'bookmarkBar' && (
-                <div className="w-fit px-1.5 py-1 bookmark-tag bookmark-tag__bar rounded-sm">
+                <div className="w-fit  bookmark-tag text-xs  rounded-sm">
                   bookmark-bar
                 </div>
               )}
               {type === 'others' && (
-                <div className="w-fit px-1.5 py-1 bookmark-tag bookmark-tag__other rounded-sm">
+                <div className="w-fit  bookmark-tag text-xs rounded-sm">
                   others
                 </div>
               )}
