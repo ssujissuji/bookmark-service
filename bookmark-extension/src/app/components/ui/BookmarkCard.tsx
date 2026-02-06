@@ -1,5 +1,4 @@
 import React, { useMemo, useRef, useState } from 'react';
-// import IconDefault from '../../assets/icon/bookmark.svg?react';
 import IconFolder from '../../assets/icon/folder_fill.svg?react';
 import Ellipsis from '../../assets/icon/ellipsis.svg?react';
 import SelectBox from './SelectBox';

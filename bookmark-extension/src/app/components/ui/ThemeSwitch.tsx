@@ -1,12 +1,11 @@
-// src/app/components/home/ThemeSwitch.tsx
 import { useEffect, useRef, useState } from 'react';
 import type { ThemeId } from '../../utils/theme';
 
 export type ThemePreset = {
   id: ThemeId;
   name: string;
-  previewClass?: string; // 그라디언트/단색 미리보기
-  previewImageUrl?: string; // 이미지 미리보기
+  previewClass?: string;
+  previewImageUrl?: string;
 };
 
 type ThemeSwitchProps = {
@@ -110,7 +109,7 @@ export default function ThemeSwitch({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60]">
+    <div className="fixed inset-0 z-60">
       <button
         type="button"
         aria-label="테마 선택 닫기"

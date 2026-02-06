@@ -100,7 +100,6 @@ export default function FolderList({
     disabled: !node.id,
     onDragStartUI: () => {
       setIsDragging(true);
-      // setIsOpen(false);
     },
     onDragEndUI: () => {
       setIsDragging(false);

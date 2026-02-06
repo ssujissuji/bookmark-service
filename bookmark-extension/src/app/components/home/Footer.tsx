@@ -69,7 +69,6 @@ export default function Footer({
             <span className="text-white/30">|</span>
             <a
               className="truncate hover:text-white transition"
-              // href={`mailto:${contactEmail}`}
               href={`${contactUrl}`}
               title={contactUrl}
             >
@@ -108,7 +107,6 @@ export default function Footer({
         activeThemeId={activeThemeId}
         onChangeTheme={(id) => {
           onChangeTheme(id);
-          // setIsThemeOpen(false);
         }}
       />
     </>
