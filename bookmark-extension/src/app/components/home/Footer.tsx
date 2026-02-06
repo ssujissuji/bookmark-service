@@ -13,7 +13,7 @@ type FooterProps = {
   onChangeTheme: (themeId: ThemeId) => void;
   storeUrl?: string;
   teamName?: string;
-  contactEmail?: string;
+  contactUrl?: string;
 };
 
 export default function Footer({
@@ -21,7 +21,7 @@ export default function Footer({
   onChangeTheme,
   storeUrl = 'https://chromewebstore.google.com/detail/bookmark-extension/gibfpdopdjmfjfablclemgpbfgihlbne?authuser=0&hl=ko',
   teamName = 'buttonn_',
-  contactEmail = 'https://www.notion.so/chrome-bookmark-extension-2f8ea2795d2d808f9a96dc45df7611d1?source=copy_link',
+  contactUrl = 'https://www.notion.so/chrome-bookmark-extension-2f8ea2795d2d808f9a96dc45df7611d1?source=copy_link',
 }: FooterProps) {
   const [isThemeOpen, setIsThemeOpen] = useState(false);
 
@@ -62,15 +62,15 @@ export default function Footer({
         <div className="mx-auto flex h-12 items-center justify-between px-4 text-[12px] text-white/80">
           {/* LEFT */}
           <div className="flex min-w-0 items-center gap-2">
+            <span className="truncate">ver 1.5.1</span>
             <span className="truncate">
               © {new Date().getFullYear()} {teamName}
             </span>
             <span className="text-white/30">|</span>
             <a
               className="truncate hover:text-white transition"
-              // href={`mailto:${contactEmail}`}
-              href={`${contactEmail}`}
-              title={contactEmail}
+              href={`${contactUrl}`}
+              title={contactUrl}
             >
               {'업데이트 제안 및 오류 접수처(Notion)'}
             </a>
@@ -107,7 +107,6 @@ export default function Footer({
         activeThemeId={activeThemeId}
         onChangeTheme={(id) => {
           onChangeTheme(id);
-          // setIsThemeOpen(false);
         }}
       />
     </>

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import IconDefault from '../../assets/icon/bookmark.svg?react';
+import IconBookmark from '../../assets/icon/bookmark.svg?react';
 import Ellipsis from '../../assets/icon/ellipsis.svg?react';
 import SelectBox from './SelectBox';
 import ReactDOM from 'react-dom';
@@ -134,7 +134,8 @@ export default function BookmarkListItem({
       >
         <div className="flex flex-1 min-w-0 justify-start items-center gap-4  ">
           <div className="flex flex-1 min-w-0 items-center gap-4 ">
-            <IconDefault width={20} height={20} className="shrink-0" />
+            {/* <IconDefault width={20} height={20} className="shrink-0" /> */}
+            <IconBookmark width={20} height={20} className="shrink-0" />
             <span className="text-base font-['LeferiBaseRegular'] align-middle truncate">
               {title}
             </span>

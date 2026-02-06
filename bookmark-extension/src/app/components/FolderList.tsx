@@ -1,13 +1,20 @@
 import TextButton from './ui/TextButton';
-import FolderIcon from '../assets/icon/folder.svg?react';
+import IconFolder from '../assets/icon/folder_fill.svg?react';
 import ArrowChild from '../assets/icon/arrow_child.svg?react';
 import { separateFolderAndBookmarks } from '../utils/bookmarkTreeUtils';
+import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router';
 import { useBookmarksData } from '../BookmarksContext';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { isRecentlyAdded } from '../utils/timeUtils';
 import { useDragGhostDnD } from '../hooks/useDragGhostDnD';
+import { useFolderColor } from '../features/folderColor/FolderColorContext';
+import {
+  COLOR_TOKENS,
+  DEFAULT_COLOR_TOKEN,
+} from '../features/folderColor/constants';
+import { ColorToken } from '../features/folderColor/types';
 
 type FolderListProps = {
   node: BookmarkItemType;
@@ -29,6 +36,10 @@ export default function FolderList({
   const [isDropping, setIsDropping] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isDragHover, setIsDragHover] = useState(false);
+
+  const [isColorOpen, setIsColorOpen] = useState(false);
+  const [folderPos, setFolderPos] = useState({ top: 0, left: 0 });
+  const folderIconRef = useRef<SVGSVGElement | null>(null);
 
   const enterCounterRef = useRef(0);
 
@@ -89,7 +100,6 @@ export default function FolderList({
     disabled: !node.id,
     onDragStartUI: () => {
       setIsDragging(true);
-      // setIsOpen(false);
     },
     onDragEndUI: () => {
       setIsDragging(false);
@@ -139,8 +149,27 @@ export default function FolderList({
 
   const isNew = isRecentlyAdded(node.dateAdded);
 
+  const { colorMap, setFolderColor } = useFolderColor();
+
+  const token: ColorToken = useMemo(() => {
+    return colorMap[String(node.id)] ?? DEFAULT_COLOR_TOKEN;
+  }, [colorMap, node.id]);
+
+  const handleFolderIcon = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (folderIconRef.current) {
+      const rect = folderIconRef.current.getBoundingClientRect();
+      setFolderPos({
+        top: rect.bottom + window.scrollY + 6,
+        left: rect.right - 80,
+      });
+    }
+    setIsColorOpen(true);
+  };
+
   return (
-    <li className="flex flex-col justify-start items-start max-w-50 min-w-0">
+    <li className="flex flex-col justify-start items-start max-w-80 min-w-0">
       <div
         style={indentStyle}
         draggable
@@ -161,7 +190,7 @@ export default function FolderList({
       >
         <TextButton
           className={`tracking-wide cursor-pointer flex items-start text-left hover:text-(--text-hover) whitespace-normal break-all min-w-0 flex-1 ${
-            isActive ? 'text-(--text-selected) text-sm' : ''
+            isActive ? 'text-(--text-selected)' : ''
           }
           }`}
           buttonName={node.title}
@@ -169,11 +198,71 @@ export default function FolderList({
           {depth > 0 && (
             <ArrowChild width={10} height={10} className="inline shrink-0" />
           )}
-          <FolderIcon
-            width={20}
-            height={20}
-            className="inline mr-2.5 ml-2.5 shrink-0"
-          />
+
+          <span
+            className="inline mr-2.5 ml-2.5 shrink-0 relative"
+            style={{ color: `var(--folder-${token})` }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsColorOpen((v) => !v);
+            }}
+          >
+            <IconFolder
+              ref={folderIconRef}
+              width={16}
+              height={16}
+              onClick={handleFolderIcon}
+            />
+
+            {isColorOpen &&
+              ReactDOM.createPortal(
+                <>
+                  <div
+                    className="fixed inset-0 "
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setIsColorOpen(false);
+                    }}
+                  />
+                  <div
+                    className="absolute z-9999 mt-2 left-0 glass__dark p-2 rounded-lg"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setIsColorOpen(false);
+                    }}
+                    style={{
+                      top: `${folderPos.top}px`,
+                      left: `${folderPos.left}px`,
+                    }}
+                  >
+                    <div className="flex gap-2">
+                      {COLOR_TOKENS.map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          className={[
+                            'w-4 h-4 rounded-full border',
+                            t === token ? 'border-white/80' : 'border-white/20',
+                          ].join(' ')}
+                          style={{ backgroundColor: `var(--folder-${t})` }}
+                          onClick={async () => {
+                            try {
+                              await setFolderColor(String(node.id), t);
+                            } finally {
+                              setIsColorOpen(false);
+                            }
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </>,
+                document.body,
+              )}
+          </span>
         </TextButton>
         {isNew && (
           <span className="text-xs text-(--text-selected) glass px-1 rounded-md max-h-[18px]">

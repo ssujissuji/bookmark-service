@@ -14,6 +14,10 @@ import TextButton from '../ui/TextButton';
 import ReactDOM from 'react-dom';
 import BookmarkEditModal from '../BookmarkEditModal';
 
+import { useFolderColor } from '@/app/features/folderColor/FolderColorContext';
+import type { ColorToken } from '@/app/features/folderColor/types';
+import { DEFAULT_COLOR_TOKEN } from '@/app/features/folderColor/constants';
+
 type TabType = 'recent' | 'barUrls';
 
 export default function BookMarkCardList({
@@ -76,6 +80,8 @@ export default function BookMarkCardList({
     return null;
   }
 
+  const { colorMap } = useFolderColor();
+
   const createOpenhandler = () => {
     setIsOpen(true);
   };
@@ -105,16 +111,21 @@ export default function BookMarkCardList({
         />
         {hasSearch && sortedFolderList.length === 0
           ? ''
-          : sortedFolderList.map((list) => (
-              <BookmarkCard
-                key={list.id}
-                title={list.title}
-                id={list.id}
-                dateAdded={list.dateAdded}
-                type="bookmarkBar"
-                onClick={() => navigate(`/bookmark/${list.id}`)}
-              />
-            ))}
+          : sortedFolderList.map((list) => {
+              const token: ColorToken =
+                colorMap[String(list.id)] ?? DEFAULT_COLOR_TOKEN;
+              return (
+                <BookmarkCard
+                  key={list.id}
+                  title={list.title}
+                  id={list.id}
+                  dateAdded={list.dateAdded}
+                  iconColor={`var(--folder-${token})`}
+                  type="bookmarkBar"
+                  onClick={() => navigate(`/bookmark/${list.id}`)}
+                />
+              );
+            })}
 
         <NewBookMark />
       </ul>
@@ -199,7 +210,7 @@ export default function BookMarkCardList({
             className="fixed inset-0 z-9999 flex items-center justify-center"
             onClick={() => setIsOpen(false)}
           >
-            <div className="absolute inset-0 bg-black/40" />
+            <div className="absolute inset-0  bg-black/30 backdrop-blur-sm" />
             <div
               className="relative z-10001"
               onClick={(e) => e.stopPropagation()}

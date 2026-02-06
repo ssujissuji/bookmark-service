@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import NewFolder from '../../assets/icon/new_folder.svg?react';
+import NewFolder from '../../assets/icon/folder_new.svg?react';
 import ReactDOM from 'react-dom';
 import FolderEditModal from '../FolderEditModal';
 import { useFolderActions } from '../../hooks/useFoldersActions';
@@ -37,7 +37,7 @@ export default function NewBookMark() {
     <>
       <div
         onClick={handleOpen}
-        className="flex justify-between items-center glass rounded-xl gap-4 px-9 py-4 w-full min-h-[120px] glass--hover text-(--color-gray-light)"
+        className="flex justify-between items-center glass rounded-xl gap-4 px-9 py-4 w-full min-h-[120px] glass--hover text-(--text-muted)"
       >
         <div className="flex gap-4">
           <NewFolder width={40} height={40} />

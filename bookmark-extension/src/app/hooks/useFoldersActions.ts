@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 
 type CreateFolderParams = {
   title: string;
-  parentId?: string; // 부모 폴더 id (생략하면 기본 위치에 생성)
+  parentId?: string;
 };
 
 type UpdateFolderParams = {

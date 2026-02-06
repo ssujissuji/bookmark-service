@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-// import IconSelectComponent from './ui/IconInputComponent';
 import InputComponent from './ui/InputComponent';
 import TextButton from './ui/TextButton';
 import toast from 'react-hot-toast';
@@ -73,7 +72,6 @@ export default function FolderEditModal({
         />
       </div>
 
-      {/* 버튼 영역: 가운데 정렬 + 폭 안정 */}
       <div className="flex justify-center gap-6 pt-2">
         <TextButton
           buttonName="취소"
