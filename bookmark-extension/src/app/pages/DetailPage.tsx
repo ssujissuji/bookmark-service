@@ -18,6 +18,12 @@ import { CreateUrlParams, useUrlActions } from '../hooks/useUrlActions';
 import BookmarkEditModal from '../components/BookmarkEditModal';
 import FolderEditModal from '../components/FolderEditModal';
 
+import {
+  loadFolderColorMap,
+  saveFolderColorMap,
+} from '../features/folderColor/storage';
+import { DEFAULT_COLOR_TOKEN } from '../features/folderColor/constants';
+
 export type OutletContextType = {
   sortType: SortType;
   keyword: string;
@@ -85,11 +91,16 @@ export default function DetailPage() {
   const { createFolder } = useFolderActions();
   const handleSubmitFolder = async (name: string) => {
     try {
-      await createFolder({
+      const newFolder = await createFolder({
         title: name,
         parentId: folderId,
       });
-      console.log('새 폴더 생성 데이터:', { name });
+      const currentMap = await loadFolderColorMap();
+      const nextMap = {
+        ...currentMap,
+        [newFolder.id]: DEFAULT_COLOR_TOKEN,
+      };
+      await saveFolderColorMap(nextMap);
 
       await reloadBookmarks();
       setIsOpenFolderEdit(false);
@@ -289,7 +300,7 @@ export default function DetailPage() {
             className="fixed inset-0 z-9999 flex items-center justify-center"
             onClick={() => setIsOpenBookmarkEdit(false)}
           >
-            <div className="absolute inset-0 bg-black/40" />
+            <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
             <div
               className="relative z-10001"
               onClick={(e) => e.stopPropagation()}

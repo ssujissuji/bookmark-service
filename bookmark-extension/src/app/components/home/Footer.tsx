@@ -62,13 +62,13 @@ export default function Footer({
         <div className="mx-auto flex h-12 items-center justify-between px-4 text-[12px] text-white/80">
           {/* LEFT */}
           <div className="flex min-w-0 items-center gap-2">
+            <span className="truncate">ver 1.5.2</span>
             <span className="truncate">
               © {new Date().getFullYear()} {teamName}
             </span>
             <span className="text-white/30">|</span>
             <a
               className="truncate hover:text-white transition"
-              // href={`mailto:${contactEmail}`}
               href={`${contactUrl}`}
               title={contactUrl}
             >
@@ -107,7 +107,6 @@ export default function Footer({
         activeThemeId={activeThemeId}
         onChangeTheme={(id) => {
           onChangeTheme(id);
-          // setIsThemeOpen(false);
         }}
       />
     </>
