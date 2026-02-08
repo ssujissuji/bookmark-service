@@ -78,7 +78,7 @@ export default function Footer({
           </div>
 
           {/* RIGHT */}
-          <div className="flex  items-center gap-2">
+          <div className="flex items-center gap-2">
             <a
               href={storeUrl}
               target="_blank"
@@ -87,17 +87,15 @@ export default function Footer({
             >
               Chrome Web Store
             </a>
-
-            <Paint
+            <button
               onClick={() => setIsThemeOpen(true)}
-              className="
-                    h-8 w-8 ml-1 mt-1 pl-1 pt-1
-                    rounded-lg text-(--folder-c9)
-                    hover:text-(--text-hover)
-                    active:bg-white/15 transition
-                    cursor-pointer
-                  "
-            />
+              className="ml-1 grid h-8 w-8 place-items-center
+    rounded-lg text-(--folder-c9)
+    hover:text-(--text-hover)
+    active:bg-white/15 transition"
+            >
+              <Paint className="h-6 w-6" />
+            </button>
           </div>
         </div>
       </footer>
