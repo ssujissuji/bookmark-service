@@ -101,9 +101,6 @@ export default function ThemeSwitch({
       inline: 'center',
       block: 'nearest',
     });
-
-    const theme = themes[idx];
-    if (theme) onChangeTheme(theme.id);
   };
 
   if (!isOpen) return null;
@@ -120,7 +117,7 @@ export default function ThemeSwitch({
       <div
         role="dialog"
         aria-modal="true"
-        className="absolute bottom-0 left-0 right-0 h-[33vh] min-h-[260px] max-h-[420px] rounded-t-2xl p-4 flex flex-col glass__dark"
+        className="absolute bottom-0 left-0 right-0 h-[40vh] min-h-[260px] max-h-[420px] rounded-t-2xl p-4 flex flex-col glass__dark"
       >
         <div className="flex items-center justify-between">
           <div className="text-sm font-semibold text-(--text-main)">Theme</div>
@@ -154,13 +151,18 @@ export default function ThemeSwitch({
                   itemRefs.current[idx] = el;
                 }}
                 type="button"
-                onClick={() => onChangeTheme(theme.id)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onChangeTheme(theme.id);
+                }}
                 className={`
+                  cursor-pointer
                   snap-center shrink-0
                   w-[78%] sm:w-[60%]
                   rounded-2xl border p-3 text-left transition
                   ${isCenterActive ? 'border-white/50' : 'border-white/10'}
                   hover:border-white/30
+                  hover:bg-(--text-muted)
                 `}
                 aria-current={isApplied ? 'true' : 'false'}
               >
@@ -191,13 +193,17 @@ export default function ThemeSwitch({
         <div className="mt-2 flex items-center justify-center gap-2">
           {themes.map((t, idx) => {
             const isOn = idx === activeIndex;
+
             return (
               <button
                 key={t.id}
                 type="button"
                 aria-label={`${t.name}로 이동`}
-                onClick={() => handleDotClick(idx)}
-                className={`
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDotClick(idx);
+                }}
+                className={`cursor-pointer
                   h-2 w-2 rounded-full transition
                   ${isOn ? 'bg-white/80' : 'bg-white/25 hover:bg-white/45'}
                 `}
