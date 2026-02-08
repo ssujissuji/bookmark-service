@@ -151,8 +151,7 @@ export default function ThemeSwitch({
                   itemRefs.current[idx] = el;
                 }}
                 type="button"
-                onClick={(e) => {
-                  e.preventDefault();
+                onClick={() => {
                   onChangeTheme(theme.id);
                 }}
                 className={`
@@ -199,13 +198,12 @@ export default function ThemeSwitch({
                 key={t.id}
                 type="button"
                 aria-label={`${t.name}로 이동`}
-                onClick={(e) => {
-                  e.preventDefault();
+                onClick={() => {
                   handleDotClick(idx);
                 }}
                 className={`cursor-pointer
                   h-2 w-2 rounded-full transition
-                  ${isOn ? 'bg-white/80' : 'bg-white/25 hover:bg-white/45'}
+                  ${isOn ? 'bg-(--text-main)' : 'bg-(--text-muted) hover:bg-(--text-sub)'}
                 `}
               />
             );
