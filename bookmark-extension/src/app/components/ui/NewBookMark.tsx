@@ -42,7 +42,7 @@ export default function NewBookMark() {
         <div className="flex gap-4">
           <NewFolder width={60} height={60} />
         </div>
-        <span className="text-2xl font-['LeferiBaseRegular']">
+        <span className="text-xl font-['LeferiBaseRegular']">
           새폴더 만들기
         </span>
       </div>
