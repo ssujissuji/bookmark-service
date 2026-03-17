@@ -9,7 +9,7 @@ import {
 
 type BookmarksState = {
   status: 'idle' | 'loading' | 'success' | 'error';
-  data: BookmarkTreeType[] | null;
+  data: BookmarkTreeType[];
   error: Error | null;
 };
 
@@ -18,7 +18,7 @@ export type BookmarksContextValue = BookmarksState & {
 };
 const initialContextValue: BookmarksContextValue = {
   status: 'idle',
-  data: null,
+  data: [],
   error: null,
   reloadBookmarks: () => Promise.resolve(),
 };
@@ -37,7 +37,7 @@ type BookmarksProviderProps = {
 export function BookmarksProvider({ children }: BookmarksProviderProps) {
   const [state, setState] = useState<BookmarksState>({
     status: 'idle',
-    data: null,
+    data: [],
     error: null,
   });
 
@@ -52,7 +52,7 @@ export function BookmarksProvider({ children }: BookmarksProviderProps) {
         const error = new Error('chrome.bookmarks API 를 사용할 수 없습니다.');
         setState({
           status: 'error',
-          data: null,
+          data: [],
           error,
         });
         reject(error);
@@ -72,7 +72,7 @@ export function BookmarksProvider({ children }: BookmarksProviderProps) {
           console.error('getTree error:', lastError);
           setState({
             status: 'error',
-            data: null,
+            data: [],
             error: new Error(lastError.message),
           });
           reject(lastError);
