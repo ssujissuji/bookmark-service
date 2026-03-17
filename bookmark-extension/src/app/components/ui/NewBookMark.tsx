@@ -37,12 +37,14 @@ export default function NewBookMark() {
     <>
       <div
         onClick={handleOpen}
-        className="flex justify-between items-center glass rounded-xl gap-4 px-9 py-4 w-full min-h-[120px] glass--hover text-(--text-muted)"
+        className="flex justify-between items-center glass rounded-xl gap-4 px-6 py-4 w-full min-h-[120px] glass--hover text-(--text-muted)"
       >
         <div className="flex gap-4">
-          <NewFolder width={40} height={40} />
+          <NewFolder width={60} height={60} />
         </div>
-        <span className="text-2xl">새폴더 만들기</span>
+        <span className="text-xl font-['LeferiBaseRegular']">
+          새폴더 만들기
+        </span>
       </div>
       {isOpen &&
         ReactDOM.createPortal(

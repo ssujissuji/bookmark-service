@@ -1,34 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import BookMarkCardList from '../components/home/BookMarkCardList';
 import { useBookmarksData } from '../BookmarksContext';
 
 export default function Home() {
   const { data, status } = useBookmarksData();
 
-  const [bookmarkBarData, setBookmarkBarData] = useState<BookmarkTreeType[]>(
-    [],
-  );
+  const bookmarkBarData = useMemo<BookmarkTreeType[]>(() => {
+    if (status !== 'success') return [];
 
-  useEffect(() => {
-    if (!data || !data[0]?.children) {
+    if (!Array.isArray(data) || !data[0]?.children) {
       console.error('Invalid data structure:', data);
-      return;
+      return [];
     }
 
     const rootLevel = data[0].children;
-    const rootBar = rootLevel.find((node: BookmarkTreeType) => node.id === '1');
 
-    if (rootBar?.children) {
-      setBookmarkBarData(rootBar.children);
-    }
-  }, [data]);
+    const bookmarkBarNode =
+      rootLevel.find((node: BookmarkTreeType) => node.id === '1') ??
+      rootLevel.find((node: BookmarkTreeType) => Array.isArray(node.children));
 
-  if (status !== 'success' || !data) {
-    return null;
-  }
+    return bookmarkBarNode?.children ?? [];
+  }, [data, status]);
+
+  if (status !== 'success') return null;
 
   return (
-    <div className="w-full ">
+    <div className="w-full">
       <BookMarkCardList bookmarkBar={bookmarkBarData} />
     </div>
   );

@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import ThemeSwitch, { ThemePreset } from '../ui/ThemeSwitch';
 import type { ThemeId } from '../../utils/theme';
+import Paint from '../../assets/icon/paint.svg?react';
 
 import ImgDefault from '../../assets/images/bg-black_figure.webp';
 import ImgDark from '../../assets/images/bg-black_some.webp';
@@ -62,7 +63,7 @@ export default function Footer({
         <div className="mx-auto flex h-12 items-center justify-between px-4 text-[12px] text-white/80">
           {/* LEFT */}
           <div className="flex min-w-0 items-center gap-2">
-            <span className="truncate">ver 1.5.1</span>
+            <span className="truncate">ver 1.5.3</span>
             <span className="truncate">
               © {new Date().getFullYear()} {teamName}
             </span>
@@ -86,15 +87,15 @@ export default function Footer({
             >
               Chrome Web Store
             </a>
-
-            <div className="ml-1 flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 px-1 py-1">
-              <IconButton
-                label="테마 변경"
-                onClick={() => setIsThemeOpen(true)}
-              >
-                ☾
-              </IconButton>
-            </div>
+            <button
+              onClick={() => setIsThemeOpen(true)}
+              className="ml-1 grid h-8 w-8 place-items-center
+    rounded-lg text-(--folder-c9)
+    hover:text-(--text-hover)
+    active:bg-white/15 transition"
+            >
+              <Paint className="h-6 w-6" />
+            </button>
           </div>
         </div>
       </footer>
@@ -110,32 +111,5 @@ export default function Footer({
         }}
       />
     </>
-  );
-}
-
-function IconButton({
-  children,
-  label,
-  onClick,
-}: {
-  children: React.ReactNode;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      title={label}
-      className="
-        grid h-8 w-8 place-items-center
-        rounded-lg text-white/80
-        hover:bg-white/10 hover:text-white
-        active:bg-white/15 transition
-      "
-    >
-      {children}
-    </button>
   );
 }
