@@ -29,12 +29,19 @@ export default function ThemeSwitch({
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     const idx = Math.max(
       0,
       themes.findIndex((t) => t.id === activeThemeId),
     );
-    setActiveIndex(idx);
-  }, [activeThemeId, themes]);
+
+    itemRefs.current[idx]?.scrollIntoView({
+      behavior: 'smooth',
+      inline: 'center',
+      block: 'nearest',
+    });
+  }, [isOpen, activeThemeId, themes]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -47,12 +54,18 @@ export default function ThemeSwitch({
 
   useEffect(() => {
     if (!isOpen) return;
-    itemRefs.current[activeIndex]?.scrollIntoView({
-      behavior: 'smooth',
-      inline: 'center',
-      block: 'nearest',
-    });
-  }, [isOpen, activeIndex]);
+
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -135,7 +148,7 @@ export default function ThemeSwitch({
           ref={containerRef}
           className="
             mt-3 flex gap-3
-            overflow-x-auto overscroll-x-contain
+            overflow-x-auto overscroll-x-contain overscroll-y-none
             snap-x snap-mandatory scroll-smooth
             px-3 pb-2
           "
