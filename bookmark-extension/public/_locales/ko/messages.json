@@ -1,0 +1,14 @@
+{
+  "appName": {
+    "message": "Bookmark Extension",
+    "description": "확장 프로그램 이름"
+  },
+  "appDescription": {
+    "message": "빠르고 깔끔한 크롬 북마크 관리 확장 프로그램",
+    "description": "Chrome 웹스토어에 표시되는 확장 프로그램 설명"
+  },
+  "appTitle": {
+    "message": "MyBookmark",
+    "description": "확장 프로그램 액션 버튼에 표시되는 기본 제목"
+  }
+}

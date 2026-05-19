@@ -1,0 +1,14 @@
+{
+  "appName": {
+    "message": "Bookmark Extension",
+    "description": "The name of the extension"
+  },
+  "appDescription": {
+    "message": "A clean and fast bookmark manager for Chrome",
+    "description": "The description of the extension shown in Chrome Web Store"
+  },
+  "appTitle": {
+    "message": "MyBookmark",
+    "description": "The default title shown on the extension action button"
+  }
+}

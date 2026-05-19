@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import IconBookmark from '../../assets/icon/bookmark.svg?react';
 import Ellipsis from '../../assets/icon/ellipsis.svg?react';
 import SelectBox from './SelectBox';
@@ -21,6 +22,7 @@ export default function BookmarkListItem({
   id: string;
   dateAdded?: number;
 }) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
@@ -73,7 +75,7 @@ export default function BookmarkListItem({
     try {
       await chrome.bookmarks.update(id, { title: data.title, url: data.url });
       await reloadBookmarks();
-      toast.success('북마크가 수정되었습니다.');
+      toast.success(t('toast.bookmarkUpdated'));
     } catch (error) {
       console.error('수정 실패:', error);
     } finally {
@@ -82,7 +84,7 @@ export default function BookmarkListItem({
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm('정말로 삭제하시겠습니까?');
+    const confirmed = window.confirm(t('confirm.deleteBookmark'));
     if (!confirmed) return;
     if (!id) return;
 

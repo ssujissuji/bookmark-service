@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import FolderList from '../components/FolderList';
 import BookmarkListItem from '../components/ui/BookmarkListItem';
 import ReactDOM from 'react-dom';
@@ -30,6 +31,7 @@ export type OutletContextType = {
 };
 
 export default function DetailPage() {
+  const { t, i18n } = useTranslation();
   const DND_JSON_MIME = 'application/x-bookmark-dnd';
   const navigate = useNavigate();
 
@@ -71,8 +73,8 @@ export default function DetailPage() {
   const [isOpenFolderEdit, setIsOpenFolderEdit] = useState(false);
 
   const sortedBookmarks = useMemo(
-    () => sortBookmarks(bookmarks, sortType),
-    [bookmarks, sortType],
+    () => sortBookmarks(bookmarks, sortType, i18n.language),
+    [bookmarks, sortType, i18n.language],
   );
 
   const normalizedKeyword = keyword.trim().toLowerCase();
@@ -167,10 +169,10 @@ export default function DetailPage() {
     try {
       await chrome.bookmarks.move(draggedId, { parentId: destinationRootId });
       await reloadBookmarks();
-      toast.success('루트로 이동되었습니다!');
+      toast.success(t('toast.movedToRoot'));
     } catch (err) {
       console.error('루트 이동 실패:', err);
-      toast.error('이동에 실패했습니다.');
+      toast.error(t('toast.moveFailed'));
     } finally {
       setIsRootDropping(false);
     }
@@ -199,13 +201,13 @@ export default function DetailPage() {
 
   const hasSearch = normalizedKeyword.length > 0;
   const hasResult = (filteredList?.length ?? 0) > 0;
-  if (!data) return <div>데이터를 불러오지 못했습니다.</div>;
+  if (!data) return <div>{t('error.dataLoad')}</div>;
   return (
     <div>
       <div className="w-full mx-auto flex flex-col gap-3 pb-25 pt-6">
         {sortedBookmarks.length === 0 ? (
           <div className="flex mt-4 text-sm text-gray-400 justify-center text-center">
-            북마크가 없습니다.
+            {t('section.bookmarkEmpty')}
           </div>
         ) : hasSearch ? (
           hasResult ? (
@@ -220,7 +222,7 @@ export default function DetailPage() {
             ))
           ) : (
             <p className="flex mt-4 text-sm text-gray-400 justify-center text-center">
-              검색 결과가 없습니다.
+              {t('search.noResult')}
             </p>
           )
         ) : (
@@ -244,13 +246,13 @@ export default function DetailPage() {
           <div className="flex flex-col gap-8 items-start min-h-0 flex-1 w-full">
             <div className="flex justify-between items-center w-full px-6">
               <TextButton
-                buttonName="+ 새폴더"
+                buttonName={t('action.newFolder')}
                 onClick={createOpenHandlerFolder}
                 className="text-xs button__text button__text__add cursor-pointer"
               />
               <span className="text-xs text-(--text-main)">|</span>
               <TextButton
-                buttonName="+ 새북마크"
+                buttonName={t('action.newBookmark')}
                 className="text-xs button__text button__text__add cursor-pointer"
                 onClick={createOpenhandler}
               />
@@ -272,7 +274,7 @@ export default function DetailPage() {
                   isRootDropping ? 'opacity-60' : '',
                   isRootDragHover ? 'outline-2 outline-(--text-hover)' : '',
                 ].join(' ')}
-                title="여기로 드롭하면 반대 루트로 이동"
+                title={t('dnd.dropHint')}
               >
                 <span className="text-sm opacity-70">↔</span>
                 <span className="text-xs font-semibold truncate">
@@ -285,7 +287,7 @@ export default function DetailPage() {
                 <FolderList node={currentRootNode} folderId={folderId} />
               ) : (
                 <p className="text-sm text-gray-400">
-                  폴더 루트를 찾지 못했습니다.
+                  {t('error.folderRootNotFound')}
                 </p>
               )}
             </ul>

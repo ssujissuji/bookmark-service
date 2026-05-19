@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import BookmarkCard from '../ui/BookmarkCard';
 import NewBookMark from '../ui/NewBookMark';
 import {
@@ -34,6 +35,7 @@ export default function BookMarkCardList({
 
   const [activeTab, setActiveTab] = useState<TabType>('recent');
 
+  const { t, i18n } = useTranslation();
   const { data, status, reloadBookmarks } = useBookmarksData();
   const { createUrl } = useUrlActions();
 
@@ -69,7 +71,7 @@ export default function BookMarkCardList({
     const base = hasSearch ? filteredList : bookmarkBarFolderList;
     const copy = [...base];
     if (sortType === 'name') {
-      copy.sort((a, b) => (a.title ?? '').localeCompare(b.title ?? '', 'ko'));
+      copy.sort((a, b) => (a.title ?? '').localeCompare(b.title ?? '', i18n.language));
     }
     if (sortType === 'recent') {
       copy.sort((a, b) => (b.dateAdded ?? 0) - (a.dateAdded ?? 0));
@@ -100,12 +102,12 @@ export default function BookMarkCardList({
     <div className="flex flex-col items-center mx-auto gap-5 w-full">
       <ul className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4 mt-4 w-full">
         <BookmarkCard
-          title={'북마크바'}
+          title={t('section.bookmarkBar')}
           type="bookmarkBar"
           onClick={() => navigate('/bookmark/1')}
         />
         <BookmarkCard
-          title={'기타 북마크'}
+          title={t('section.other')}
           type="others"
           onClick={() => navigate('/bookmark/2')}
         />
@@ -130,7 +132,7 @@ export default function BookMarkCardList({
         <NewBookMark />
       </ul>
       {hasSearch && sortedFolderList.length === 0 && (
-        <p className="mt-4 text-sm text-gray-400">검색 결과가 없습니다.</p>
+        <p className="mt-4 text-sm text-gray-400">{t('search.noResult')}</p>
       )}
 
       <div className="flex flex-col justify-start items-start w-full gap-4">
@@ -146,7 +148,7 @@ export default function BookMarkCardList({
                   : 'text-(--color-gray-light) hover:bg-white/10',
               ].join(' ')}
             >
-              최근 북마크 추가 목록
+              {t('tab.recentList')}
             </button>
 
             <button
@@ -159,11 +161,11 @@ export default function BookMarkCardList({
                   : ' text-(--color-gray-light) hover:bg-white/10',
               ].join(' ')}
             >
-              북마크바 URL 리스트
+              {t('tab.barUrlList')}
             </button>
           </div>
           <TextButton
-            buttonName="+ 새북마크"
+            buttonName={t('action.newBookmark')}
             className="button__text px-4 pt-10 text-sm cursor-pointer shrink-0 whitespace-nowrap"
             onClick={createOpenhandler}
           />
@@ -197,7 +199,7 @@ export default function BookMarkCardList({
                 ))
               ) : (
                 <p className="flex justify-center mt-4 text-sm text-(--text-hover)">
-                  북마크바에 URL이 없습니다.
+                  {t('section.barEmpty')}
                 </p>
               )}
             </>

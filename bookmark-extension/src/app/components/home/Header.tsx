@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import Title from '../ui/Title';
 import TextButton from '../ui/TextButton';
 import ArrowLeft from '../../assets/icon/arrow-left.svg?react';
@@ -31,6 +32,7 @@ export default function Header({
   onKeyDown,
   onReset,
 }: HeaderProps) {
+  const { t } = useTranslation();
   const { folderId } = useParams<{ folderId: string }>();
   const { data, status, reloadBookmarks } = useBookmarksData();
   const [editInitialValue, setEditInitialValue] = useState('');
@@ -76,13 +78,13 @@ export default function Header({
 
     try {
       await updateFolder({ id: folderId, title: name });
-      toast.success('폴더 이름이 변경되었습니다.');
+      toast.success(t('toast.folderRenamed'));
 
       await reloadBookmarks();
       setIsOpen(false);
     } catch (error) {
       console.error('폴더 이름 변경 실패:', error);
-      toast.error('폴더 이름 변경에 실패했습니다.');
+      toast.error(t('toast.folderRenameFailed'));
     }
   };
 
@@ -94,11 +96,11 @@ export default function Header({
   const handleDeleteFolder = async () => {
     if (!folderId) return;
     if (folderId === '1' || folderId === '2') {
-      toast.error('기본 폴더는 삭제할 수 없습니다.');
+      toast.error(t('toast.cannotDeleteRoot'));
       return;
     }
 
-    const confirmed = window.confirm('정말로 이 폴더를 삭제하시겠습니까?');
+    const confirmed = window.confirm(t('confirm.deleteFolder'));
     if (!confirmed) return;
 
     try {

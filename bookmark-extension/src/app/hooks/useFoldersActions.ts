@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
 type CreateFolderParams = {
@@ -12,6 +13,7 @@ type UpdateFolderParams = {
 };
 
 export function useFolderActions() {
+  const { t } = useTranslation();
   const index = 0; // 새 폴더 인덱스
   const createFolder = useCallback((params: CreateFolderParams) => {
     const { title, parentId } = params;
@@ -32,16 +34,16 @@ export function useFolderActions() {
           const error = chrome.runtime.lastError;
           if (error) {
             console.error('createFolder error:', error);
-            toast.error('폴더 생성에 실패했습니다.');
+            toast.error(t('toast.folderCreateFailed'));
             reject(error);
           } else {
             resolve(result);
-            toast.success(' 폴더가 생성되었습니다!');
+            toast.success(t('toast.folderCreated'));
           }
         },
       );
     });
-  }, []);
+  }, [t]);
 
   const updateFolder = useCallback((params: UpdateFolderParams) => {
     const { id, title } = params;
@@ -62,7 +64,7 @@ export function useFolderActions() {
         }
       });
     });
-  }, []);
+  }, [t]);
 
   const deleteFolder = useCallback((id: string) => {
     return new Promise<void>((resolve, reject) => {
@@ -74,16 +76,16 @@ export function useFolderActions() {
       chrome.bookmarks.removeTree(id, () => {
         const error = chrome.runtime.lastError;
         if (error) {
-          toast.error('폴더 삭제에 실패했습니다.');
+          toast.error(t('toast.folderDeleteFailed'));
           console.error('deleteFolder error:', error);
           reject(error);
         } else {
           resolve();
-          toast.success('폴더가 삭제되었습니다!');
+          toast.success(t('toast.folderDeleted'));
         }
       });
     });
-  }, []);
+  }, [t]);
 
   return {
     createFolder,

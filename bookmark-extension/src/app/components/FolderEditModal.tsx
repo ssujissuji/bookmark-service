@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import InputComponent from './ui/InputComponent';
 import TextButton from './ui/TextButton';
 import toast from 'react-hot-toast';
@@ -14,7 +15,8 @@ export default function FolderEditModal({
   onCancel: () => void;
   onSubmit: (name: string) => void;
 }) {
-  const option = type === 'new' ? '🆕 새로운 폴더 생성' : '🪄 폴더 수정';
+  const { t } = useTranslation();
+  const option = type === 'new' ? t('modal.createFolder') : t('modal.editFolder');
   const [folderName, setFolderName] = useState(initialValue || '');
   const maxLength = 20;
 
@@ -24,11 +26,10 @@ export default function FolderEditModal({
     const trimmed = folderName.trim();
     const len = countChars(trimmed);
 
-    if (len === 0) return '폴더명을 입력해주세요.';
-    if (len > maxLength)
-      return `폴더명은 최대 ${maxLength}자까지 입력할 수 있어요.`;
+    if (len === 0) return t('error.folderNameEmpty');
+    if (len > maxLength) return t('error.folderNameMax', { max: maxLength });
     return '';
-  }, [folderName]);
+  }, [folderName, t]);
 
   const hasError = nameError.length > 0;
 
@@ -59,12 +60,12 @@ export default function FolderEditModal({
           id="name"
           placeholder={
             type === 'new'
-              ? '폴더명을 입력해주세요.'
+              ? t('placeholder.folderName')
               : folderName.length > 0
                 ? folderName
-                : '수정할 폴더명을 입력해주세요.'
+                : t('placeholder.folderNameEdit')
           }
-          label="폴더명"
+          label={t('label.folderName')}
           type="text"
           value={folderName}
           mode="folder"
@@ -74,12 +75,12 @@ export default function FolderEditModal({
 
       <div className="flex justify-center gap-6 pt-2">
         <TextButton
-          buttonName="취소"
+          buttonName={t('action.cancel')}
           className="button__text__folder tracking-[0.25em]"
           onClick={onCancel}
         />
         <TextButton
-          buttonName={type === 'new' ? '생성' : '수정'}
+          buttonName={type === 'new' ? t('action.create') : t('action.edit')}
           className="button__text__folder tracking-[0.25em]"
           onClick={handleSubmitClick}
         />

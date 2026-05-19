@@ -4,6 +4,7 @@ import type { SortType } from '../layout/RootLayout';
 export function sortBookmarks(
   bookmarks: BookmarkTreeType[],
   sortType: SortType,
+  locale?: string,
 ) {
   if (!bookmarks) return [];
 
@@ -14,7 +15,7 @@ export function sortBookmarks(
   }
 
   if (sortType === 'name') {
-    return list.sort((a, b) => a.title.localeCompare(b.title));
+    return list.sort((a, b) => a.title.localeCompare(b.title, locale));
   }
 
   return list;
