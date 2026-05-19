@@ -30,8 +30,14 @@
 - `BookmarkCard.tsx`, `BookmarkListItem.tsx` 누락 한글 문자열 처리
 - 번역 파일 `toast.moved`, `confirm.deleteBookmark` 키 추가
 
+#### Phase 5 완료 — 언어 수동 전환 UI
+- Footer에 KO/EN 토글 버튼 추가 (현재 언어의 반대 언어 표시)
+- `localStorage` 기반 언어 선택 저장 (재방문 시 유지)
+- `i18n.ts` 감지 순서 변경: `localStorage` → `navigator` (수동 선택 우선)
+- `nonExplicitSupportedLngs: true` 추가 — `en-US`, `ko-KR` 등 지역 코드 자동 매칭
+
 #### 예정
-- Phase 4: Chrome Web Store 스토어 리스팅 영어 추가
+- Phase 4: Chrome Web Store 스토어 리스팅 영어 추가 (수동 작업)
 
 자세한 내용은 [WORK.md](./WORK.md) 참조
 

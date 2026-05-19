@@ -84,10 +84,11 @@ UI 전체가 한국어로만 되어 있어 이탈률이 높은 상황.
 
 ---
 
-## Phase 5 — 언어 수동 전환 UI (선택)
+## Phase 5 — 언어 수동 전환 UI ✅
 
-- [ ] 설정 영역에 언어 토글 버튼 (KO / EN) 추가
-- [ ] 선택 언어를 `chrome.storage.sync`에 저장 (기기 간 동기화)
+- [x] Footer에 언어 토글 버튼 (KO / EN) 추가
+- [x] 선택 언어를 `localStorage`에 저장 (재방문 시 유지)
+- [x] `nonExplicitSupportedLngs: true` — en-US 등 지역 코드 자동 매칭 버그 수정
 
 ---
 

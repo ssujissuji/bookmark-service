@@ -25,8 +25,12 @@ export default function Footer({
   teamName = 'buttonn_',
   contactUrl = 'https://www.notion.so/chrome-bookmark-extension-2f8ea2795d2d808f9a96dc45df7611d1?source=copy_link',
 }: FooterProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isThemeOpen, setIsThemeOpen] = useState(false);
+
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language.startsWith('ko') ? 'en' : 'ko');
+  };
 
   const themes: ThemePreset[] = useMemo(
     () => [
@@ -90,11 +94,19 @@ export default function Footer({
               Chrome Web Store
             </a>
             <button
+              onClick={toggleLanguage}
+              className="grid h-8 w-8 place-items-center rounded-lg text-[11px] font-semibold
+                text-(--folder-c9) hover:text-(--text-hover) active:bg-white/15 transition"
+              aria-label="Toggle language"
+            >
+              {i18n.language.startsWith('ko') ? 'EN' : 'KO'}
+            </button>
+            <button
               onClick={() => setIsThemeOpen(true)}
-              className="ml-1 grid h-8 w-8 place-items-center
-    rounded-lg text-(--folder-c9)
-    hover:text-(--text-hover)
-    active:bg-white/15 transition"
+              className="grid h-8 w-8 place-items-center
+                rounded-lg text-(--folder-c9)
+                hover:text-(--text-hover)
+                active:bg-white/15 transition"
             >
               <Paint className="h-6 w-6" />
             </button>

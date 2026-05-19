@@ -15,12 +15,14 @@ i18n
     },
     fallbackLng: 'ko',
     supportedLngs: ['ko', 'en'],
+    nonExplicitSupportedLngs: true, // en-US → en 매칭
     interpolation: {
       escapeValue: false,
     },
     detection: {
-      order: ['navigator'],
-      caches: [],
+      order: ['localStorage', 'navigator'], // 수동 선택 우선, 없으면 브라우저 언어
+      caches: ['localStorage'],
+      lookupLocalStorage: 'i18nextLng',
     },
   });
 
