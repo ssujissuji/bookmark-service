@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import IconFolder from '../../assets/icon/folder_fill.svg?react';
 import Ellipsis from '../../assets/icon/ellipsis.svg?react';
 import SelectBox from './SelectBox';
@@ -32,6 +33,7 @@ export default function BookmarkCard({
   iconColor?: string;
   onClick: () => void;
 }) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLDivElement>(null);
@@ -74,7 +76,7 @@ export default function BookmarkCard({
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm('정말로 이 폴더를 삭제하시겠습니까?');
+    const confirmed = window.confirm(t('confirm.deleteFolder'));
     if (!confirmed) return;
     if (!id) return;
     try {
@@ -102,7 +104,7 @@ export default function BookmarkCard({
     try {
       await chrome.bookmarks.update(id, { title: name });
       await reloadBookmarks();
-      toast.success('폴더명이 수정되었습니다.');
+      toast.success(t('toast.folderRenamed'));
     } catch (error) {
       console.error('폴더 수정 실패:', error);
     } finally {
@@ -178,7 +180,7 @@ export default function BookmarkCard({
       });
 
       await reloadBookmarks();
-      toast.success('이동되었습니다!');
+      toast.success(t('toast.moved'));
     } catch (err) {
       console.error('이동 실패:', err);
     }

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 export default function InputComponent({
   id,
   placeholder,
@@ -9,6 +11,7 @@ export default function InputComponent({
   onKeyDown,
   onReset,
 }: InputProps) {
+  const { t } = useTranslation();
   const searchStyle = id === 'search' ? 'input--search' : '';
   const maxLength = mode === 'bookmark' ? 100 : 20;
 
@@ -59,7 +62,7 @@ export default function InputComponent({
               }`}
               aria-hidden={!isOverLimit}
             >
-              글자 수 제한을 초과했습니다.
+              {t('error.charLimit')}
             </p>
           </div>
         )}
@@ -69,7 +72,7 @@ export default function InputComponent({
             type="button"
             onClick={onReset}
             className="absolute right-3 text-gray-400 hover:text-gray-200 transition-colors top-1/2 transform -translate-y-1/2"
-            aria-label="입력 내용 삭제"
+            aria-label={t('aria.clearInput')}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
