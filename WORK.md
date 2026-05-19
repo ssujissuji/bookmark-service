@@ -77,10 +77,10 @@ UI 전체가 한국어로만 되어 있어 이탈률이 높은 상황.
 
 **목표:** 영어권 검색 → 설치 전환율 개선
 
-- [ ] 영어 스토어 설명문 작성 (SEO 키워드 포함)
+- [x] 영어 스토어 설명문 작성 (SEO 키워드 포함)
   - 키워드 예시: `bookmark manager`, `bookmark organizer`, `new tab bookmarks`, `chrome bookmark extension`
-- [ ] 영어 UI 기반 스크린샷 재촬영 (또는 다국어 병행 표시 스크린샷)
-- [ ] `Footer.tsx` 피드백 링크 문구 영어 버전 추가
+- [x] 영어 UI 기반 스크린샷 재촬영 (또는 다국어 병행 표시 스크린샷)
+- [x] `Footer.tsx` 피드백 링크 문구 영어 버전 추가
 
 ---
 
