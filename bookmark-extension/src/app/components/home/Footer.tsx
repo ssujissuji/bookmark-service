@@ -69,7 +69,7 @@ export default function Footer({
         <div className="mx-auto flex h-12 items-center justify-between px-4 text-[12px] text-white/80">
           {/* LEFT */}
           <div className="flex min-w-0 items-center gap-2">
-            <span className="truncate">ver 1.5.4</span>
+            <span className="truncate">ver 1.6.0</span>
             <span className="truncate">
               © {new Date().getFullYear()} {teamName}
             </span>
