@@ -1,0 +1,92 @@
+{
+  "sort": {
+    "recent": "최신순",
+    "name": "이름순"
+  },
+  "section": {
+    "bookmarkBar": "북마크바",
+    "other": "기타 북마크",
+    "bookmarkEmpty": "북마크가 없습니다.",
+    "barEmpty": "북마크바에 URL이 없습니다.",
+    "folderRootNotFound": "폴더 루트를 찾지 못했습니다."
+  },
+  "tab": {
+    "recentList": "최근 북마크 추가 목록",
+    "barUrlList": "북마크바 URL 리스트"
+  },
+  "action": {
+    "newBookmark": "+ 새북마크",
+    "newFolder": "+ 새폴더",
+    "createNewFolder": "새폴더 만들기",
+    "cancel": "취소",
+    "create": "생성",
+    "edit": "수정",
+    "delete": "삭제"
+  },
+  "modal": {
+    "createFolder": "🆕 새로운 폴더 생성",
+    "editFolder": "🪄 폴더 수정",
+    "createBookmark": "🆕 새로운 북마크 생성",
+    "editBookmark": "🪄 북마크 설정 변경"
+  },
+  "label": {
+    "folderName": "폴더명",
+    "bookmarkName": "북마크 이름"
+  },
+  "placeholder": {
+    "folderName": "폴더명을 입력해주세요.",
+    "folderNameEdit": "수정할 폴더명을 입력해주세요.",
+    "bookmarkName": "북마크 이름을 입력해주세요."
+  },
+  "error": {
+    "charLimit": "글자 수 제한을 초과했습니다.",
+    "folderNameEmpty": "폴더명을 입력해주세요.",
+    "folderNameMax": "폴더명은 최대 {{max}}자까지 입력할 수 있어요.",
+    "bookmarkNameEmpty": "북마크 이름을 입력해주세요.",
+    "bookmarkNameMax": "북마크 이름은 최대 {{max}}자까지 입력할 수 있어요.",
+    "urlEmpty": "URL을 입력해주세요.",
+    "urlProtocol": "http 또는 https URL만 입력할 수 있어요.",
+    "urlInvalid": "URL 형식이 올바르지 않아요. 예) https://example.com",
+    "dataLoad": "데이터를 불러오지 못했습니다."
+  },
+  "toast": {
+    "folderCreated": "폴더가 생성되었습니다!",
+    "folderCreateFailed": "폴더 생성에 실패했습니다.",
+    "folderDeleted": "폴더가 삭제되었습니다!",
+    "folderDeleteFailed": "폴더 삭제에 실패했습니다.",
+    "folderRenamed": "폴더 이름이 변경되었습니다.",
+    "folderRenameFailed": "폴더 이름 변경에 실패했습니다.",
+    "cannotDeleteRoot": "기본 폴더는 삭제할 수 없습니다.",
+    "bookmarkCreated": "북마크가 생성되었습니다!",
+    "bookmarkCreateFailed": "북마크 생성에 실패했습니다.",
+    "bookmarkUpdated": "북마크가 수정되었습니다!",
+    "bookmarkUpdateFailed": "북마크 수정에 실패했습니다.",
+    "bookmarkDeleted": "북마크가 삭제되었습니다!",
+    "bookmarkDeleteFailed": "북마크 삭제에 실패했습니다.",
+    "movedToRoot": "루트로 이동되었습니다!",
+    "moveFailed": "이동에 실패했습니다."
+  },
+  "confirm": {
+    "deleteFolder": "정말로 이 폴더를 삭제하시겠습니까?"
+  },
+  "search": {
+    "noResult": "검색 결과가 없습니다."
+  },
+  "dnd": {
+    "dropHint": "여기로 드롭하면 반대 루트로 이동"
+  },
+  "theme": {
+    "applied": "적용됨",
+    "select": "선택",
+    "hint": "좌우로 넘기거나 카드를 눌러 테마를 즉시 적용할 수 있어요"
+  },
+  "aria": {
+    "closeTheme": "테마 선택 닫기",
+    "close": "닫기",
+    "goToTheme": "{{name}}로 이동",
+    "clearInput": "입력 내용 삭제"
+  },
+  "footer": {
+    "feedback": "업데이트 제안 및 오류 접수처(Notion)"
+  }
+}

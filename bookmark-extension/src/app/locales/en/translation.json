@@ -1,0 +1,92 @@
+{
+  "sort": {
+    "recent": "Recent",
+    "name": "A-Z"
+  },
+  "section": {
+    "bookmarkBar": "Bookmark Bar",
+    "other": "Other Bookmarks",
+    "bookmarkEmpty": "No bookmarks here.",
+    "barEmpty": "No URLs in bookmark bar.",
+    "folderRootNotFound": "Folder root not found."
+  },
+  "tab": {
+    "recentList": "Recently Added",
+    "barUrlList": "Bookmark Bar URLs"
+  },
+  "action": {
+    "newBookmark": "+ New Bookmark",
+    "newFolder": "+ New Folder",
+    "createNewFolder": "Create New Folder",
+    "cancel": "Cancel",
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "modal": {
+    "createFolder": "🆕 Create New Folder",
+    "editFolder": "🪄 Edit Folder",
+    "createBookmark": "🆕 Add New Bookmark",
+    "editBookmark": "🪄 Edit Bookmark"
+  },
+  "label": {
+    "folderName": "Folder Name",
+    "bookmarkName": "Bookmark Name"
+  },
+  "placeholder": {
+    "folderName": "Enter folder name",
+    "folderNameEdit": "Enter new folder name",
+    "bookmarkName": "Enter bookmark name"
+  },
+  "error": {
+    "charLimit": "Character limit exceeded.",
+    "folderNameEmpty": "Please enter a folder name.",
+    "folderNameMax": "Folder name must be {{max}} characters or less.",
+    "bookmarkNameEmpty": "Please enter a bookmark name.",
+    "bookmarkNameMax": "Bookmark name must be {{max}} characters or less.",
+    "urlEmpty": "Please enter a URL.",
+    "urlProtocol": "Only http or https URLs are allowed.",
+    "urlInvalid": "Invalid URL. e.g. https://example.com",
+    "dataLoad": "Failed to load data."
+  },
+  "toast": {
+    "folderCreated": "Folder created!",
+    "folderCreateFailed": "Failed to create folder.",
+    "folderDeleted": "Folder deleted!",
+    "folderDeleteFailed": "Failed to delete folder.",
+    "folderRenamed": "Folder renamed.",
+    "folderRenameFailed": "Failed to rename folder.",
+    "cannotDeleteRoot": "Default folders cannot be deleted.",
+    "bookmarkCreated": "Bookmark added!",
+    "bookmarkCreateFailed": "Failed to add bookmark.",
+    "bookmarkUpdated": "Bookmark updated!",
+    "bookmarkUpdateFailed": "Failed to update bookmark.",
+    "bookmarkDeleted": "Bookmark deleted!",
+    "bookmarkDeleteFailed": "Failed to delete bookmark.",
+    "movedToRoot": "Moved to root!",
+    "moveFailed": "Failed to move item."
+  },
+  "confirm": {
+    "deleteFolder": "Are you sure you want to delete this folder?"
+  },
+  "search": {
+    "noResult": "No results found."
+  },
+  "dnd": {
+    "dropHint": "Drop here to move to the other root"
+  },
+  "theme": {
+    "applied": "Applied",
+    "select": "Select",
+    "hint": "Swipe or tap a card to apply a theme instantly"
+  },
+  "aria": {
+    "closeTheme": "Close theme selector",
+    "close": "Close",
+    "goToTheme": "Go to {{name}}",
+    "clearInput": "Clear input"
+  },
+  "footer": {
+    "feedback": "Feedback & Bug Reports (Notion)"
+  }
+}

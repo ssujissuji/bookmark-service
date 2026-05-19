@@ -1,0 +1,84 @@
+# CHANGELOG
+
+모든 주요 변경 사항을 이 파일에 기록합니다.  
+형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 기반으로 합니다.
+
+---
+
+## [Unreleased]
+
+### In Progress — i18n 다국어 지원 (`feat/locale-based-language`)
+
+#### Phase 1 완료 — i18n 인프라 구축
+- `i18next` + `react-i18next` + `i18next-browser-languagedetector` 설치
+- 번역 파일 생성 (`src/app/locales/ko`, `src/app/locales/en`) — 한글 문자열 전체 키 정의 완료
+- `i18n.ts` 초기화 파일 추가 (브라우저 언어 자동 감지, 폴백 `ko`)
+- Chrome `_locales` 디렉토리 추가 (`public/_locales/ko`, `public/_locales/en`)
+- `manifest.config.js` — `default_locale: 'ko'` 추가
+- `main.tsx` — `i18n` 초기화 import 추가
+
+#### 예정
+- Phase 2: 컴포넌트 한글 문자열 → `t('key')` 교체
+- Phase 3: 날짜/정렬 현지화
+- Phase 4: Chrome Web Store 스토어 리스팅 영어 추가
+
+자세한 내용은 [WORK.md](./WORK.md) 참조
+
+---
+
+## [1.5.4] - 2025-05
+
+### Fixed
+- 테마 전환 시 가로 스크롤 카드 밀림 현상 제거
+- 테마 전환 시 배경 스크롤 현상 제거
+
+---
+
+## [1.5.3] - 2025-05
+
+### Fixed
+- 테마 변경 스위치 오류 수정 — 버튼 클릭으로 테마가 변경되는 불편함 제거, 테마 카드 클릭 시에만 적용되도록 수정
+- Footer 높이 부족으로 발생하던 y-scroll 현상 수정 (`h-[40vh]`)
+
+### Improved
+- Footer 테마 변경 아이콘을 `button` 태그로 감싸 스크린리더 접근성 향상
+- 새 폴더 생성 카드 디자인을 기존 북마크 폴더 카드와 통일
+
+---
+
+## [1.5.2] - 2025-04
+
+### Added
+- 폴더 아이콘 색상 변경 기능 추가
+
+### Changed
+- 폴더 아이콘 디자인 통일 (스타일 일관성)
+- 테마 변경 아이콘 교체 — 다크모드 아이콘 → 페인트 아이콘 (직관성 개선)
+
+### Removed
+- 사용하지 않는 `IconInputComponent` 컴포넌트 삭제
+
+---
+
+## [1.5.1] - 2025-04
+
+### Fixed
+- `global.css` 배경 이미지 import 이름 오타 수정
+- 이미지 파일 이름 공백 제거
+
+---
+
+## [1.5.0] - 2025-04
+
+### Added
+- 테마 변경 기능 추가 (black / bed / hologram / snow 테마)
+- Footer 추가 — 테마 변경 진입점 및 버전 표시
+
+### Removed
+- 북마크 데이터 로드 관련 불필요한 console 제거
+
+---
+
+## [이전 버전]
+
+git log 참조: `git log --oneline`
