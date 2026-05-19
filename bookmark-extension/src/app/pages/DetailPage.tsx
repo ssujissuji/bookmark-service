@@ -31,7 +31,7 @@ export type OutletContextType = {
 };
 
 export default function DetailPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const DND_JSON_MIME = 'application/x-bookmark-dnd';
   const navigate = useNavigate();
 
@@ -73,8 +73,8 @@ export default function DetailPage() {
   const [isOpenFolderEdit, setIsOpenFolderEdit] = useState(false);
 
   const sortedBookmarks = useMemo(
-    () => sortBookmarks(bookmarks, sortType),
-    [bookmarks, sortType],
+    () => sortBookmarks(bookmarks, sortType, i18n.language),
+    [bookmarks, sortType, i18n.language],
   );
 
   const normalizedKeyword = keyword.trim().toLowerCase();

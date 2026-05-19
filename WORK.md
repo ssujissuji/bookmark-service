@@ -61,14 +61,19 @@ UI 전체가 한국어로만 되어 있어 이탈률이 높은 상황.
 
 ---
 
-## Phase 3 — 날짜/시간 및 정렬 현지화 (다음 작업)
+## Phase 3 — 정렬 현지화 및 누락 문자열 처리 ✅
 
-- [ ] `timeUtils.ts` — 한국식 날짜 포맷 → `Intl.DateTimeFormat` 변경
-- [ ] 이름 정렬 `localeCompare()` → locale 파라미터 동적 적용
+- [x] 이름 정렬 `localeCompare()` → `i18n.language` 동적 적용
+  - `sortBookmarks.ts` — `locale?` 파라미터 추가
+  - `BookMarkCardList.tsx` — 하드코딩 `'ko'` 제거
+  - `DetailPage.tsx` — `i18n.language` 전달
+- [x] Phase 2 누락 파일 처리 (`BookmarkCard.tsx`, `BookmarkListItem.tsx`)
+  - confirm, toast 메시지 번역키 교체
+  - 번역 파일에 `toast.moved`, `confirm.deleteBookmark` 키 추가
 
 ---
 
-## Phase 4 — Chrome Web Store 스토어 리스팅 개선
+## Phase 4 — Chrome Web Store 스토어 리스팅 개선 (다음 작업)
 
 **목표:** 영어권 검색 → 설치 전환율 개선
 

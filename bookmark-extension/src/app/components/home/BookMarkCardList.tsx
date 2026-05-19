@@ -35,7 +35,7 @@ export default function BookMarkCardList({
 
   const [activeTab, setActiveTab] = useState<TabType>('recent');
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data, status, reloadBookmarks } = useBookmarksData();
   const { createUrl } = useUrlActions();
 
@@ -71,7 +71,7 @@ export default function BookMarkCardList({
     const base = hasSearch ? filteredList : bookmarkBarFolderList;
     const copy = [...base];
     if (sortType === 'name') {
-      copy.sort((a, b) => (a.title ?? '').localeCompare(b.title ?? '', 'ko'));
+      copy.sort((a, b) => (a.title ?? '').localeCompare(b.title ?? '', i18n.language));
     }
     if (sortType === 'recent') {
       copy.sort((a, b) => (b.dateAdded ?? 0) - (a.dateAdded ?? 0));

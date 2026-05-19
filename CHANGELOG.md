@@ -24,8 +24,13 @@
   - 커스텀 훅: `useFoldersActions`, `useUrlActions` (toast 메시지)
   - `window.confirm()` 문자열 영어 처리 포함
 
+#### Phase 3 완료 — 정렬 현지화 및 누락 문자열 처리
+- `sortBookmarks.ts` locale 파라미터 추가, `i18n.language` 기반 동적 정렬
+- `BookMarkCardList.tsx` 하드코딩 `'ko'` 제거
+- `BookmarkCard.tsx`, `BookmarkListItem.tsx` 누락 한글 문자열 처리
+- 번역 파일 `toast.moved`, `confirm.deleteBookmark` 키 추가
+
 #### 예정
-- Phase 3: 날짜/정렬 현지화
 - Phase 4: Chrome Web Store 스토어 리스팅 영어 추가
 
 자세한 내용은 [WORK.md](./WORK.md) 참조
