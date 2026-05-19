@@ -36,7 +36,7 @@ UI 전체가 한국어로만 되어 있어 이탈률이 높은 상황.
 
 ---
 
-## Phase 2 — 한글 문자열 추출 및 번역 (다음 작업)
+## Phase 2 — 한글 문자열 추출 및 번역 ✅
 
 **목표:** 하드코딩된 한글 약 50개를 번역 키로 교체
 
@@ -56,12 +56,12 @@ UI 전체가 한국어로만 되어 있어 이탈률이 높은 상황.
 | hooks (toast) | 폴더/북마크 생성·수정·삭제·이동 메시지 6종 | `toast.*` |
 
 - [x] 번역 키 전체 정의 (`ko/translation.json`, `en/translation.json`)
-- [ ] 각 컴포넌트에서 `useTranslation()` 훅 적용 및 `t('key')` 교체
-- [ ] `window.confirm()` 한글 메시지 영어 처리
+- [x] 각 컴포넌트에서 `useTranslation()` 훅 적용 및 `t('key')` 교체
+- [x] `window.confirm()` 한글 메시지 영어 처리
 
 ---
 
-## Phase 3 — 날짜/시간 및 정렬 현지화
+## Phase 3 — 날짜/시간 및 정렬 현지화 (다음 작업)
 
 - [ ] `timeUtils.ts` — 한국식 날짜 포맷 → `Intl.DateTimeFormat` 변경
 - [ ] 이름 정렬 `localeCompare()` → locale 파라미터 동적 적용

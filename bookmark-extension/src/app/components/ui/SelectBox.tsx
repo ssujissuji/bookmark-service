@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import SelectItem from './SelectItem';
 
 export default function SelectBox({
@@ -7,16 +8,17 @@ export default function SelectBox({
   onDelete?: () => void;
   onModify?: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="select-box" onClick={(e) => e.stopPropagation()}>
       <SelectItem
         className="rounded-t-lg"
-        selectOption="수정"
+        selectOption={t('action.edit')}
         onClick={onModify}
       />
       <SelectItem
         className="rounded-b-lg"
-        selectOption="삭제"
+        selectOption={t('action.delete')}
         onClick={onDelete}
       />
     </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import InputComponent from '../ui/InputComponent';
 import TextButton from '../ui/TextButton';
 import type { SortType } from '../../layout/RootLayout';
@@ -21,6 +22,7 @@ export default function Navbar({
   onKeyDown,
   onReset,
 }: NavbarProps) {
+  const { t } = useTranslation();
   const handleRecentClick = () => onChangeSort('recent');
   const handleNameClick = () => onChangeSort('name');
 
@@ -31,7 +33,7 @@ export default function Navbar({
     <div className="flex justify-between items-end w-full mt-12">
       <div className="flex justify-start items-center min-w-[120px]">
         <TextButton
-          buttonName="최신순"
+          buttonName={t('sort.recent')}
           onClick={handleRecentClick}
           className={[
             'px-4 py-2 rounded-lg text-sm transition cursor-pointer',
@@ -41,7 +43,7 @@ export default function Navbar({
           ].join(' ')}
         />
         <TextButton
-          buttonName="이름순"
+          buttonName={t('sort.name')}
           onClick={handleNameClick}
           className={[
             'px-4 py-2 rounded-lg text-sm transition cursor-pointer',

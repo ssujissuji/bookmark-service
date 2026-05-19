@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { ThemeId } from '../../utils/theme';
 
 export type ThemePreset = {
@@ -24,6 +25,7 @@ export default function ThemeSwitch({
   activeThemeId,
   onChangeTheme,
 }: ThemeSwitchProps) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -122,7 +124,7 @@ export default function ThemeSwitch({
     <div className="fixed inset-0 z-60">
       <button
         type="button"
-        aria-label="테마 선택 닫기"
+        aria-label={t('aria.closeTheme')}
         onClick={onClose}
         className="absolute inset-0 bg-black/45"
       />
@@ -138,7 +140,7 @@ export default function ThemeSwitch({
             type="button"
             onClick={onClose}
             className="rounded-lg px-2 py-1 text-(--text-main) hover:bg-white/10 hover:text-(--text-muted)"
-            aria-label="닫기"
+            aria-label={t('aria.close')}
           >
             ✕
           </button>
@@ -191,10 +193,10 @@ export default function ThemeSwitch({
                   <div className="text-sm text-(--text-main)">{theme.name}</div>
                   {isApplied ? (
                     <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-white/80">
-                      적용됨
+                      {t('theme.applied')}
                     </span>
                   ) : (
-                    <span className="text-[11px] text-(--text-sub)">선택</span>
+                    <span className="text-[11px] text-(--text-sub)">{t('theme.select')}</span>
                   )}
                 </div>
               </button>
@@ -203,14 +205,14 @@ export default function ThemeSwitch({
         </div>
 
         <div className="mt-2 flex items-center justify-center gap-2">
-          {themes.map((t, idx) => {
+          {themes.map((theme, idx) => {
             const isOn = idx === activeIndex;
 
             return (
               <button
-                key={t.id}
+                key={theme.id}
                 type="button"
-                aria-label={`${t.name}로 이동`}
+                aria-label={t('aria.goToTheme', { name: theme.name })}
                 onClick={() => {
                   handleDotClick(idx);
                 }}
@@ -224,7 +226,7 @@ export default function ThemeSwitch({
         </div>
 
         <div className="mt-3 text-center text-[11px] text-(--text-muted)">
-          좌우로 넘기거나 카드를 눌러 테마를 즉시 적용할 수 있어요
+          {t('theme.hint')}
         </div>
       </div>
     </div>

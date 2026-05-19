@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import NewFolder from '../../assets/icon/folder_new.svg?react';
 import ReactDOM from 'react-dom';
 import FolderEditModal from '../FolderEditModal';
@@ -6,6 +7,7 @@ import { useFolderActions } from '../../hooks/useFoldersActions';
 import { useBookmarksData } from '@/app/BookmarksContext';
 
 export default function NewBookMark() {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const currentFolderId = '1'; // 기본 북마크바에 생성되도록 설정
 
@@ -43,7 +45,7 @@ export default function NewBookMark() {
           <NewFolder width={60} height={60} />
         </div>
         <span className="text-xl font-['LeferiBaseRegular']">
-          새폴더 만들기
+          {t('action.createNewFolder')}
         </span>
       </div>
       {isOpen &&

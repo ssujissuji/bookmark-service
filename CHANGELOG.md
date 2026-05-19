@@ -17,8 +17,14 @@
 - `manifest.config.js` — `default_locale: 'ko'` 추가
 - `main.tsx` — `i18n` 초기화 import 추가
 
+#### Phase 2 완료 — 컴포넌트 한글 문자열 교체
+- `useTranslation()` 훅 도입, 13개 파일 한글 문자열 전체 `t('key')` 교체
+  - UI 컴포넌트: `Navbar`, `BookMarkCardList`, `FolderEditModal`, `BookmarkEditModal`, `SelectBox`, `Header`, `InputComponent`, `ThemeSwitch`, `Footer`, `NewBookMark`
+  - 페이지: `DetailPage`
+  - 커스텀 훅: `useFoldersActions`, `useUrlActions` (toast 메시지)
+  - `window.confirm()` 문자열 영어 처리 포함
+
 #### 예정
-- Phase 2: 컴포넌트 한글 문자열 → `t('key')` 교체
 - Phase 3: 날짜/정렬 현지화
 - Phase 4: Chrome Web Store 스토어 리스팅 영어 추가
 
