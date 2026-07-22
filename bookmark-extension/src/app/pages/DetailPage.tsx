@@ -1,16 +1,19 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import FolderList from '../components/FolderList';
+import FolderChipSection from '../components/FolderChipSection';
 import BookmarkListItem from '../components/ui/BookmarkListItem';
 import ReactDOM from 'react-dom';
 import { useNavigate, useOutletContext, useParams } from 'react-router';
 
 import {
   findNodeById,
+  findPathToNode,
   separateFolderAndBookmarks,
 } from '../utils/bookmarkTreeUtils';
 import type { SortType } from '../layout/RootLayout';
 import { sortBookmarks } from '../utils/sortBookmarks';
+import { sortFolders } from '../utils/sortFolders';
 import { useBookmarksData } from '../BookmarksContext';
 import TextButton from '../components/ui/TextButton';
 import { useFolderActions } from '../hooks/useFoldersActions';
@@ -67,7 +70,7 @@ export default function DetailPage() {
   const targetFolder = folderId ? findNodeById(rootNodes, folderId) : undefined;
   const children = targetFolder?.children ?? [];
 
-  const { bookmarks } = separateFolderAndBookmarks(children);
+  const { bookmarks, folders } = separateFolderAndBookmarks(children);
   const { createUrl } = useUrlActions();
   const [isOpenBookmarkEdit, setIsOpenBookmarkEdit] = useState(false);
   const [isOpenFolderEdit, setIsOpenFolderEdit] = useState(false);
@@ -89,6 +92,81 @@ export default function DetailPage() {
     }
     return [];
   }, [sortedBookmarks, normalizedKeyword]);
+
+  const sortedFolders = useMemo(
+    () => sortFolders(folders, sortType),
+    [folders, sortType],
+  );
+
+  const filteredFolders = useMemo(() => {
+    if (!normalizedKeyword) return sortedFolders;
+    return sortedFolders.filter((folder) => {
+      const title = folder.title.toLowerCase() ?? '';
+      return title.includes(normalizedKeyword);
+    });
+  }, [sortedFolders, normalizedKeyword]);
+
+  // 칩 섹션: 상위 폴더 + 형제 폴더 (현재 폴더 활성 표시)
+  const parentFolder = useMemo(() => {
+    if (!folderId) return undefined;
+    const path = findPathToNode(data?.[0]?.children ?? [], folderId);
+    if (!path || path.length < 2) return undefined;
+    return path[path.length - 2];
+  }, [data, folderId]);
+
+  const filteredSiblings = useMemo(() => {
+    const siblingSource = parentFolder
+      ? (parentFolder.children ?? [])
+      : rootNodes;
+    const { folders: siblingFolders } =
+      separateFolderAndBookmarks(siblingSource);
+    const sorted = sortFolders(siblingFolders, sortType);
+
+    if (!normalizedKeyword) return sorted;
+    return sorted.filter((folder) => {
+      if (String(folder.id) === String(folderId)) return true;
+      const title = folder.title.toLowerCase() ?? '';
+      return title.includes(normalizedKeyword);
+    });
+  }, [parentFolder, rootNodes, sortType, normalizedKeyword, folderId]);
+
+  const folderChipMatchCount = useMemo(() => {
+    if (!normalizedKeyword) return 0;
+    const siblingMatches = filteredSiblings.filter(
+      (folder) => String(folder.id) !== String(folderId),
+    ).length;
+    return filteredFolders.length + siblingMatches;
+  }, [normalizedKeyword, filteredSiblings, filteredFolders, folderId]);
+
+  // 사이드바 아코디언: 현재 폴더까지의 경로는 항상 펼침
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!folderId || !data) return;
+    const path = findPathToNode(data[0]?.children ?? [], folderId);
+    if (!path) return;
+
+    setExpandedIds((prev) => {
+      const missing = path.filter((node) => !prev.has(String(node.id)));
+      if (missing.length === 0) return prev;
+
+      const next = new Set(prev);
+      missing.forEach((node) => next.add(String(node.id)));
+      return next;
+    });
+  }, [folderId, data]);
+
+  const toggleExpand = (id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
 
   const { createFolder } = useFolderActions();
   const handleSubmitFolder = async (name: string) => {
@@ -205,10 +283,18 @@ export default function DetailPage() {
   return (
     <div>
       <div className="w-full mx-auto flex flex-col gap-3 pb-25 pt-6">
+        <FolderChipSection
+          parentFolder={parentFolder}
+          siblings={filteredSiblings}
+          childFolders={filteredFolders}
+          currentFolderId={folderId}
+        />
         {sortedBookmarks.length === 0 ? (
-          <div className="flex mt-4 text-sm text-gray-400 justify-center text-center">
-            {t('section.bookmarkEmpty')}
-          </div>
+          hasSearch && folderChipMatchCount > 0 ? null : (
+            <div className="flex mt-4 text-sm text-gray-400 justify-center text-center">
+              {t('section.bookmarkEmpty')}
+            </div>
+          )
         ) : hasSearch ? (
           hasResult ? (
             (filteredList ?? []).map((bookmark) => (
@@ -220,7 +306,7 @@ export default function DetailPage() {
                 dateAdded={bookmark.dateAdded}
               />
             ))
-          ) : (
+          ) : folderChipMatchCount > 0 ? null : (
             <p className="flex mt-4 text-sm text-gray-400 justify-center text-center">
               {t('search.noResult')}
             </p>
@@ -284,7 +370,12 @@ export default function DetailPage() {
             )}
             <ul className="flex flex-col gap-2 min-w-0 w-[200px] wrap hide-scrollbar overflow-y-auto flex-1 min-h-0">
               {currentRootNode ? (
-                <FolderList node={currentRootNode} folderId={folderId} />
+                <FolderList
+                  node={currentRootNode}
+                  folderId={folderId}
+                  expandedIds={expandedIds}
+                  onToggleExpand={toggleExpand}
+                />
               ) : (
                 <p className="text-sm text-gray-400">
                   {t('error.folderRootNotFound')}

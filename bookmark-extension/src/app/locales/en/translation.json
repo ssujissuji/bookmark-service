@@ -8,7 +8,9 @@
     "other": "Other Bookmarks",
     "bookmarkEmpty": "No bookmarks here.",
     "barEmpty": "No URLs in bookmark bar.",
-    "folderRootNotFound": "Folder root not found."
+    "folderRootNotFound": "Folder root not found.",
+    "subFolders": "Folders",
+    "childFolders": "Subfolders"
   },
   "tab": {
     "recentList": "Recently Added",
@@ -86,7 +88,12 @@
     "closeTheme": "Close theme selector",
     "close": "Close",
     "goToTheme": "Go to {{name}}",
-    "clearInput": "Clear input"
+    "clearInput": "Clear input",
+    "expandSection": "Expand folders",
+    "collapseSection": "Collapse folders",
+    "expandFolder": "Expand folder",
+    "collapseFolder": "Collapse folder",
+    "goToParent": "Go to parent folder"
   },
   "footer": {
     "feedback": "Feedback & Bug Reports (Notion)"

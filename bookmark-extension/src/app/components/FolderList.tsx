@@ -1,9 +1,10 @@
 import TextButton from './ui/TextButton';
 import IconFolder from '../assets/icon/folder_fill.svg?react';
-import ArrowChild from '../assets/icon/arrow_child.svg?react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import { separateFolderAndBookmarks } from '../utils/bookmarkTreeUtils';
 import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { useBookmarksData } from '../BookmarksContext';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -20,16 +21,23 @@ type FolderListProps = {
   node: BookmarkItemType;
   depth?: number;
   folderId?: string;
+  expandedIds: Set<string>;
+  onToggleExpand: (id: string) => void;
 };
 
 export default function FolderList({
   node,
   depth = 0,
   folderId,
+  expandedIds,
+  onToggleExpand,
 }: FolderListProps) {
   const children = node.children ?? [];
   const { folders } = separateFolderAndBookmarks(children);
+  const hasChildFolders = folders.length > 0;
+  const isExpanded = expandedIds.has(String(node.id));
 
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { reloadBookmarks } = useBookmarksData();
 
@@ -188,6 +196,24 @@ export default function FolderList({
           isDragHover ? 'underline text-(--text-hover)' : '',
         ].join(' ')}
       >
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onToggleExpand(String(node.id));
+          }}
+          aria-expanded={isExpanded}
+          aria-label={
+            isExpanded ? t('aria.collapseFolder') : t('aria.expandFolder')
+          }
+          className={[
+            'shrink-0 w-4 h-4 mt-1 flex items-center justify-center cursor-pointer hover:text-(--text-hover)',
+            hasChildFolders ? '' : 'invisible',
+          ].join(' ')}
+        >
+          {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+        </button>
         <TextButton
           className={`tracking-wide cursor-pointer flex items-start text-left hover:text-(--text-hover) whitespace-normal break-all min-w-0 flex-1 ${
             isActive ? 'text-(--text-selected)' : ''
@@ -195,9 +221,6 @@ export default function FolderList({
           }`}
           buttonName={node.title}
         >
-          {depth > 0 && (
-            <ArrowChild width={10} height={10} className="inline shrink-0" />
-          )}
 
           <span
             className="inline mr-2.5 ml-2.5 shrink-0 relative"
@@ -271,7 +294,7 @@ export default function FolderList({
         )}
       </div>
 
-      {folders.length > 0 && (
+      {hasChildFolders && isExpanded && (
         <ul className="flex flex-col gap-1 mt-1">
           {folders.map((childFolder) => (
             <FolderList
@@ -279,6 +302,8 @@ export default function FolderList({
               node={childFolder}
               depth={depth + 1}
               folderId={folderId}
+              expandedIds={expandedIds}
+              onToggleExpand={onToggleExpand}
             />
           ))}
         </ul>
