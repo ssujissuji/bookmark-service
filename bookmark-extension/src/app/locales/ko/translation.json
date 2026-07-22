@@ -8,7 +8,9 @@
     "other": "기타 북마크",
     "bookmarkEmpty": "북마크가 없습니다.",
     "barEmpty": "북마크바에 URL이 없습니다.",
-    "folderRootNotFound": "폴더 루트를 찾지 못했습니다."
+    "folderRootNotFound": "폴더 루트를 찾지 못했습니다.",
+    "subFolders": "폴더",
+    "childFolders": "하위 폴더"
   },
   "tab": {
     "recentList": "최근 북마크 추가 목록",
@@ -86,7 +88,12 @@
     "closeTheme": "테마 선택 닫기",
     "close": "닫기",
     "goToTheme": "{{name}}로 이동",
-    "clearInput": "입력 내용 삭제"
+    "clearInput": "입력 내용 삭제",
+    "expandSection": "하위 폴더 펼치기",
+    "collapseSection": "하위 폴더 접기",
+    "expandFolder": "폴더 펼치기",
+    "collapseFolder": "폴더 접기",
+    "goToParent": "상위 폴더로 이동"
   },
   "footer": {
     "feedback": "업데이트 제안 및 오류 접수처(Notion)"
