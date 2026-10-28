@@ -9,6 +9,10 @@ import svgr from 'vite-plugin-svgr';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
+  // package.json의 version을 앱 코드에서 __APP_VERSION__으로 사용 (버전은 package.json 한 곳만 수정)
+  define: {
+    __APP_VERSION__: JSON.stringify(version),
+  },
   resolve: {
     alias: {
       '@': `${path.resolve(__dirname, 'src')}`,
