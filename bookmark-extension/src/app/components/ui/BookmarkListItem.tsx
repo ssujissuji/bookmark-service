@@ -11,6 +11,7 @@ import BookmarkEditModal, { BookmarkSubmitValue } from '../BookmarkEditModal';
 import { isRecentlyAdded } from '@/app/utils/timeUtils';
 import { useDragGhostDnD } from '@/app/hooks/useDragGhostDnD';
 import { useDragState } from '@/app/DragContext';
+import { useConfirm } from '@/app/ConfirmContext';
 import { Pin } from 'lucide-react';
 
 export default function BookmarkListItem({
@@ -38,6 +39,7 @@ export default function BookmarkListItem({
   onTogglePin?: () => void;
 }) {
   const { t } = useTranslation();
+  const confirm = useConfirm();
   const { draggingId, setDraggingId, canDrop } = useDragState();
   const [isOpen, setIsOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
@@ -105,7 +107,11 @@ export default function BookmarkListItem({
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(t('confirm.deleteBookmark'));
+    const confirmed = await confirm({
+      message: t('confirm.deleteBookmark'),
+      confirmText: t('action.delete'),
+      danger: true,
+    });
     if (!confirmed) return;
     if (!id) return;
 

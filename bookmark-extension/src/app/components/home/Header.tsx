@@ -12,6 +12,7 @@ import { findPathToNode } from '../../utils/bookmarkTreeUtils';
 import type { SortType } from '../../layout/RootLayout';
 import { useBookmarksData } from '@/app/BookmarksContext';
 import { useFolderActions } from '@/app/hooks/useFoldersActions';
+import { useConfirm } from '@/app/ConfirmContext';
 import toast from 'react-hot-toast';
 import { Trash } from 'lucide-react';
 
@@ -33,6 +34,7 @@ export default function Header({
   onReset,
 }: HeaderProps) {
   const { t } = useTranslation();
+  const confirm = useConfirm();
   const { folderId } = useParams<{ folderId: string }>();
   const { data, status, reloadBookmarks } = useBookmarksData();
   const [editInitialValue, setEditInitialValue] = useState('');
@@ -100,7 +102,11 @@ export default function Header({
       return;
     }
 
-    const confirmed = window.confirm(t('confirm.deleteFolder'));
+    const confirmed = await confirm({
+      message: t('confirm.deleteFolder'),
+      confirmText: t('action.delete'),
+      danger: true,
+    });
     if (!confirmed) return;
 
     try {

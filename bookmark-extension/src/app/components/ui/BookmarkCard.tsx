@@ -6,6 +6,7 @@ import SelectBox from './SelectBox';
 import ReactDOM from 'react-dom';
 import { useFolderActions } from '@/app/hooks/useFoldersActions';
 import { useBookmarksData } from '@/app/BookmarksContext';
+import { useConfirm } from '@/app/ConfirmContext';
 import toast from 'react-hot-toast';
 import FolderEditModal from '../FolderEditModal';
 import { Pin } from 'lucide-react';
@@ -38,6 +39,7 @@ export default function BookmarkCard({
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const buttonRef = useRef<HTMLDivElement>(null);
 
+  const confirm = useConfirm();
   const { deleteFolder } = useFolderActions();
   const { reloadBookmarks } = useBookmarksData();
 
@@ -76,7 +78,11 @@ export default function BookmarkCard({
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(t('confirm.deleteFolder'));
+    const confirmed = await confirm({
+      message: t('confirm.deleteFolder'),
+      confirmText: t('action.delete'),
+      danger: true,
+    });
     if (!confirmed) return;
     if (!id) return;
     try {

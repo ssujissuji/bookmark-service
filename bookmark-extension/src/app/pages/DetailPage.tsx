@@ -15,6 +15,7 @@ import type { SortType } from '../layout/RootLayout';
 import { sortBookmarks } from '../utils/sortBookmarks';
 import { applyManualOrder } from '../utils/applyManualOrder';
 import { usePinnedBookmarks } from '../features/pin/usePinnedBookmarks';
+import { useConfirm } from '../ConfirmContext';
 import { sortFolders } from '../utils/sortFolders';
 import { useBookmarksData } from '../BookmarksContext';
 import TextButton from '../components/ui/TextButton';
@@ -38,6 +39,7 @@ export type OutletContextType = {
 
 export default function DetailPage() {
   const { t, i18n } = useTranslation();
+  const confirm = useConfirm();
   const DND_JSON_MIME = 'application/x-bookmark-dnd';
   const navigate = useNavigate();
 
@@ -302,7 +304,10 @@ export default function DetailPage() {
 
     // recent/name 정렬 중이면: 수동 순서 전환 동의를 받고 전환
     if (sortType !== 'manual') {
-      const ok = window.confirm(t('confirm.switchToManual'));
+      const ok = await confirm({
+        title: t('sort.manual'),
+        message: t('confirm.switchToManual'),
+      });
       if (!ok) return;
       onChangeSort('manual');
     }

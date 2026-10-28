@@ -6,6 +6,7 @@ import { HashRouter } from 'react-router-dom';
 import App from './App';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DragProvider } from '@/app/DragContext';
+import { ConfirmProvider } from '@/app/ConfirmContext';
 
 const queryClient = new QueryClient();
 
@@ -14,7 +15,9 @@ createRoot(document.getElementById('root')!).render(
     <DragProvider>
       <QueryClientProvider client={queryClient}>
         <HashRouter>
-          <App />
+          <ConfirmProvider>
+            <App />
+          </ConfirmProvider>
         </HashRouter>
       </QueryClientProvider>
     </DragProvider>
