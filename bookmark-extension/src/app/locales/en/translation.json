@@ -25,7 +25,9 @@
     "cancel": "Cancel",
     "create": "Create",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "pin": "Pin to top",
+    "unpin": "Unpin"
   },
   "modal": {
     "createFolder": "🆕 Create New Folder",

@@ -25,7 +25,9 @@
     "cancel": "취소",
     "create": "생성",
     "edit": "수정",
-    "delete": "삭제"
+    "delete": "삭제",
+    "pin": "상단 고정",
+    "unpin": "고정 해제"
   },
   "modal": {
     "createFolder": "🆕 새로운 폴더 생성",

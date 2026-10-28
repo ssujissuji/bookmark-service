@@ -11,23 +11,31 @@ import BookmarkEditModal, { BookmarkSubmitValue } from '../BookmarkEditModal';
 import { isRecentlyAdded } from '@/app/utils/timeUtils';
 import { useDragGhostDnD } from '@/app/hooks/useDragGhostDnD';
 import { useDragState } from '@/app/DragContext';
+import { Pin } from 'lucide-react';
 
 export default function BookmarkListItem({
   url,
   title,
   id,
   dateAdded,
-  index,
   onReorder,
+  isPinned,
+  onTogglePin,
 }: {
   url: string;
   title: string;
   id: string;
   dateAdded?: number;
-  /** 폴더 내 표시 순서(위치). onReorder와 함께 넘기면 순서 이동 가능 */
-  index?: number;
-  /** 다른 북마크를 이 위치로 떨어뜨렸을 때 호출 (검색 결과 목록에서는 넘기지 않음) */
-  onReorder?: (draggedId: string, targetIndex: number, placeBelow: boolean) => void;
+  /** 다른 북마크를 이 아이템 위치로 떨어뜨렸을 때 호출 (검색 결과 목록에서는 넘기지 않음) */
+  onReorder?: (
+    draggedId: string,
+    targetId: string,
+    placeBelow: boolean,
+  ) => void;
+  /** 상단 고정 여부 */
+  isPinned?: boolean;
+  /** 고정/해제 토글 (넘기지 않으면 메뉴에 고정 항목 숨김) */
+  onTogglePin?: () => void;
 }) {
   const { t } = useTranslation();
   const { draggingId, setDraggingId, canDrop } = useDragState();
@@ -38,7 +46,8 @@ export default function BookmarkListItem({
   // 드롭 시 삽입될 위치 표시: 이 아이템의 위쪽('top') / 아래쪽('bottom')
   const [dropEdge, setDropEdge] = useState<'top' | 'bottom' | null>(null);
 
-  const reorderEnabled = typeof index === 'number' && Boolean(onReorder);
+  // 핀된 아이템은 순서 고정(그룹 내 재정렬 없음) → 드롭 대상에서 제외
+  const reorderEnabled = Boolean(onReorder) && !isPinned;
   const buttonRef = useRef<HTMLDivElement>(null);
   const { deleteUrl } = useUrlActions();
   const { reloadBookmarks } = useBookmarksData();
@@ -162,7 +171,7 @@ export default function BookmarkListItem({
   };
 
   const onReorderDrop = (e: React.DragEvent<HTMLElement>) => {
-    if (!reorderEnabled || index === undefined || !onReorder) return;
+    if (!reorderEnabled || !onReorder) return;
     const edge = dropEdge ?? computeEdge(e);
     setDropEdge(null);
 
@@ -173,7 +182,7 @@ export default function BookmarkListItem({
 
     e.preventDefault();
     e.stopPropagation();
-    onReorder(draggedId, index, edge === 'bottom');
+    onReorder(draggedId, id, edge === 'bottom');
   };
 
   const isNew = isRecentlyAdded(dateAdded);
@@ -215,13 +224,38 @@ export default function BookmarkListItem({
             </span>
           )}
         </div>
-        <div
-          ref={buttonRef}
-          data-ignore-link
-          className="hover:text-(--color-gray-dark) cursor-pointer"
-          onClick={handleOpen}
-        >
-          <Ellipsis />
+        <div className="flex items-center gap-3 shrink-0">
+          {onTogglePin && (
+            <button
+              type="button"
+              data-ignore-link
+              aria-label={isPinned ? t('action.unpin') : t('action.pin')}
+              title={isPinned ? t('action.unpin') : t('action.pin')}
+              onClick={(e) => {
+                e.stopPropagation();
+                onTogglePin();
+              }}
+              className={[
+                'cursor-pointer transition-opacity',
+                isPinned
+                  ? 'text-(--text-selected)'
+                  : 'opacity-40 hover:opacity-100',
+              ].join(' ')}
+            >
+              <Pin
+                size={16}
+                className={isPinned ? 'fill-(--text-selected)' : ''}
+              />
+            </button>
+          )}
+          <div
+            ref={buttonRef}
+            data-ignore-link
+            className="hover:text-(--color-gray-dark) cursor-pointer"
+            onClick={handleOpen}
+          >
+            <Ellipsis />
+          </div>
         </div>
         {isOpen &&
           ReactDOM.createPortal(

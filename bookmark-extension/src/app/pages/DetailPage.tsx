@@ -14,6 +14,7 @@ import {
 import type { SortType } from '../layout/RootLayout';
 import { sortBookmarks } from '../utils/sortBookmarks';
 import { applyManualOrder } from '../utils/applyManualOrder';
+import { usePinnedBookmarks } from '../features/pin/usePinnedBookmarks';
 import { sortFolders } from '../utils/sortFolders';
 import { useBookmarksData } from '../BookmarksContext';
 import TextButton from '../components/ui/TextButton';
@@ -82,6 +83,15 @@ export default function DetailPage() {
     () => sortBookmarks(bookmarks, sortType, i18n.language),
     [bookmarks, sortType, i18n.language],
   );
+
+  const { isPinned, toggle: togglePin } = usePinnedBookmarks(folderId);
+
+  // 표시 순서: 고정(핀)된 북마크를 위로, 각 그룹 내부는 정렬 순서를 유지
+  const displayBookmarks = useMemo(() => {
+    const pinned = sortedBookmarks.filter((b) => isPinned(b.id));
+    const rest = sortedBookmarks.filter((b) => !isPinned(b.id));
+    return [...pinned, ...rest];
+  }, [sortedBookmarks, isPinned]);
 
   const normalizedKeyword = keyword.trim().toLowerCase();
 
@@ -261,24 +271,34 @@ export default function DetailPage() {
 
   const handleReorder = async (
     draggedId: string,
-    targetIndex: number,
+    targetId: string,
     placeBelow: boolean,
   ) => {
     if (!folderId) return;
 
-    const orderedIds = sortedBookmarks.map((b) => String(b.id));
-    const from = orderedIds.indexOf(String(draggedId));
+    const dragged = String(draggedId);
+    const target = String(targetId);
+    if (dragged === target) return;
+    // 고정된 북마크는 순서 고정 → 순서 이동 대상에서 제외
+    if (isPinned(dragged)) return;
+
+    // 기준 순서: manual이면 네이티브 순서, 아니면 현재 정렬(recent/name) 순서.
+    // 핀은 표시 전용 오버레이이므로 기준 순서에는 반영하지 않는다.
+    const baseIds = (sortType === 'manual' ? bookmarks : sortedBookmarks).map(
+      (b) => String(b.id),
+    );
     // 드래그 대상이 이 폴더의 북마크가 아니면(예: 폴더 드래그) 순서 이동 대상이 아님
-    if (from === -1) return;
+    if (!baseIds.includes(dragged) || !baseIds.includes(target)) return;
 
     // 표시 순서 기준 삽입 위치 계산
-    let insertAt = placeBelow ? targetIndex + 1 : targetIndex;
-    const without = orderedIds.filter((_, i) => i !== from);
-    if (from < insertAt) insertAt -= 1;
-    without.splice(insertAt, 0, String(draggedId));
+    const without = baseIds.filter((x) => x !== dragged);
+    let insertAt = without.indexOf(target);
+    if (insertAt === -1) return;
+    if (placeBelow) insertAt += 1;
+    without.splice(insertAt, 0, dragged);
 
     // 순서 변화가 없으면 아무것도 하지 않음
-    if (without.join(' ') === orderedIds.join(' ')) return;
+    if (without.join(' ') === baseIds.join(' ')) return;
 
     // recent/name 정렬 중이면: 수동 순서 전환 동의를 받고 전환
     if (sortType !== 'manual') {
@@ -348,6 +368,8 @@ export default function DetailPage() {
                 title={bookmark.title}
                 id={bookmark.id}
                 dateAdded={bookmark.dateAdded}
+                isPinned={isPinned(bookmark.id)}
+                onTogglePin={() => togglePin(bookmark.id)}
               />
             ))
           ) : folderChipMatchCount > 0 ? null : (
@@ -356,15 +378,16 @@ export default function DetailPage() {
             </p>
           )
         ) : (
-          sortedBookmarks.map((bookmark, idx) => (
+          displayBookmarks.map((bookmark) => (
             <BookmarkListItem
               key={bookmark.id}
               url={bookmark.url}
               title={bookmark.title}
               id={bookmark.id}
               dateAdded={bookmark.dateAdded}
-              index={idx}
               onReorder={handleReorder}
+              isPinned={isPinned(bookmark.id)}
+              onTogglePin={() => togglePin(bookmark.id)}
             />
           ))
         )}
