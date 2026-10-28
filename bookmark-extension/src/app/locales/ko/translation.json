@@ -84,7 +84,10 @@
     "noResult": "검색 결과가 없습니다."
   },
   "dnd": {
-    "dropHint": "여기로 드롭하면 반대 루트로 이동"
+    "dropHint": "여기로 드롭하면 반대 루트로 이동",
+    "modeMove": "이동",
+    "modeReorder": "정렬",
+    "modeHint": "이동: 폴더 위로 드롭하면 그 안으로 이동 / 정렬: 폴더 순서를 바꿉니다"
   },
   "theme": {
     "applied": "적용됨",

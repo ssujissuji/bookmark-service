@@ -11,7 +11,7 @@ import {
   findPathToNode,
   separateFolderAndBookmarks,
 } from '../utils/bookmarkTreeUtils';
-import type { SortType } from '../layout/RootLayout';
+import type { DragMode, SortType } from '../layout/RootLayout';
 import { sortBookmarks } from '../utils/sortBookmarks';
 import { applyManualOrder } from '../utils/applyManualOrder';
 import { usePinnedBookmarks } from '../features/pin/usePinnedBookmarks';
@@ -35,6 +35,7 @@ export type OutletContextType = {
   sortType: SortType;
   keyword: string;
   onChangeSort: (type: SortType) => void;
+  dragMode: DragMode;
 };
 
 export default function DetailPage() {

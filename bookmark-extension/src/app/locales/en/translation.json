@@ -84,7 +84,10 @@
     "noResult": "No results found."
   },
   "dnd": {
-    "dropHint": "Drop here to move to the other root"
+    "dropHint": "Drop here to move to the other root",
+    "modeMove": "Move",
+    "modeReorder": "Reorder",
+    "modeHint": "Move: drop onto a folder to move it inside / Reorder: change folder order"
   },
   "theme": {
     "applied": "Applied",

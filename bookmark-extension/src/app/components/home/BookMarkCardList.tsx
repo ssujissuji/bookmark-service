@@ -7,6 +7,7 @@ import {
   separateFolderAndBookmarks,
 } from '../../utils/bookmarkTreeUtils';
 import { useNavigate, useOutletContext } from 'react-router';
+import { useFolderReorder } from '@/app/hooks/useFolderReorder';
 import BookmarkListItem from '../ui/BookmarkListItem';
 import type { OutletContextType } from '../../pages/DetailPage';
 import { useBookmarksData } from '@/app/BookmarksContext';
@@ -39,7 +40,9 @@ export default function BookMarkCardList({
   const { data, status, reloadBookmarks } = useBookmarksData();
   const { createUrl } = useUrlActions();
 
-  const { keyword, sortType } = useOutletContext<OutletContextType>();
+  const { keyword, sortType, dragMode } =
+    useOutletContext<OutletContextType>();
+  const reorderFolder = useFolderReorder();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -125,6 +128,15 @@ export default function BookMarkCardList({
                   iconColor={`var(--folder-${token})`}
                   type="bookmarkBar"
                   onClick={() => navigate(`/bookmark/${list.id}`)}
+                  dragMode={dragMode}
+                  onReorder={(draggedId, targetId, placeBelow) =>
+                    reorderFolder(
+                      draggedId,
+                      targetId,
+                      placeBelow,
+                      sortedFolderList.map((f) => String(f.id)),
+                    )
+                  }
                 />
               );
             })}

@@ -6,9 +6,11 @@ import Footer from '../components/home/Footer';
 import { applyTheme, loadTheme, saveTheme, type ThemeId } from '../utils/theme';
 
 export type SortType = 'recent' | 'name' | 'manual';
+export type DragMode = 'move' | 'reorder';
 
 export default function RootLayout() {
   const [sortType, setSortType] = useState<SortType>('recent');
+  const [dragMode, setDragMode] = useState<DragMode>('move');
   const [inputValue, setInputValue] = useState<string>('');
   const [searchKeyword, setSearchKeyword] = useState<string>('');
 
@@ -60,13 +62,20 @@ export default function RootLayout() {
       <Header
         sortType={sortType}
         onChangeSort={setSortType}
+        dragMode={dragMode}
+        onChangeDragMode={setDragMode}
         keyword={inputValue}
         onChangeKeyword={handleChangeKeyword}
         onKeyDown={handleKeyDown}
         onReset={handleReset}
       />
       <Outlet
-        context={{ sortType, keyword: searchKeyword, onChangeSort: setSortType }}
+        context={{
+          sortType,
+          keyword: searchKeyword,
+          onChangeSort: setSortType,
+          dragMode,
+        }}
       />
       <Footer
         activeThemeId={activeThemeId}
