@@ -18,6 +18,7 @@ import {
   DEFAULT_COLOR_TOKEN,
 } from '@/app/features/folderColor/constants';
 import type { ColorToken } from '@/app/features/folderColor/types';
+import type { DragMode } from '@/app/layout/RootLayout';
 
 export default function BookmarkCard({
   title,
@@ -26,6 +27,8 @@ export default function BookmarkCard({
   dateAdded,
   iconColor,
   onClick,
+  dragMode = 'move',
+  onReorder,
 }: {
   title: string;
   type: string;
@@ -33,6 +36,10 @@ export default function BookmarkCard({
   dateAdded?: number;
   iconColor?: string;
   onClick: () => void;
+  /** 'reorder'면 드롭 시 순서 재정렬, 'move'면 기존 중첩 이동 */
+  dragMode?: DragMode;
+  /** 정렬 모드에서 다른 폴더를 이 카드 위치로 떨어뜨렸을 때 호출 */
+  onReorder?: (draggedId: string, targetId: string, placeBelow: boolean) => void;
 }) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -53,6 +60,10 @@ export default function BookmarkCard({
   const [isDragging, setIsDragging] = useState(false);
   const [isDragHover, setIsDragHover] = useState(false);
   const enterCounterRef = useRef(0);
+  // 정렬 모드 삽입 위치 표시: 카드 왼쪽('start') / 오른쪽('end')
+  const [dropEdge, setDropEdge] = useState<'start' | 'end' | null>(null);
+  const reorderEnabled =
+    dragMode === 'reorder' && !isRootFolder && Boolean(id) && Boolean(onReorder);
 
   const [isColorOpen, setIsColorOpen] = useState(false);
   const [folderPos, setFolderPos] = useState({ top: 0, left: 0 });
@@ -139,9 +150,13 @@ export default function BookmarkCard({
     },
   });
 
+  const parseDraggedId = (raw: string) =>
+    raw.replace(/^(folder|bookmark):/, '');
+
   const onDragEnter = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    if (reorderEnabled) return; // 정렬 모드에선 중첩 하이라이트 안 함
 
     enterCounterRef.current += 1;
     setIsDragHover(true);
@@ -151,8 +166,14 @@ export default function BookmarkCard({
     e.preventDefault();
     e.stopPropagation();
 
-    enterCounterRef.current -= 1;
+    if (reorderEnabled) {
+      const next = e.relatedTarget as Node | null;
+      if (next && e.currentTarget.contains(next)) return;
+      setDropEdge(null);
+      return;
+    }
 
+    enterCounterRef.current -= 1;
     if (enterCounterRef.current <= 0) {
       enterCounterRef.current = 0;
       setIsDragHover(false);
@@ -163,23 +184,34 @@ export default function BookmarkCard({
     e.preventDefault();
     e.stopPropagation();
     e.dataTransfer.dropEffect = 'move';
+
+    if (reorderEnabled) {
+      // 그리드: 커서가 카드 왼쪽/오른쪽 절반인지로 앞/뒤 판정
+      const rect = e.currentTarget.getBoundingClientRect();
+      setDropEdge(e.clientX < rect.left + rect.width / 2 ? 'start' : 'end');
+    }
   };
 
   const onDrop = async (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
-    enterCounterRef.current = 0;
-    setIsDragHover(false);
-
     const raw = e.dataTransfer.getData('text/plain');
     if (!raw || !targetFolderId) return;
-
-    let draggedId = raw;
-    if (raw.startsWith('folder:')) draggedId = raw.replace('folder:', '');
-    if (raw.startsWith('bookmark:')) draggedId = raw.replace('bookmark:', '');
-
+    const draggedId = parseDraggedId(raw);
     if (String(draggedId) === String(targetFolderId)) return;
+
+    // 정렬 모드: 순서 재정렬
+    if (reorderEnabled && id && onReorder) {
+      const edge = dropEdge;
+      setDropEdge(null);
+      onReorder(draggedId, id, edge === 'end');
+      return;
+    }
+
+    // 이동 모드: 기존 중첩 이동
+    enterCounterRef.current = 0;
+    setIsDragHover(false);
     try {
       await chrome.bookmarks.move(draggedId, {
         parentId: String(targetFolderId),
@@ -235,6 +267,12 @@ export default function BookmarkCard({
             : '',
 
           isDragHover ? 'outline-2 outline-(--text-hover)' : '',
+          dropEdge === 'start'
+            ? 'before:content-[""] before:absolute before:top-1 before:bottom-1 before:-left-1 before:w-0.5 before:rounded-full before:bg-(--text-selected)'
+            : '',
+          dropEdge === 'end'
+            ? 'after:content-[""] after:absolute after:top-1 after:bottom-1 after:-right-1 after:w-0.5 after:rounded-full after:bg-(--text-selected)'
+            : '',
         ].join(' ')}
       >
         <div className="flex flex-1 min-w-0 gap-5 cursor-pointer">

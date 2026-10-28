@@ -9,7 +9,7 @@ import ReactDOM from 'react-dom';
 import FolderEditModal from '../FolderEditModal';
 import { useNavigate, useParams } from 'react-router';
 import { findPathToNode } from '../../utils/bookmarkTreeUtils';
-import type { SortType } from '../../layout/RootLayout';
+import type { DragMode, SortType } from '../../layout/RootLayout';
 import { useBookmarksData } from '@/app/BookmarksContext';
 import { useFolderActions } from '@/app/hooks/useFoldersActions';
 import { useConfirm } from '@/app/ConfirmContext';
@@ -20,6 +20,8 @@ type HeaderProps = {
   sortType: SortType;
   keyword: string;
   onChangeSort: (type: SortType) => void;
+  dragMode: DragMode;
+  onChangeDragMode: (mode: DragMode) => void;
   onChangeKeyword: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onReset?: () => void;
@@ -29,6 +31,8 @@ export default function Header({
   sortType,
   keyword,
   onChangeSort,
+  dragMode,
+  onChangeDragMode,
   onChangeKeyword,
   onKeyDown,
   onReset,
@@ -164,6 +168,8 @@ export default function Header({
       <Navbar
         sortType={sortType}
         onChangeSort={onChangeSort}
+        dragMode={dragMode}
+        onChangeDragMode={onChangeDragMode}
         keyword={keyword}
         onChangeValue={onChangeKeyword}
         onKeyDown={onKeyDown}

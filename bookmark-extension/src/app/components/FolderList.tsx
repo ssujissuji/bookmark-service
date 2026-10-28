@@ -3,7 +3,9 @@ import IconFolder from '../assets/icon/folder_fill.svg?react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { separateFolderAndBookmarks } from '../utils/bookmarkTreeUtils';
 import ReactDOM from 'react-dom';
-import { useNavigate } from 'react-router';
+import { useNavigate, useOutletContext } from 'react-router';
+import { useFolderReorder } from '../hooks/useFolderReorder';
+import type { OutletContextType } from '../pages/DetailPage';
 import { useTranslation } from 'react-i18next';
 import { useBookmarksData } from '../BookmarksContext';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -40,10 +42,16 @@ export default function FolderList({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { reloadBookmarks } = useBookmarksData();
+  const { dragMode } = useOutletContext<OutletContextType>();
+  const reorderFolder = useFolderReorder();
 
   const [isDropping, setIsDropping] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isDragHover, setIsDragHover] = useState(false);
+  // 정렬 모드 삽입 위치 표시: 위('top') / 아래('bottom')
+  const [dropEdge, setDropEdge] = useState<'top' | 'bottom' | null>(null);
+  // 루트(북마크바/기타)는 순서 대상이 아님 → 자식 폴더만 재정렬
+  const reorderEnabled = dragMode === 'reorder' && node.id !== '1' && node.id !== '2';
 
   const [isColorOpen, setIsColorOpen] = useState(false);
   const [folderPos, setFolderPos] = useState({ top: 0, left: 0 });
@@ -77,6 +85,7 @@ export default function FolderList({
   const onDragEnter = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    if (reorderEnabled) return; // 정렬 모드에선 중첩 하이라이트 안 함
 
     enterCounterRef.current += 1;
     setIsDragHover(true);
@@ -85,6 +94,13 @@ export default function FolderList({
   const onDragLeave = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (reorderEnabled) {
+      const next = e.relatedTarget as Node | null;
+      if (next && e.currentTarget.contains(next)) return;
+      setDropEdge(null);
+      return;
+    }
 
     enterCounterRef.current -= 1;
 
@@ -100,6 +116,12 @@ export default function FolderList({
     e.stopPropagation();
 
     e.dataTransfer.dropEffect = 'move';
+
+    if (reorderEnabled) {
+      // 세로 리스트: 커서가 위/아래 절반인지로 앞/뒤 판정
+      const rect = e.currentTarget.getBoundingClientRect();
+      setDropEdge(e.clientY < rect.top + rect.height / 2 ? 'top' : 'bottom');
+    }
   };
 
   const { onDragStart, onDragEnd } = useDragGhostDnD({
@@ -126,17 +148,23 @@ export default function FolderList({
     e.preventDefault();
     e.stopPropagation();
 
-    enterCounterRef.current = 0;
-    setIsDragHover(false);
-
     const raw = e.dataTransfer.getData('text/plain');
     if (!raw || !node.id) return;
 
-    let draggedId = raw;
-    if (raw.startsWith('folder:')) draggedId = raw.replace('folder:', '');
-    if (raw.startsWith('bookmark:')) draggedId = raw.replace('bookmark:', '');
-
+    const draggedId = raw.replace(/^(folder|bookmark):/, '');
     if (String(draggedId) === String(node.id)) return;
+
+    // 정렬 모드: 순서 재정렬 (사이드바는 네이티브 순서 기준)
+    if (reorderEnabled) {
+      const edge = dropEdge;
+      setDropEdge(null);
+      reorderFolder(draggedId, String(node.id), edge === 'bottom');
+      return;
+    }
+
+    // 이동 모드: 기존 중첩 이동
+    enterCounterRef.current = 0;
+    setIsDragHover(false);
     try {
       await chrome.bookmarks.move(draggedId, {
         parentId: node.id,
@@ -189,11 +217,17 @@ export default function FolderList({
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
         className={[
-          'flex flex-1 gap-1 w-full min-w-0',
+          'relative flex flex-1 gap-1 w-full min-w-0',
           isDragging
             ? 'opacity-30 blur-[0.5px] cursor-grabbing transition-opacity duration-150 ease-out'
             : '',
           isDragHover ? 'underline text-(--text-hover)' : '',
+          dropEdge === 'top'
+            ? 'before:content-[""] before:absolute before:-top-0.5 before:left-0 before:right-0 before:h-0.5 before:rounded-full before:bg-(--text-selected)'
+            : '',
+          dropEdge === 'bottom'
+            ? 'after:content-[""] after:absolute after:-bottom-0.5 after:left-0 after:right-0 after:h-0.5 after:rounded-full after:bg-(--text-selected)'
+            : '',
         ].join(' ')}
       >
         <button
