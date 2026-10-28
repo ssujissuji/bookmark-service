@@ -100,13 +100,16 @@ h2 {
 .glass__dark textarea,
 .glass__dark .input {
   color: var(--text-main);
-  border: 1px solid var(--glass-border);
-  background-color: rgba(255, 255, 255, 0.55);
+  /* 배경을 테마 토큰으로 → 다크 테마에선 어둡게, 라이트 테마에선 밝게 비쳐
+     글자색(--text-main)과 대비가 항상 유지된다. */
+  background-color: var(--glass-bg);
+  /* 테두리는 글자색을 섞어 만들어 테마에 따라 밝기가 자동으로 맞는다. */
+  border: 1.5px solid color-mix(in srgb, var(--text-main) 22%, transparent);
 }
 
 .glass__dark input::placeholder,
 .glass__dark textarea::placeholder {
-  color: var(--text-muted);
+  color: var(--text-sub);
 }
 
 /* hover: 무드 유지하면서 살짝 강조 */
@@ -161,7 +164,8 @@ h2 {
 }
 
 .input:focus {
-  outline: 2px solid var(--text-hover);
+  outline: 2px solid var(--text-selected);
+  outline-offset: 1px;
 }
 
 .input--search {

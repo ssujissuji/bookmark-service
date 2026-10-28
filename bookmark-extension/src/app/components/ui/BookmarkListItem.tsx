@@ -10,23 +10,46 @@ import toast from 'react-hot-toast';
 import BookmarkEditModal, { BookmarkSubmitValue } from '../BookmarkEditModal';
 import { isRecentlyAdded } from '@/app/utils/timeUtils';
 import { useDragGhostDnD } from '@/app/hooks/useDragGhostDnD';
+import { useDragState } from '@/app/DragContext';
+import { useConfirm } from '@/app/ConfirmContext';
+import { Pin } from 'lucide-react';
 
 export default function BookmarkListItem({
   url,
   title,
   id,
   dateAdded,
+  onReorder,
+  isPinned,
+  onTogglePin,
 }: {
   url: string;
   title: string;
   id: string;
   dateAdded?: number;
+  /** 다른 북마크를 이 아이템 위치로 떨어뜨렸을 때 호출 (검색 결과 목록에서는 넘기지 않음) */
+  onReorder?: (
+    draggedId: string,
+    targetId: string,
+    placeBelow: boolean,
+  ) => void;
+  /** 상단 고정 여부 */
+  isPinned?: boolean;
+  /** 고정/해제 토글 (넘기지 않으면 메뉴에 고정 항목 숨김) */
+  onTogglePin?: () => void;
 }) {
   const { t } = useTranslation();
+  const confirm = useConfirm();
+  const { draggingId, setDraggingId, canDrop } = useDragState();
   const [isOpen, setIsOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
   const [isDragging, setIsDragging] = useState(false);
+  // 드롭 시 삽입될 위치 표시: 이 아이템의 위쪽('top') / 아래쪽('bottom')
+  const [dropEdge, setDropEdge] = useState<'top' | 'bottom' | null>(null);
+
+  // 핀된 아이템은 순서 고정(그룹 내 재정렬 없음) → 드롭 대상에서 제외
+  const reorderEnabled = Boolean(onReorder) && !isPinned;
   const buttonRef = useRef<HTMLDivElement>(null);
   const { deleteUrl } = useUrlActions();
   const { reloadBookmarks } = useBookmarksData();
@@ -84,7 +107,11 @@ export default function BookmarkListItem({
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(t('confirm.deleteBookmark'));
+    const confirmed = await confirm({
+      message: t('confirm.deleteBookmark'),
+      confirmText: t('action.delete'),
+      danger: true,
+    });
     if (!confirmed) return;
     if (!id) return;
 
@@ -104,9 +131,11 @@ export default function BookmarkListItem({
     onDragStartUI: () => {
       setIsDragging(true);
       setIsOpen(false);
+      setDraggingId(id);
     },
     onDragEndUI: () => {
       setIsDragging(false);
+      setDraggingId(null);
     },
     ghost: {
       scale: 0.55,
@@ -118,6 +147,50 @@ export default function BookmarkListItem({
     },
   });
 
+  const parseDraggedId = (e: React.DragEvent) => {
+    const plain = e.dataTransfer.getData('text/plain');
+    if (!plain) return '';
+    return plain.replace(/^(folder|bookmark):/, '');
+  };
+
+  // 이 아이템 영역에서 커서가 위쪽 절반인지 아래쪽 절반인지로 삽입 위치를 계산
+  const computeEdge = (e: React.DragEvent<HTMLElement>): 'top' | 'bottom' => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    return e.clientY < rect.top + rect.height / 2 ? 'top' : 'bottom';
+  };
+
+  const onReorderDragOver = (e: React.DragEvent<HTMLElement>) => {
+    if (!reorderEnabled) return;
+    // 자기 자신 위로는 표시하지 않음
+    if (draggingId && draggingId === id) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDropEdge(computeEdge(e));
+  };
+
+  const onReorderDragLeave = (e: React.DragEvent<HTMLElement>) => {
+    if (!reorderEnabled) return;
+    // 자식 요소로 이동하는 경우는 무시(깜빡임 방지)
+    const next = e.relatedTarget as Node | null;
+    if (next && e.currentTarget.contains(next)) return;
+    setDropEdge(null);
+  };
+
+  const onReorderDrop = (e: React.DragEvent<HTMLElement>) => {
+    if (!reorderEnabled || !onReorder) return;
+    const edge = dropEdge ?? computeEdge(e);
+    setDropEdge(null);
+
+    const draggedId = parseDraggedId(e);
+    if (!draggedId || draggedId === id) return;
+    // 드래그 대상이 드롭 가능한지(자기 자신 제외) 확인
+    if (!canDrop(id)) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    onReorder(draggedId, id, edge === 'bottom');
+  };
+
   const isNew = isRecentlyAdded(dateAdded);
 
   return (
@@ -127,10 +200,19 @@ export default function BookmarkListItem({
         onClick={handleItemClick}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
+        onDragOver={onReorderDragOver}
+        onDragLeave={onReorderDragLeave}
+        onDrop={onReorderDrop}
         className={[
           'flex relative justify-between items-center glass rounded-lg gap-4 px-6 py-3 glass--hover cursor-pointer min-w-[500px] hover:underline',
           isDragging
             ? 'opacity-30 blur-[0.5px] cursor-grabbing transition-opacity duration-150 ease-out'
+            : '',
+          dropEdge === 'top'
+            ? 'before:content-[""] before:absolute before:-top-1 before:left-0 before:right-0 before:h-0.5 before:rounded-full before:bg-(--text-selected)'
+            : '',
+          dropEdge === 'bottom'
+            ? 'after:content-[""] after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-0.5 after:rounded-full after:bg-(--text-selected)'
             : '',
         ].join(' ')}
       >
@@ -148,13 +230,38 @@ export default function BookmarkListItem({
             </span>
           )}
         </div>
-        <div
-          ref={buttonRef}
-          data-ignore-link
-          className="hover:text-(--color-gray-dark) cursor-pointer"
-          onClick={handleOpen}
-        >
-          <Ellipsis />
+        <div className="flex items-center gap-3 shrink-0">
+          {onTogglePin && (
+            <button
+              type="button"
+              data-ignore-link
+              aria-label={isPinned ? t('action.unpin') : t('action.pin')}
+              title={isPinned ? t('action.unpin') : t('action.pin')}
+              onClick={(e) => {
+                e.stopPropagation();
+                onTogglePin();
+              }}
+              className={[
+                'cursor-pointer transition-opacity',
+                isPinned
+                  ? 'text-(--text-selected)'
+                  : 'opacity-40 hover:opacity-100',
+              ].join(' ')}
+            >
+              <Pin
+                size={16}
+                className={isPinned ? 'fill-(--text-selected)' : ''}
+              />
+            </button>
+          )}
+          <div
+            ref={buttonRef}
+            data-ignore-link
+            className="hover:text-(--color-gray-dark) cursor-pointer"
+            onClick={handleOpen}
+          >
+            <Ellipsis />
+          </div>
         </div>
         {isOpen &&
           ReactDOM.createPortal(
