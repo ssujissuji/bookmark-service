@@ -52,6 +52,14 @@ export default function Navbar({
               : 'text-(--text-muted) hover:bg-white/20',
           ].join(' ')}
         />
+        {sortType === 'manual' && (
+          <span
+            className="px-3 py-1 ml-1 rounded-full text-xs font-semibold text-(--text-selected) border border-(--text-selected)/40"
+            title={t('sort.manualHint')}
+          >
+            {t('sort.manual')}
+          </span>
+        )}
       </div>
       <InputComponent
         id="search"

@@ -5,7 +5,7 @@ import Footer from '../components/home/Footer';
 
 import { applyTheme, loadTheme, saveTheme, type ThemeId } from '../utils/theme';
 
-export type SortType = 'recent' | 'name';
+export type SortType = 'recent' | 'name' | 'manual';
 
 export default function RootLayout() {
   const [sortType, setSortType] = useState<SortType>('recent');
@@ -65,7 +65,9 @@ export default function RootLayout() {
         onKeyDown={handleKeyDown}
         onReset={handleReset}
       />
-      <Outlet context={{ sortType, keyword: searchKeyword }} />
+      <Outlet
+        context={{ sortType, keyword: searchKeyword, onChangeSort: setSortType }}
+      />
       <Footer
         activeThemeId={activeThemeId}
         onChangeTheme={handleChangeTheme}

@@ -13,6 +13,7 @@ import {
 } from '../utils/bookmarkTreeUtils';
 import type { SortType } from '../layout/RootLayout';
 import { sortBookmarks } from '../utils/sortBookmarks';
+import { applyManualOrder } from '../utils/applyManualOrder';
 import { sortFolders } from '../utils/sortFolders';
 import { useBookmarksData } from '../BookmarksContext';
 import TextButton from '../components/ui/TextButton';
@@ -31,6 +32,7 @@ import { DEFAULT_COLOR_TOKEN } from '../features/folderColor/constants';
 export type OutletContextType = {
   sortType: SortType;
   keyword: string;
+  onChangeSort: (type: SortType) => void;
 };
 
 export default function DetailPage() {
@@ -42,7 +44,8 @@ export default function DetailPage() {
   const { folderId } = useParams<{ folderId: string }>();
   const { data, status, reloadBookmarks } = useBookmarksData();
 
-  const { sortType, keyword } = useOutletContext<OutletContextType>();
+  const { sortType, keyword, onChangeSort } =
+    useOutletContext<OutletContextType>();
 
   const rootNodes = data?.[0]?.children ?? [];
   const [isRootDragHover, setIsRootDragHover] = useState(false);
@@ -256,6 +259,47 @@ export default function DetailPage() {
     }
   };
 
+  const handleReorder = async (
+    draggedId: string,
+    targetIndex: number,
+    placeBelow: boolean,
+  ) => {
+    if (!folderId) return;
+
+    const orderedIds = sortedBookmarks.map((b) => String(b.id));
+    const from = orderedIds.indexOf(String(draggedId));
+    // 드래그 대상이 이 폴더의 북마크가 아니면(예: 폴더 드래그) 순서 이동 대상이 아님
+    if (from === -1) return;
+
+    // 표시 순서 기준 삽입 위치 계산
+    let insertAt = placeBelow ? targetIndex + 1 : targetIndex;
+    const without = orderedIds.filter((_, i) => i !== from);
+    if (from < insertAt) insertAt -= 1;
+    without.splice(insertAt, 0, String(draggedId));
+
+    // 순서 변화가 없으면 아무것도 하지 않음
+    if (without.join(' ') === orderedIds.join(' ')) return;
+
+    // recent/name 정렬 중이면: 수동 순서 전환 동의를 받고 전환
+    if (sortType !== 'manual') {
+      const ok = window.confirm(t('confirm.switchToManual'));
+      if (!ok) return;
+      onChangeSort('manual');
+    }
+
+    try {
+      // 최적화용 "현재 순서"는 크롬의 실제(네이티브) 순서여야 한다.
+      // recent/name 모드에서는 화면 순서와 네이티브 순서가 다르기 때문.
+      const nativeOrder = bookmarks.map((b) => String(b.id));
+      await applyManualOrder(without, folderId, nativeOrder);
+      await reloadBookmarks();
+      toast.success(t('toast.reordered'));
+    } catch (err) {
+      console.error('순서 변경 실패:', err);
+      toast.error(t('toast.moveFailed'));
+    }
+  };
+
   const goToFolder = (id: string) => {
     navigate(`/bookmark/${id}`);
   };
@@ -312,13 +356,15 @@ export default function DetailPage() {
             </p>
           )
         ) : (
-          sortedBookmarks.map((bookmark) => (
+          sortedBookmarks.map((bookmark, idx) => (
             <BookmarkListItem
               key={bookmark.id}
               url={bookmark.url}
               title={bookmark.title}
               id={bookmark.id}
               dateAdded={bookmark.dateAdded}
+              index={idx}
+              onReorder={handleReorder}
             />
           ))
         )}
